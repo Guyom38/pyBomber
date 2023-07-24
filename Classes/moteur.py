@@ -47,19 +47,21 @@ class CMoteur():
             # --- récupére l'ensemble des évènements
             for event in pygame.event.get():        
                 if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE: VAR.boucle_jeu = False        
-                if event.type == KEYDOWN:  
-                    if event.key == K_LEFT: 
-                        self.JOUEURS[0].direction = "GAUCHE"
-                        self.JOUEURS[0].enMouvement = True
-                    if event.key == K_RIGHT: 
-                        self.JOUEURS[0].direction = "DROITE"
-                        self.JOUEURS[0].enMouvement = True
-                    if event.key == K_UP: 
-                        self.JOUEURS[0].direction = "HAUT"
-                        self.JOUEURS[0].enMouvement = True
-                    if event.key == K_DOWN: 
-                        self.JOUEURS[0].direction = "BAS"
-                        self.JOUEURS[0].enMouvement = True
+                #if event.type == KEYDOWN:  
+            keys = pygame.key.get_pressed()
+                    
+            if keys[K_LEFT] == 1:
+                self.JOUEURS[0].direction = "GAUCHE"
+                self.JOUEURS[0].enMouvement = True
+            if keys[K_RIGHT] == 1:
+                self.JOUEURS[0].direction = "DROITE"
+                self.JOUEURS[0].enMouvement = True
+            if keys[K_UP] == 1:
+                self.JOUEURS[0].direction = "HAUT"
+                self.JOUEURS[0].enMouvement = True
+            if keys[K_DOWN] == 1:
+                self.JOUEURS[0].direction = "BAS"
+                self.JOUEURS[0].enMouvement = True
 
             # --- remplissage de la fenetre avec une couleur proche du noir
             VAR.fenetre.fill((16,16,16))
