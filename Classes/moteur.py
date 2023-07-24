@@ -46,7 +46,7 @@ class CMoteur():
         while VAR.boucle_jeu:
             # --- récupére l'ensemble des évènements
             for event in pygame.event.get():        
-                if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE: VAR.boucle = False        
+                if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE: VAR.boucle_jeu = False        
                 if event.type == KEYDOWN:  
                     if event.key == K_LEFT: 
                         self.JOUEURS[0].direction = "GAUCHE"

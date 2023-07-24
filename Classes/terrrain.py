@@ -21,7 +21,15 @@ class CTerrain():
                 if x % 2 == 0 and y % 2 == 0: mur = VAR.C_MUR             
                 
                 self.GRILLE[x][y] = mur
-    
+                
+    def Libere_Zone(self, _x, _y, _nb):
+        for y in range(-_nb, _nb+1):
+            for x in range(-_nb, _nb+1):    
+                xPos = _x + x
+                yPos = _y + y  
+                if self.MOTEUR.TERRAIN.GRILLE[xPos][yPos] > VAR.C_MUR:
+                    self.MOTEUR.TERRAIN.GRILLE[xPos][yPos] = VAR.C_SOL
+                    
     def Afficher(self):
         i=0
         

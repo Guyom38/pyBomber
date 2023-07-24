@@ -14,3 +14,6 @@ tauxRemplissage = 70
 C_SOL = 0
 C_MUR = 1
 C_CASSABLE = 2
+
+C_HORS_TERRAIN = (-2, -2)
+C_AUCUNE_COLLISION = (-99, -99)
