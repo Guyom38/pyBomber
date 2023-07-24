@@ -1,26 +1,46 @@
 import pygame
 from pygame.locals import *
+
+from Classes.terrrain import *
 import variables as VAR
+import fonctions as FCT
 
 class CMoteur():
     def __init__(self):
-        pygame.init()
+        pygame.init()   
+    
+    def Initialisation(self):
+        self.TERRAIN = CTerrain(self)        
+        self.Chargement_Graphismes()
         
+        VAR.offSet = ( (VAR.resolution[0] - (VAR.nbColonnes* VAR.tailleCellule)) /2,
+                        (VAR.resolution[1] - (VAR.nbLignes* VAR.tailleCellule)) /2 )
+        
+    
+    def Chargement_Graphismes(self):
+        tmp = pygame.image.load("images/decors2.png").convert_alpha()   
+        VAR.image["cassable"] = FCT.image_decoupe(tmp, 0, 0, 40, 40 )
+        VAR.image["sol0"] = FCT.image_decoupe(tmp, 0, 1, 40, 40 )
+        VAR.image["sol1"] = FCT.image_decoupe(tmp, 1, 1, 40, 40 )
+        VAR.image["mur"] = FCT.image_decoupe(tmp, 0, 2, 40, 40 )
+
+         
+    def Demarrer(self):
         VAR.fenetre = pygame.display.set_mode(VAR.resolution, pygame.DOUBLEBUF, 32)
         pygame.display.set_caption("PyBomber 0.1")        
         self.horloge = pygame.time.Clock()
-    
-    def Demarrer(self):
+        
+        self.Initialisation()
         self.Boucle()
     
     def Boucle(self):
-        boucle = True
-        while boucle:
+        VAR.boucle_jeu = True
+        while VAR.boucle_jeu:
             # --- récupére l'ensemble des évènements
             for event in pygame.event.get():        
                 # --- si l'utilisateur clic sur la croix, ou appuie sur la touche ESCAPE
                 if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
-                    boucle = False
+                    VAR.boucle_jeu = False
 
                 # --- si l'utilisateur presse l'une des fleches de direction
                 if event.type == KEYDOWN:  
@@ -31,11 +51,8 @@ class CMoteur():
 
             # --- remplissage de la fenetre avec une couleur proche du noir
             VAR.fenetre.fill((16,16,16))
-
-            # --- affiche le message Hello World
-            ecriture = pygame.font.SysFont('arial', 40) 
-            image_texte = ecriture.render("Hello world", True, (255,0,0)) 
-            VAR.fenetre.blit(image_texte, (150, 150))
+            self.TERRAIN.Afficher()
+            
 
             # --- afficher le résultat
             pygame.display.update()
