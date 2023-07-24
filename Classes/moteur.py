@@ -11,15 +11,20 @@ class CMoteur():
     def __init__(self):
         pygame.init()   
     
+    
+    
+    
     def Initialisation(self):
         self.TERRAIN = CTerrain(self)      
         self.JOUEURS = []
-        self.JOUEURS.append(Joueur(self, 0, "Guyom"))
+        self.JOUEURS.append(CJoueur(self, 0, "Guyom"))
           
         self.Chargement_Graphismes()
         
         VAR.offSet = ( (VAR.resolution[0] - (VAR.nbColonnes* VAR.tailleCellule)) /2,
                         (VAR.resolution[1] - (VAR.nbLignes* VAR.tailleCellule)) /2 )
+        
+        
         
     
     def Chargement_Graphismes(self):
@@ -33,6 +38,9 @@ class CMoteur():
         # --- Joueurs
         VAR.image["joueur0"] = pygame.image.load("images/sprite0.png").convert_alpha()     
          
+         
+         
+         
     def Demarrer(self):
         VAR.fenetre = pygame.display.set_mode(VAR.resolution, pygame.DOUBLEBUF, 32)
         pygame.display.set_caption("PyBomber 0.1")        
@@ -40,6 +48,9 @@ class CMoteur():
         
         self.Initialisation()
         self.Boucle()
+    
+    
+    
     
     def Boucle(self):
         VAR.boucle_jeu = True

@@ -10,6 +10,9 @@ tailleCellule = 32
 
 tauxRemplissage = 70
     
+    
+    
+    
 # --- constantes
 C_SOL = 0
 C_MUR = 1

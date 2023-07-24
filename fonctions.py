@@ -1,6 +1,9 @@
 import pygame
 from pygame.locals import *
 
+
+
+
 def image_decoupe(img, x, y, dimx, dimy, dimxZ = -1, dimyZ = -1):
     tmp = pygame.Surface((dimx, dimy),pygame.SRCALPHA,32)
     tmp.blit(img, (0,0), (int(x) * dimx, int(y) * dimy, dimx, dimy))
@@ -10,11 +13,20 @@ def image_decoupe(img, x, y, dimx, dimy, dimxZ = -1, dimyZ = -1):
         tmp = pygame.transform.scale(tmp, (dimxZ, dimyZ))
     return tmp
 
+
+
+
 def image_vide(dimx, dimy):
     return pygame.Surface((dimx, dimy),pygame.SRCALPHA,32)
 
+
+
+
 def GenereMat2D(xDim, yDim, valeurDefaut):
     return [[valeurDefaut for x in range(xDim)] for i in range(yDim)]
+
+
+
 
 def Collision(objet1, objet2):
     x1, y1, dx1, dy1 = objet1

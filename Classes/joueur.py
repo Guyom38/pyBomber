@@ -9,30 +9,39 @@ from random import *
 
 import time
 
-class Joueur():
+class CJoueur():
     
     def __init__(self, _moteur, _id, _pseudo):         
         self.MOTEUR = _moteur     
-         
+                 
         self.id = _id
         self.pseudo = _pseudo
         self.Initialiser()
+        
+        
+        
        
     def Initialiser(self):        
         self.x, self.y = 1, 1      
         self.direction = "BAS"
         self.enMouvement = False
         self.xD, self.yD = 0.0, 0.0  
-        self.vitesse = 0.10
+        self.vitesse = 0.20
         
         self.mort = False
-        self.MOTEUR.TERRAIN.Libere_Zone(self.x, self.y, 2)     
+        self.MOTEUR.TERRAIN.Libere_Zone(self.x, self.y, 2)    
+        
+        
+         
         
     def direction_y_image(self):
         if self.direction == "BAS": return 0
         if self.direction == "HAUT": return 2
         if self.direction == "DROITE": return 3
-        if self.direction == "GAUCHE": return 1        
+        if self.direction == "GAUCHE": return 1      
+        
+        
+          
     
     
     def Afficher(self):
@@ -40,21 +49,20 @@ class Joueur():
             self.Gestion_Deplacement()            
 
             posX = VAR.offSet[0] + ((self.x + self.xD) * VAR.tailleCellule) 
-            posY = VAR.offSet[1] + ((self.y + self.yD) * VAR.tailleCellule) - 20
-            
+            posY = VAR.offSet[1] + ((self.y + self.yD) * VAR.tailleCellule)             
            
-            animationId = (time.time()*10) % 3
+            animationId = (time.time()*10) % 3            
+            VAR.fenetre.blit(FCT.image_decoupe(VAR.image["joueur0"], (self.id * 3) + animationId, self.direction_y_image(), 32, 40), (posX+4, posY-16))
             
-            VAR.fenetre.blit(FCT.image_decoupe(VAR.image["joueur0"], (self.id * 3) + animationId, self.direction_y_image(), 32, 40), (posX+4, posY+4))
-            self.Detection_Collision_Decors()
+            
+            
 
             
     def Gestion_Deplacement(self):
         if self.enMouvement == False: return
         
         # --- Mémorisation des coordonnées avant modification
-        old = self.x, self.y, self.xD, self.yD
-        
+        old = self.x, self.y, self.xD, self.yD        
         
         # --- mouvement en fonction de la direction
         if self.direction == "HAUT":
@@ -65,61 +73,89 @@ class Joueur():
             self.xD -= self.vitesse
         elif self.direction == "DROITE":
             self.xD += self.vitesse
-        
+
         if (self.yD < 0.0):
             self.yD = 1.0 - self.vitesse
             self.y -=1
         elif (self.yD > 1.0):
             self.yD = 0.0 + self.vitesse
             self.y +=1
-        elif (self.xD < 1.0):
+        
+        if (self.xD < 0.0):
             self.xD = 1.0 - self.vitesse
             self.x -=1
         elif (self.xD > 1.0):
             self.xD = 0.0 + self.vitesse
             self.x +=1
-            
+
         # --- controle si collision
         coord_collision = self.Detection_Collision_Decors()
-        collision = not coord_collision == VAR.C_AUCUNE_COLLISION
-        if collision:
+        if not coord_collision == VAR.C_AUCUNE_COLLISION:
             # --- retablissement position initiale car collision
             self.x, self.y, self.xD, self.yD = old
             
-        if collision:  
-            self.Algorithme_Drift(coord_collision)   
-              
-        
-            
-        
-            
+            if not coord_collision == VAR.C_HORS_TERRAIN:  
+                self.Algorithme_Drift(coord_collision)  
+             
         self.enMouvement = False     
+        
+        
+        
+        
+        
         
     def Algorithme_Drift(self, _collision_coord):
         d = self.direction
         x, y = self.x + self.xD, self.y + self.yD
-
         xCollision, yCollision = _collision_coord
-        print("Y:"+ str(round(y,2))+" >" + str(yCollision-1) + " // " + "Y:"+ str(round(y,2)) + " < " + str(yCollision))
-            
-    
-        if d == "DROITE":           
+
+        # --- Test le Passage a empreinter pour contourner
+        if d == "DROITE": bloc1 = (self.MOTEUR.TERRAIN.GRILLE[xCollision-1][yCollision-1] == VAR.C_SOL)      
+        if d == "GAUCHE": bloc1 = (self.MOTEUR.TERRAIN.GRILLE[xCollision+1][yCollision-1] == VAR.C_SOL)      
+        if d == "HAUT": bloc1 = (self.MOTEUR.TERRAIN.GRILLE[xCollision-1][yCollision+1] == VAR.C_SOL)      
+        if d == "BAS": bloc1 = (self.MOTEUR.TERRAIN.GRILLE[xCollision-1][yCollision-1] == VAR.C_SOL)      
+        
+        # --- Test le passage final
+        if d == "DROITE" or d == "GAUCHE":           
             # --- Passage au dessus
             if y > (yCollision-1) and y < (yCollision): 
-                if self.MOTEUR.TERRAIN.GRILLE[xCollision][yCollision-1] == VAR.C_SOL:
+                bloc2 = (self.MOTEUR.TERRAIN.GRILLE[xCollision][yCollision-1] == VAR.C_SOL)
+                if bloc1 and bloc2:
                     self.yD -= self.vitesse
-
             # --- Passage au dessous
-            elif y > (yCollision + 0.35) and y < (yCollision + 1):
-                if self.MOTEUR.TERRAIN.GRILLE[xCollision][yCollision+1] == VAR.C_SOL:
+            elif y > (yCollision ) and y < (yCollision + 1):
+                bloc2 = (self.MOTEUR.TERRAIN.GRILLE[xCollision][yCollision+1] == VAR.C_SOL)
+                if bloc1 and bloc2:
                     self.yD += self.vitesse
+
+        if d == "HAUT" or d == "BAS":           
+            # --- Passage au dessus
+            if x > (xCollision-1) and x < (xCollision): 
+                bloc2 = (self.MOTEUR.TERRAIN.GRILLE[xCollision-1][yCollision] == VAR.C_SOL)
+                if bloc1 and bloc2:
+                    self.xD -= self.vitesse
+            # --- Passage au dessous
+            elif x > (xCollision ) and x < (xCollision + 1):
+                bloc2 = (self.MOTEUR.TERRAIN.GRILLE[xCollision+1][yCollision] == VAR.C_SOL)
+                if bloc1 and bloc2:
+                    self.xD += self.vitesse
+
+
+
 
         
     def Toujours_Sur_Le_Terrain(self, x, y):
         return x >= 0 and y >=0 and x <= VAR.nbColonnes and y <= VAR.nbLignes
     
+    
+    
+    
+    
     def Zone_Traversable(self, gX, gY):
         return (self.MOTEUR.TERRAIN.GRILLE[gX][gY] == VAR.C_SOL)
+    
+    
+    
     
     
     def Detection_Collision_Decors(self, pX=-1, pY=-1):
@@ -141,10 +177,11 @@ class Joueur():
             if self.Toujours_Sur_Le_Terrain(gX, gY):
                 if not self.Zone_Traversable(gX, gY):
                     
-                    objet2 = (gX * 40, gY * 40, 40,40)                
+                    objet2 = (gX * 40, gY * 40, 40, 40)                
                     pygame.draw.rect(VAR.fenetre, (255,0,0), objet2)
                     
-                    if FCT.Collision(objet1, objet2):                     
+                    if FCT.Collision(objet1, objet2):    
+                        print("COLLISION : ",objet1, objet2)                 
                         return (gX, gY)
             else:
                 return VAR.C_HORS_TERRAIN
