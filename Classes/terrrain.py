@@ -56,7 +56,11 @@ class CTerrain():
                 posY = VAR.offSet[1] + (y * VAR.tailleCellule)
                 
                 cellule = self.GRILLE[x][y]
-                if cellule == VAR.C_SOL: VAR.fenetre.blit(VAR.image["sol"+str(i % 2)], (posX, posY))
+                if cellule == VAR.C_SOL: 
+                    if not (self.GRILLE[x][y-1] == VAR.C_SOL):
+                        VAR.fenetre.blit(VAR.image["ombre"], (posX, posY))
+                    else:
+                        VAR.fenetre.blit(VAR.image["sol"+str(i % 2)], (posX, posY))
                 i+=1
         
         # --- affiche couches suivantes, murs ...      

@@ -1,10 +1,11 @@
 import pygame
 from pygame.locals import *
+import variables as VAR
+import fonctions as FCT
 
 from Classes.moteur import *
 
-import variables as VAR
-import fonctions as FCT
+
 from random import *
 
 import time
@@ -27,7 +28,7 @@ class CJoueur():
         self.enMouvement = False
         self.xD, self.yD = 0.0, 0.0  
         self.vitesse = 0.20
-        
+        self.puissance = 2
         self.mort = False
         self.MOTEUR.TERRAIN.Libere_Zone(self.x, self.y, 2)    
         
@@ -35,10 +36,10 @@ class CJoueur():
          
         
     def direction_y_image(self):
-        if self.direction == "BAS": return 0
-        if self.direction == "HAUT": return 2
-        if self.direction == "DROITE": return 3
-        if self.direction == "GAUCHE": return 1      
+        if self.direction == "BAS": return 1
+        if self.direction == "HAUT": return 3
+        if self.direction == "DROITE": return 4
+        if self.direction == "GAUCHE": return 2      
         
         
           
@@ -51,8 +52,9 @@ class CJoueur():
             posX = VAR.offSet[0] + ((self.x + self.xD) * VAR.tailleCellule) 
             posY = VAR.offSet[1] + ((self.y + self.yD) * VAR.tailleCellule)             
            
-            animationId = (time.time()*10) % 3            
-            VAR.fenetre.blit(FCT.image_decoupe(VAR.image["joueur0"], (self.id * 3) + animationId, self.direction_y_image(), 32, 40), (posX+4, posY-16))
+            animationId = int((time.time()*10) % 3)
+            print(animationId)            
+            VAR.fenetre.blit(FCT.image_decoupe(VAR.image["joueur0"], (self.id * 3) + animationId, self.direction_y_image(), 16, 32), (posX, posY-12))
             
             
             
@@ -160,12 +162,12 @@ class CJoueur():
     
     def Detection_Collision_Decors(self, pX=-1, pY=-1):
         if pX == -1 and pY == -1: 
-            objet1 = (((self.x + self.xD) * 40), ((self.y + self.yD) * 40), 40, 40)
+            objet1 = (((self.x + self.xD) * VAR.tailleCellule), ((self.y + self.yD) * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
         else:
-            objet1 = ((pX * 40), (pY * 40), 40, 40)
+            objet1 = ((pX * VAR.tailleCellule40), (pY * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
         
         pygame.draw.rect(VAR.fenetre, (0,255,0), objet1)
-        VAR.fenetre.blit(FCT.image_decoupe(VAR.image["joueur0"], (self.id * 3), self.direction_y_image(), 32, 40), (objet1[0]+4, objet1[1]-16))
+        VAR.fenetre.blit(FCT.image_decoupe(VAR.image["joueur0"], (self.id * 3), self.direction_y_image(), VAR.tailleCellule, VAR.tailleCellule*2), (objet1[0], objet1[1]-12))
         
         for coord in ((-1,-1), (0,-1), (1, -1),
                       (-1, 0), (0, 0), (1, 0),
@@ -177,14 +179,13 @@ class CJoueur():
             if self.Toujours_Sur_Le_Terrain(gX, gY):
                 if not self.Zone_Traversable(gX, gY):
                     
-                    objet2 = (gX * 40, gY * 40, 40, 40)                
+                    objet2 = (gX * VAR.tailleCellule, gY * VAR.tailleCellule, VAR.tailleCellule, VAR.tailleCellule)                
                     pygame.draw.rect(VAR.fenetre, (255,0,0), objet2)
                     
                     if FCT.Collision(objet1, objet2):    
-                        print("COLLISION : ",objet1, objet2)                 
                         return (gX, gY)
             else:
                 return VAR.C_HORS_TERRAIN
             
-        VAR.fenetre.blit(FCT.image_decoupe(VAR.image["joueur0"], (self.id * 3), self.direction_y_image(), 32, 40), (objet1[0]+4, objet1[1]-16))
+        VAR.fenetre.blit(FCT.image_decoupe(VAR.image["joueur0"], (self.id * 3), self.direction_y_image(), VAR.tailleCellule, VAR.tailleCellule*2), (objet1[0], objet1[1]-12))
         return VAR.C_AUCUNE_COLLISION

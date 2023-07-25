@@ -3,6 +3,7 @@ from pygame.locals import *
 
 from Classes.terrrain import *
 from Classes.joueur import *
+from Classes.bombe import *
 
 import variables as VAR
 import fonctions as FCT
@@ -18,7 +19,8 @@ class CMoteur():
         self.TERRAIN = CTerrain(self)      
         self.JOUEURS = []
         self.JOUEURS.append(CJoueur(self, 0, "Guyom"))
-          
+        self.BOMBES = []
+        
         self.Chargement_Graphismes()
         
         VAR.offSet = ( (VAR.resolution[0] - (VAR.nbColonnes* VAR.tailleCellule)) /2,
@@ -29,14 +31,16 @@ class CMoteur():
     
     def Chargement_Graphismes(self):
         # --- Decors
-        tmp = pygame.image.load("images/decors2.png").convert_alpha()   
-        VAR.image["cassable"] = FCT.image_decoupe(tmp, 0, 0, 40, 40 )
-        VAR.image["sol0"] = FCT.image_decoupe(tmp, 0, 1, 40, 40 )
-        VAR.image["sol1"] = FCT.image_decoupe(tmp, 1, 1, 40, 40 )
-        VAR.image["mur"] = FCT.image_decoupe(tmp, 0, 2, 40, 40 )
-        
+        tmp = pygame.image.load("images/decors.png").convert_alpha()   
+        VAR.image["cassable"] = FCT.image_decoupe(tmp, 0, 0, 16, 16 )
+        VAR.image["sol0"] = FCT.image_decoupe(tmp, 0, 2, 16, 16 )
+        VAR.image["sol1"] = FCT.image_decoupe(tmp, 0, 2, 16, 16 )
+        VAR.image["ombre"] = FCT.image_decoupe(tmp, 1, 2, 16, 16 )
+        VAR.image["mur"] = FCT.image_decoupe(tmp, 0, 1, 16, 16 )
+
         # --- Joueurs
-        VAR.image["joueur0"] = pygame.image.load("images/sprite0.png").convert_alpha()     
+        VAR.image["joueur0"] = pygame.image.load("images/sprite1.png").convert_alpha() 
+        VAR.image["objets"] = pygame.image.load("images/objets.png").convert_alpha() 
          
          
          
@@ -58,7 +62,13 @@ class CMoteur():
             # --- récupére l'ensemble des évènements
             for event in pygame.event.get():        
                 if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE: VAR.boucle_jeu = False        
-                #if event.type == KEYDOWN:  
+                if event.type == KEYDOWN:  
+                    if event.key == K_SPACE: 
+                        posX = int(self.JOUEURS[0].x + self.JOUEURS[0].xD)
+                        posY = int(self.JOUEURS[0].y + self.JOUEURS[0].yD)
+                        
+                        self.BOMBES.append(CBombe(posX, posY, self.JOUEURS[0].puissance))
+                    
             keys = pygame.key.get_pressed()
                     
             if keys[K_LEFT] == 1:
@@ -77,7 +87,12 @@ class CMoteur():
             # --- remplissage de la fenetre avec une couleur proche du noir
             VAR.fenetre.fill((16,16,16))
             self.TERRAIN.Afficher()
-            self.JOUEURS[0].Afficher()            
+            for bombe in self.BOMBES:
+                bombe.Afficher()     
+                
+            self.JOUEURS[0].Afficher() 
+            
+            
 
             # --- afficher le résultat
             pygame.display.update()

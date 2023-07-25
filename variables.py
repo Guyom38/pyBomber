@@ -1,12 +1,13 @@
 image = {}
 
 resolution = (1024, 768)
+zoom = 2
 offSet = (0, 0)
 
 boucle_jeu = True
 
 nbLignes, nbColonnes = 13, 15
-tailleCellule = 32
+tailleCellule = 16
 
 tauxRemplissage = 70
     
