@@ -33,6 +33,9 @@ class CMoteur():
         # --- Decors
         tmp = pygame.image.load("images/decors.png").convert_alpha()   
         VAR.image["cassable"] = FCT.image_decoupe(tmp, 0, 0, 16, 16 )
+        VAR.image["cassable0"] = FCT.image_decoupe(tmp, 1, 0, 16, 16 )
+        VAR.image["cassable1"] = FCT.image_decoupe(tmp, 2, 0, 16, 16 )
+        VAR.image["cassable2"] = FCT.image_decoupe(tmp, 2, 1, 16, 16 )
         VAR.image["sol0"] = FCT.image_decoupe(tmp, 0, 2, 16, 16 )
         VAR.image["sol1"] = FCT.image_decoupe(tmp, 0, 2, 16, 16 )
         VAR.image["ombre"] = FCT.image_decoupe(tmp, 1, 2, 16, 16 )
@@ -42,7 +45,11 @@ class CMoteur():
         VAR.image["joueur0"] = pygame.image.load("images/sprite1.png").convert_alpha() 
         VAR.image["objets"] = pygame.image.load("images/objets.png").convert_alpha() 
          
-         
+        
+        VAR.image["bombe"] = FCT.image_decoupe(VAR.image["objets"], 0, 0, 16, 16 )
+        VAR.image["coup"] = FCT.image_decoupe(VAR.image["objets"], 1, 0, 16, 16 )
+        VAR.image["roller"] = FCT.image_decoupe(VAR.image["objets"], 2, 0, 16, 16 )
+        VAR.image["flamme"] = FCT.image_decoupe(VAR.image["objets"], 3, 0, 16, 16 )
          
          
     def Demarrer(self):
@@ -62,12 +69,10 @@ class CMoteur():
             # --- récupére l'ensemble des évènements
             for event in pygame.event.get():        
                 if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE: VAR.boucle_jeu = False        
+                
                 if event.type == KEYDOWN:  
                     if event.key == K_SPACE: 
-                        posX = int(self.JOUEURS[0].x + self.JOUEURS[0].xD)
-                        posY = int(self.JOUEURS[0].y + self.JOUEURS[0].yD)
-                        
-                        self.BOMBES.append(CBombe(posX, posY, self.JOUEURS[0].puissance))
+                        self.JOUEURS[0].Poser_Une_Bombe()
                     
             keys = pygame.key.get_pressed()
                     
@@ -98,7 +103,7 @@ class CMoteur():
             pygame.display.update()
 
             # --- limite la fréquence de raffraichissement a 25 images seconde
-            self.horloge.tick(25)           
+            self.horloge.tick(30)           
                
 
         # --- en sortie de boucle, quitte le programme

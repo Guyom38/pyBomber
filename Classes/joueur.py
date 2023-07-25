@@ -4,7 +4,7 @@ import variables as VAR
 import fonctions as FCT
 
 from Classes.moteur import *
-
+from Classes.bombe import *
 
 from random import *
 
@@ -28,7 +28,10 @@ class CJoueur():
         self.enMouvement = False
         self.xD, self.yD = 0.0, 0.0  
         self.vitesse = 0.20
-        self.puissance = 2
+        
+        self.puissance = 5
+        self.bombes = 2
+        
         self.mort = False
         self.MOTEUR.TERRAIN.Libere_Zone(self.x, self.y, 2)    
         
@@ -53,13 +56,17 @@ class CJoueur():
             posY = VAR.offSet[1] + ((self.y + self.yD) * VAR.tailleCellule)             
            
             animationId = int((time.time()*10) % 3)
-            print(animationId)            
             VAR.fenetre.blit(FCT.image_decoupe(VAR.image["joueur0"], (self.id * 3) + animationId, self.direction_y_image(), 16, 32), (posX, posY-12))
             
             
             
 
-            
+    def Poser_Une_Bombe(self):
+        posX = int(self.x + self.xD)
+        posY = int(self.y + self.yD)                        
+        self.MOTEUR.BOMBES.append(CBombe(self.MOTEUR, posX, posY, self.puissance))
+        
+        
     def Gestion_Deplacement(self):
         if self.enMouvement == False: return
         
@@ -106,41 +113,7 @@ class CJoueur():
         
         
         
-    def Algorithme_Drift(self, _collision_coord):
-        d = self.direction
-        x, y = self.x + self.xD, self.y + self.yD
-        xCollision, yCollision = _collision_coord
-
-        # --- Test le Passage a empreinter pour contourner
-        if d == "DROITE": bloc1 = (self.MOTEUR.TERRAIN.GRILLE[xCollision-1][yCollision-1] == VAR.C_SOL)      
-        if d == "GAUCHE": bloc1 = (self.MOTEUR.TERRAIN.GRILLE[xCollision+1][yCollision-1] == VAR.C_SOL)      
-        if d == "HAUT": bloc1 = (self.MOTEUR.TERRAIN.GRILLE[xCollision-1][yCollision+1] == VAR.C_SOL)      
-        if d == "BAS": bloc1 = (self.MOTEUR.TERRAIN.GRILLE[xCollision-1][yCollision-1] == VAR.C_SOL)      
-        
-        # --- Test le passage final
-        if d == "DROITE" or d == "GAUCHE":           
-            # --- Passage au dessus
-            if y > (yCollision-1) and y < (yCollision): 
-                bloc2 = (self.MOTEUR.TERRAIN.GRILLE[xCollision][yCollision-1] == VAR.C_SOL)
-                if bloc1 and bloc2:
-                    self.yD -= self.vitesse
-            # --- Passage au dessous
-            elif y > (yCollision ) and y < (yCollision + 1):
-                bloc2 = (self.MOTEUR.TERRAIN.GRILLE[xCollision][yCollision+1] == VAR.C_SOL)
-                if bloc1 and bloc2:
-                    self.yD += self.vitesse
-
-        if d == "HAUT" or d == "BAS":           
-            # --- Passage au dessus
-            if x > (xCollision-1) and x < (xCollision): 
-                bloc2 = (self.MOTEUR.TERRAIN.GRILLE[xCollision-1][yCollision] == VAR.C_SOL)
-                if bloc1 and bloc2:
-                    self.xD -= self.vitesse
-            # --- Passage au dessous
-            elif x > (xCollision ) and x < (xCollision + 1):
-                bloc2 = (self.MOTEUR.TERRAIN.GRILLE[xCollision+1][yCollision] == VAR.C_SOL)
-                if bloc1 and bloc2:
-                    self.xD += self.vitesse
+    
 
 
 
@@ -154,20 +127,25 @@ class CJoueur():
     
     
     def Zone_Traversable(self, gX, gY):
-        return (self.MOTEUR.TERRAIN.GRILLE[gX][gY] == VAR.C_SOL)
+        return (self.MOTEUR.TERRAIN.GRILLE[gX][gY].Traversable())
     
     
     
     
-    
+    def Detection_Collision_Bombes(self):
+        for bombe in self.MOTEUR.BOMBES:
+            objet1 = (((self.x + self.xD) * VAR.tailleCellule), ((self.y + self.yD) * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
+            objet2 = (((bombe.x + bombe.xD) * VAR.tailleCellule), ((bombe.y + bombe.yD) * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
+            
+            if FCT.Collision(objet1, objet2):    
+                return True
+        return False
+                    
     def Detection_Collision_Decors(self, pX=-1, pY=-1):
         if pX == -1 and pY == -1: 
             objet1 = (((self.x + self.xD) * VAR.tailleCellule), ((self.y + self.yD) * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
         else:
-            objet1 = ((pX * VAR.tailleCellule40), (pY * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
-        
-        pygame.draw.rect(VAR.fenetre, (0,255,0), objet1)
-        VAR.fenetre.blit(FCT.image_decoupe(VAR.image["joueur0"], (self.id * 3), self.direction_y_image(), VAR.tailleCellule, VAR.tailleCellule*2), (objet1[0], objet1[1]-12))
+            objet1 = ((pX * VAR.tailleCellule), (pY * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
         
         for coord in ((-1,-1), (0,-1), (1, -1),
                       (-1, 0), (0, 0), (1, 0),
@@ -180,12 +158,51 @@ class CJoueur():
                 if not self.Zone_Traversable(gX, gY):
                     
                     objet2 = (gX * VAR.tailleCellule, gY * VAR.tailleCellule, VAR.tailleCellule, VAR.tailleCellule)                
-                    pygame.draw.rect(VAR.fenetre, (255,0,0), objet2)
                     
                     if FCT.Collision(objet1, objet2):    
                         return (gX, gY)
+                    
+                    #if coord == (0,0) and self.Detection_Collision_Bombes():
+                    #    return (gX, gY)
             else:
                 return VAR.C_HORS_TERRAIN
             
-        VAR.fenetre.blit(FCT.image_decoupe(VAR.image["joueur0"], (self.id * 3), self.direction_y_image(), VAR.tailleCellule, VAR.tailleCellule*2), (objet1[0], objet1[1]-12))
         return VAR.C_AUCUNE_COLLISION
+
+
+
+    def Algorithme_Drift(self, _collision_coord):
+        d = self.direction
+        x, y = self.x + self.xD, self.y + self.yD
+        xCollision, yCollision = _collision_coord
+
+        # --- Test le Passage a empreinter pour contourner
+        if d == "DROITE": bloc1 = (self.MOTEUR.TERRAIN.GRILLE[xCollision-1][yCollision-1].Traversable())      
+        if d == "GAUCHE": bloc1 = (self.MOTEUR.TERRAIN.GRILLE[xCollision+1][yCollision-1].Traversable())      
+        if d == "HAUT": bloc1 = (self.MOTEUR.TERRAIN.GRILLE[xCollision-1][yCollision+1].Traversable())      
+        if d == "BAS": bloc1 = (self.MOTEUR.TERRAIN.GRILLE[xCollision-1][yCollision-1].Traversable())      
+        
+        # --- Test le passage final
+        if d == "DROITE" or d == "GAUCHE":           
+            # --- Passage au dessus
+            if y > (yCollision-1) and y < (yCollision): 
+                bloc2 = (self.MOTEUR.TERRAIN.GRILLE[xCollision][yCollision-1].Traversable())
+                if bloc1 and bloc2:
+                    self.yD -= self.vitesse
+            # --- Passage au dessous
+            elif y > (yCollision ) and y < (yCollision + 1):
+                bloc2 = (self.MOTEUR.TERRAIN.GRILLE[xCollision][yCollision+1].Traversable())
+                if bloc1 and bloc2:
+                    self.yD += self.vitesse
+
+        if d == "HAUT" or d == "BAS":           
+            # --- Passage au dessus
+            if x > (xCollision-1) and x < (xCollision): 
+                bloc2 = (self.MOTEUR.TERRAIN.GRILLE[xCollision-1][yCollision].Traversable())
+                if bloc1 and bloc2:
+                    self.xD -= self.vitesse
+            # --- Passage au dessous
+            elif x > (xCollision ) and x < (xCollision + 1):
+                bloc2 = (self.MOTEUR.TERRAIN.GRILLE[xCollision+1][yCollision].Traversable())
+                if bloc1 and bloc2:
+                    self.xD += self.vitesse
