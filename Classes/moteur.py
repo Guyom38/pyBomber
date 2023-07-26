@@ -1,4 +1,5 @@
 import pygame
+import pygame.midi
 from pygame.locals import *
 
 from Classes.terrrain import *
@@ -7,19 +8,23 @@ from Classes.bombe import *
 
 import variables as VAR
 import fonctions as FCT
+import pygame.mixer
 
 class CMoteur():
     def __init__(self):
         pygame.init()   
-    
-    
-    
+        pygame.mixer.init()
+        
+     
     
     def Initialisation(self):
         self.TERRAIN = CTerrain(self)      
         self.JOUEURS = []
         self.JOUEURS.append(CJoueur(self, 0, "Guyom"))
-        self.BOMBES = []
+        
+        
+        self.BOMBES = CBombes(self)   
+        self.OBJETS = CObjets(self)
         
         self.Chargement_Graphismes()
         
@@ -46,11 +51,13 @@ class CMoteur():
         VAR.image["objets"] = pygame.image.load("images/objets.png").convert_alpha() 
          
         
-        VAR.image["bombe"] = FCT.image_decoupe(VAR.image["objets"], 0, 0, 16, 16 )
-        VAR.image["coup"] = FCT.image_decoupe(VAR.image["objets"], 1, 0, 16, 16 )
-        VAR.image["roller"] = FCT.image_decoupe(VAR.image["objets"], 2, 0, 16, 16 )
-        VAR.image["flamme"] = FCT.image_decoupe(VAR.image["objets"], 3, 0, 16, 16 )
-         
+        VAR.image[VAR.C_OBJ_BOMBE] = FCT.image_decoupe(VAR.image["objets"], 0, 0, 16, 16 )
+        VAR.image[VAR.C_OBJ_COUP] = FCT.image_decoupe(VAR.image["objets"], 1, 0, 16, 16 )
+        VAR.image[VAR.C_OBJ_ROLLER] = FCT.image_decoupe(VAR.image["objets"], 2, 0, 16, 16 )
+        VAR.image[VAR.C_OBJ_FLAMME] = FCT.image_decoupe(VAR.image["objets"], 3, 0, 16, 16 )
+        
+        VAR.sons["poser_bombe"] = pygame.mixer.Sound('audios/bomb.wav')
+        VAR.sons["prendre_objet"] = pygame.mixer.Sound('audios/prendre.wav')
          
     def Demarrer(self):
         VAR.fenetre = pygame.display.set_mode(VAR.resolution, pygame.DOUBLEBUF, 32)
@@ -63,6 +70,7 @@ class CMoteur():
     
     
     
+        
     def Boucle(self):
         VAR.boucle_jeu = True
         while VAR.boucle_jeu:
@@ -92,9 +100,13 @@ class CMoteur():
             # --- remplissage de la fenetre avec une couleur proche du noir
             VAR.fenetre.fill((16,16,16))
             self.TERRAIN.Afficher()
-            for bombe in self.BOMBES:
-                bombe.Afficher()     
-                
+            
+            
+            
+            
+            self.BOMBES.Afficher_Toutes_Les_Bombes()
+            self.OBJETS.Afficher_Tous_Les_Objets()
+            
             self.JOUEURS[0].Afficher() 
             
             

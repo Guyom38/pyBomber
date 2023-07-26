@@ -14,7 +14,7 @@ class CTerrain():
         
         
     def Initialiser(self):
-        self.GRILLE =  [[CCellule(self, x, y) for y in range(VAR.nbLignes)] for x in range(VAR.nbColonnes)]
+        self.GRILLE =  [[CCellule(self.MOTEUR, x, y) for y in range(VAR.nbLignes)] for x in range(VAR.nbColonnes)]
         self.Construire_Terrain_De_Jeu()
         
         

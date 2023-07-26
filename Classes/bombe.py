@@ -1,11 +1,39 @@
 import pygame
 from pygame.locals import *
+
 import variables as VAR
 import fonctions as FCT
 
+
 import time
 
-
+class CBombes:
+    def __init__(self, _moteur):
+        self.MOTEUR = _moteur
+        self.LISTE = []
+    
+    def Afficher_Toutes_Les_Bombes(self):
+        for bombe in self.LISTE:
+            bombe.Afficher()   
+        
+    def Ajouter(self, _x, _y, _puissance):
+        self.LISTE.append(CBombe(self, _x, _y, _puissance))
+        
+    def Explosion_En_Chaine(self, _x, _y):
+        for bombe in self.LISTE:
+            if not bombe == self:
+                x, y = bombe.x, bombe.y
+                if x == _x and y == _y:
+                    bombe.Raccrourci_Delais_Explosion()
+                    
+    def Detection_Collision_Avec_Bombes(self, joueur):
+        for bombe in self.LISTE:            
+            objet_bombe = (((bombe.x + bombe.xD) * VAR.tailleCellule), ((bombe.y + bombe.yD) * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
+            
+            if FCT.Collision(joueur, objet_bombe):    
+                return True
+        return False
+        
 class CBombe:   
     class CFeu:
         def __init__(self, _x, _y):
@@ -15,8 +43,9 @@ class CBombe:
             
             
                 
-    def __init__(self, _moteur, _x, _y, _force):
-        self.MOTEUR = _moteur
+    def __init__(self, _bombes, _x, _y, _force):
+        self.BOMBES = _bombes
+        self.TERRAIN = _bombes.MOTEUR.TERRAIN
         
         self.delais = 3.0
         self.temps = time.time()
@@ -67,24 +96,19 @@ class CBombe:
         self.delais = 0.05
         self.temps = time.time()
         
-    def Explosion_En_Chaine(self, _x, _y):
-        for bombe in self.MOTEUR.BOMBES:
-            if not bombe == self:
-                x, y = bombe.x, bombe.y
-                if x == _x and y == _y:
-                    bombe.Raccrourci_Delais_Explosion()
+
           
     def Gestion_Explosion(self):
         if not self.initialiser:
             feuSTOP = {"DROITE" : True, "GAUCHE" : True, "HAUT" : True, "BAS" : True}
             feuSTOP_nb = {"DROITE" : 0, "GAUCHE" : 0, "HAUT" : 0, "BAS" : 0}
             
-            grille = self.MOTEUR.TERRAIN.GRILLE            
+            grille = self.TERRAIN.GRILLE            
             for force in range(1, self.force):
                 for sens, xD, yD in (("DROITE", -force, 0), ("GAUCHE", force, 0), ("HAUT", 0, -force), ("BAS", 0, force)):
                     if (self.x + xD) >=0 and (self.x + xD) < VAR.nbColonnes and (self.y + yD) >=0 and (self.y + yD) < VAR.nbLignes:
                         feuSTOP[sens] = (grille[self.x+xD][self.y+yD].Traversable() and feuSTOP[sens])                    
-                        self.Explosion_En_Chaine(self.x+xD, self.y+yD)
+                        self.BOMBES.Explosion_En_Chaine(self.x+xD, self.y+yD)
                         
                         if feuSTOP[sens]: 
                             self.FOYER.append(CBombe.CFeu(self.x+xD, self.y+yD))
@@ -103,6 +127,7 @@ class CBombe:
                 
             if self.animationId > 5:
                 self.etat = "A EXPLOSE"
+                
                 
             
                 

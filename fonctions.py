@@ -1,8 +1,12 @@
 import pygame
 from pygame.locals import *
 
+import variables as VAR
 
 
+def jouer_sons(_fichier):
+    #VAR.sons[_fichier].play()
+    pass
 
 def image_decoupe(img, x, y, dimx, dimy, dimxZ = -1, dimyZ = -1):
     tmp = pygame.Surface((dimx, dimy),pygame.SRCALPHA,32)

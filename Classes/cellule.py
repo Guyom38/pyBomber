@@ -1,9 +1,11 @@
 import variables as VAR
 import time
 
+from Classes.objet import *
+
 class CCellule():
-    def __init__(self, _terrain, _x, _y):
-        self.TERRAIN = _terrain  
+    def __init__(self, _moteur, _x, _y):
+        self.MOTEUR = _moteur  
              
         self.objet = VAR.C_SOL   
         
@@ -33,6 +35,7 @@ class CCellule():
             
         if self.animationId > 1:
             self.objet = VAR.C_SOL    
+            self.MOTEUR.OBJETS.Ajouter_Ou_Pas_Un_Objet(self.x, self.y)
             
     def Afficher(self, _couche):
         posX = VAR.offSet[0] + (self.x * VAR.tailleCellule)
@@ -47,7 +50,7 @@ class CCellule():
     def Afficher_Sol(self, _posX, _posY):
         i = int((_posY * VAR.nbLignes) + _posX)            
         if self.objet == VAR.C_SOL: 
-            if not (self.TERRAIN.GRILLE[self.x][self.y-1].objet == VAR.C_SOL):
+            if not (self.MOTEUR.TERRAIN.GRILLE[self.x][self.y-1].objet == VAR.C_SOL):
                 VAR.fenetre.blit(VAR.image["ombre"], (_posX, _posY))
             else:
                 VAR.fenetre.blit(VAR.image["sol"+str(i % 2)], (_posX, _posY))
