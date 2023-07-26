@@ -7,7 +7,7 @@ offSet = (0, 0)
 
 boucle_jeu = True
 
-nbLignes, nbColonnes = 15, 20 #13, 15
+nbLignes, nbColonnes = 15, 21 #13, 15
 tailleCellule = 16
 
 tauxRemplissage = 70

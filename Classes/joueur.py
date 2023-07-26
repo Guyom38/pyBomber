@@ -79,9 +79,7 @@ class CJoueur():
         
     def Gestion_Deplacement(self):
         if self.enMouvement == False: return
-        
-        # --- Mémorisation des coordonnées avant modification
-        old = self.x, self.y   
+ 
         
         # --- mouvement en fonction de la direction
         if self.direction == "HAUT":   self.y -= self.vitesse
@@ -93,9 +91,6 @@ class CJoueur():
         # --- controle si collision
         coord_collision = self.Detection_Collision_Decors()
         if not coord_collision == VAR.C_AUCUNE_COLLISION:
-            # --- retablissement position initiale car collision
-            #self.x, self.y = old
-            
             # --- repositionne parfaitement la position du joueur sur la case qu'il occupe
             if self.direction in ["HAUT","BAS"]: self.y = round(self.y, 0)
             if self.direction in ["GAUCHE","DROITE"]: self.x = round(self.x, 0)
@@ -142,7 +137,7 @@ class CJoueur():
     def Detection_Collision_Decors(self, pX=-1, pY=-1):
         
         if pX == -1 and pY == -1: 
-            joueur = (self.x * VAR.tailleCellule, self.y * VAR.tailleCellule, VAR.tailleCellule, VAR.tailleCellule)
+            joueur = ((self.x * VAR.tailleCellule), (self.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
         else:
             joueur = ((pX * VAR.tailleCellule), (pY * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
         
@@ -160,7 +155,8 @@ class CJoueur():
                     pygame.draw.rect(VAR.fenetre, (128,255,0,0), ((x+2) * VAR.tailleCellule, (y+2) * VAR.tailleCellule, VAR.tailleCellule-1, VAR.tailleCellule-1))
                     decors = ((gX) * VAR.tailleCellule, (gY) * VAR.tailleCellule, VAR.tailleCellule, VAR.tailleCellule)                
                     
-                    if FCT.Collision(joueur, decors):    
+                    if FCT.Collision(joueur, decors): 
+                        print((gX, gY), round(self.x,4), round(self.y,4))   
                         return (gX, gY)
                     
                     #if coord == (0,0) and self.Detection_Collision_Bombes():
@@ -173,16 +169,16 @@ class CJoueur():
         pX = self.x - int(self.x)
         pY = self.y - int(self.y)
         pygame.draw.rect(VAR.fenetre, (128,0,255,0), (int((2+pX)*VAR.tailleCellule), int((2+pY)*VAR.tailleCellule), VAR.tailleCellule-1, VAR.tailleCellule-1))  
-        print(round(self.x,2), round(self.y,2))
+        
         return collision
 
 
 
     def Algorithme_Drift(self, _collision_coord):
         d = self.direction
-        x, y = self.x, self.y
+        x, y = round(self.x,2), round(self.y,2)
         xCollision, yCollision = _collision_coord
-        limit = 1
+        limit = 0.5
         
         # --- Test le Passage a empreinter pour contourner
         if d == "DROITE": bloc1 = (self.MOTEUR.TERRAIN.GRILLE[xCollision-1][yCollision-1].Traversable())      
@@ -192,13 +188,15 @@ class CJoueur():
         
         # --- Test le passage final
         if d in ["DROITE","GAUCHE"]:           
-            # --- Passage au dessus
-            if y > (yCollision-limit) and y < (yCollision): 
+            # --- Passage au dessus            
+            if  (yCollision-1) <= y <= (yCollision+0.2): 
                 bloc2 = (self.MOTEUR.TERRAIN.GRILLE[xCollision][yCollision-1].Traversable())
                 if bloc1 and bloc2:
                     self.y -= self.vitesseBase
+                    if self.y-round(self.y,0) < self.vitesseBase: self.y = round(self.y, 0)
+                    
             # --- Passage au dessous
-            elif y > (yCollision ) and y < (yCollision + limit):
+            elif (yCollision+0.8 ) <= y <= (yCollision+1.5):
                 bloc2 = (self.MOTEUR.TERRAIN.GRILLE[xCollision][yCollision+1].Traversable())
                 if bloc1 and bloc2:
                     self.y += self.vitesseBase
