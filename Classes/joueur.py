@@ -19,11 +19,11 @@ class CJoueurs():
         self.LISTE.append(CJoueur(self.MOTEUR, 1, "Amandine"))
         self.LISTE.append(CJoueur(self.MOTEUR, 2, "Hugo"))
         self.LISTE.append(CJoueur(self.MOTEUR, 3, "Lola"))
-        self.LISTE.append(CJoueur(self.MOTEUR, 4, "Louis"))
-        self.LISTE.append(CJoueur(self.MOTEUR, 5, "Benjamin"))
-        self.LISTE.append(CJoueur(self.MOTEUR, 6, "Emilie"))
-        self.LISTE.append(CJoueur(self.MOTEUR, 7, "Kimmy"))    
-        self.LISTE.append(CJoueur(self.MOTEUR, 8, "Lony"))    
+        #self.LISTE.append(CJoueur(self.MOTEUR, 4, "Louis"))
+        #self.LISTE.append(CJoueur(self.MOTEUR, 5, "Benjamin"))
+        #self.LISTE.append(CJoueur(self.MOTEUR, 6, "Emilie"))
+        #self.LISTE.append(CJoueur(self.MOTEUR, 7, "Kimmy"))    
+        #self.LISTE.append(CJoueur(self.MOTEUR, 8, "Lony"))    
         
     def Afficher_Tous_Les_Joueurs(self):
         # --- retri les joueurs pour que si un joueur s'affiche devant l'autre, il soit afficher apres
@@ -39,6 +39,8 @@ class CJoueur():
                  
         self.id = _id
         self.pseudo = _pseudo
+        self.couleur = (255,255,255,255)
+        
         self.Initialiser()
         
         self.image = VAR.image["joueur0"].copy()        
@@ -48,6 +50,7 @@ class CJoueur():
         if self.id == 0: return
         
         C_COLOR_TRANSPARENT = (255, 255, 255, 0)
+        self.couleur = VAR.LISTE_COLOR['(232, 232, 232, 255)'][self.id]
         
         for y in range(self.image.get_height()):
             for x in range(self.image.get_width()):
@@ -78,9 +81,9 @@ class CJoueur():
         
         self.vitesseBase = 0.10
         self.vitesse = self.vitesseBase
-        self.pasVitesse = 0.01
+        self.pasVitesse = 0.005
         
-        self.puissance = 2
+        self.puissance = 1
         self.bombes = 1
         self.bombes_posees = 0
         
@@ -119,7 +122,22 @@ class CJoueur():
             self.Gestion_Deplacement()  
             self.Detection_Collision_Decors()    
             
-
+    def Mourir(self):
+        # --- active l'animation de la mort
+        #self.mort = True
+        
+        # --- jete les objets
+        for _ in range(self.bombes-1):
+            self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_BOMBE, True)
+        
+        for _ in range(self.puissance-1):
+            self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_FLAMME, True)
+        
+        nbVitesse = int(round((self.vitesse-self.vitesseBase) / self.pasVitesse,0))
+        for _ in range(nbVitesse):
+            self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_ROLLER, True)
+        
+        
     def Poser_Une_Bombe(self):
         if self.bombes_posees < self.bombes:
             self.MOTEUR.BOMBES.Ajouter(self)    
@@ -135,6 +153,10 @@ class CJoueur():
         if self.direction == "GAUCHE": self.x -= self.vitesse
         if self.direction == "DROITE": self.x += self.vitesse        
 
+        posX = VAR.offSet[0] + self.offSetX + (self.x * VAR.tailleCellule)  + (VAR.tailleCellule / 2)
+        posY = VAR.offSet[1] + self.offSetY + (self.y * VAR.tailleCellule)  + (VAR.tailleCellule / 2)             
+        self.MOTEUR.PARTICULES.Ajouter(posX, posY, self.couleur)
+        
         # --- controle si collision
         coord_collision = self.Detection_Collision_Decors()
         if not coord_collision == VAR.C_AUCUNE_COLLISION:

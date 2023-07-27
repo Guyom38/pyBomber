@@ -8,8 +8,6 @@ class CCellule():
         self.MOTEUR = _moteur  
              
         self.objet = VAR.C_SOL   
-        
-             
         self.x, self.y = _x, _y
         
         self.animationId = 0

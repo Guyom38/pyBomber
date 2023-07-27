@@ -57,7 +57,7 @@ class CBombe:
         self.temps = time.time()
         self.animationId = 0
         
-        self.force = _joueur.puissance        
+        self.force = _joueur.puissance+1        
         self.x, self.y = round(_joueur.x, 0), round(_joueur.y, 0)
         self.etat = "VA EXPLOSER"
     
@@ -120,6 +120,10 @@ class CBombe:
                         if feuSTOP[sens]: 
                             self.FOYER.append(CBombe.CFeu(posX, posY))
                             feuSTOP_nb[sens] = force
+                            
+                            for joueur in self.BOMBES.MOTEUR.JOUEURS.LISTE:
+                                if posX == joueur.iX() and posY == joueur.iY():
+                                    joueur.Mourir()
                             
                         elif feuSTOP_nb[sens]+1 == force:
                             if grille[posX][posY].Cassable():

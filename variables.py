@@ -2,12 +2,12 @@ image = {}
 sons = {}
 
 resolution = (1320, 768)
-zoom = 2
+zoom = 3
 offSet = (0, 0)
 
 boucle_jeu = True
 
-nbLignes, nbColonnes = 24, 35 #13, 15
+nbLignes, nbColonnes = 13,15
 tailleCellule = 16
 
 tauxRemplissage = 70

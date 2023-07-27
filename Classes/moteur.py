@@ -5,6 +5,8 @@ from pygame.locals import *
 from Classes.terrrain import *
 from Classes.joueur import *
 from Classes.bombe import *
+from Classes.particules import *
+
 
 import variables as VAR
 import fonctions as FCT
@@ -14,15 +16,20 @@ class CMoteur():
     def __init__(self):
         pygame.init()   
         pygame.mixer.init()
+        self.nbManettes = pygame.joystick.get_count()
         
-     
+        self.MANETTES = []
+        for i in range(self.nbManettes):
+            self.MANETTES.append(pygame.joystick.Joystick(i))
+            pygame.joystick.Joystick(i).init()            
+            print("Manette "+str(i)+" :", pygame.joystick.Joystick(i).get_name())
     
     def Initialisation(self):
         self.Chargement_Graphismes()
         
         self.TERRAIN = CTerrain(self)              
         self.JOUEURS = CJoueurs(self)
-        
+        self.PARTICULES = CParticules(self)
         
         
         self.BOMBES = CBombes(self)   
@@ -91,8 +98,12 @@ class CMoteur():
                     if event.key == K_SPACE: 
                         self.JOUEURS.LISTE[0].Poser_Une_Bombe()
                     
-            keys = pygame.key.get_pressed()
-                    
+                if event.type == pygame.JOYBUTTONDOWN:
+                    if (event.button == 2):
+                        self.JOUEURS.LISTE[event.joy].Poser_Une_Bombe()
+                        
+            # --- Gestion Clavier Joueur #1           
+            keys = pygame.key.get_pressed()                    
             if keys[K_LEFT] == 1:
                 self.JOUEURS.LISTE[0].direction = "GAUCHE"
                 self.JOUEURS.LISTE[0].enMouvement = True
@@ -106,13 +117,29 @@ class CMoteur():
                 self.JOUEURS.LISTE[0].direction = "BAS"
                 self.JOUEURS.LISTE[0].enMouvement = True
 
+            # --- Gestion Manettes Joueur #1 a #9
+            for manette in self.MANETTES:
+                axis_id = manette.get_id()
+                axis_x = manette.get_axis(0)
+                axis_y = manette.get_axis(1)
+                if axis_x < -0.5: self.JOUEURS.LISTE[axis_id].direction = "GAUCHE"
+                if axis_x > 0.5: self.JOUEURS.LISTE[axis_id].direction = "DROITE"
+                if axis_y < -0.5: self.JOUEURS.LISTE[axis_id].direction = "HAUT"
+                if axis_y > 0.5: self.JOUEURS.LISTE[axis_id].direction = "BAS"                
+                if round(axis_x,0) != 0 or round(axis_y,0) != 0: self.JOUEURS.LISTE[axis_id].enMouvement = True
+                
+                
+
             # --- remplissage de la fenetre avec une couleur proche du noir
             VAR.fenetre.fill((16,16,16))
             self.TERRAIN.Afficher()  
             
             self.BOMBES.Afficher_Toutes_Les_Bombes()
             self.OBJETS.Afficher_Tous_Les_Objets()
+            
+            self.PARTICULES.Afficher_Les_Particules()
             self.JOUEURS.Afficher_Tous_Les_Joueurs()
+            
             
             # --- afficher le résultat
             pygame.display.update()
