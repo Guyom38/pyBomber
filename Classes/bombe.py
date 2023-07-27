@@ -13,24 +13,29 @@ class CBombes:
         self.LISTE = []
     
     def Afficher_Toutes_Les_Bombes(self):
+        self.Purger_Bombes_Explosees()
+        
         for bombe in self.LISTE:
             bombe.Afficher()   
-        
-    def Ajouter(self, _x, _y, _puissance):
-        self.LISTE.append(CBombe(self, _x, _y, _puissance))
+
+    def Purger_Bombes_Explosees(self):
+        self.LISTE = [bombe for bombe in self.LISTE if bombe.etat != "A EXPLOSE"]
+            
+    def Ajouter(self, _joueur):
+        self.LISTE.append(CBombe(self, _joueur))
+        _joueur.bombes_posees += 1
         
     def Explosion_En_Chaine(self, _x, _y):
         for bombe in self.LISTE:
             if not bombe == self:
-                x, y = bombe.x, bombe.y
-                if x == _x and y == _y:
+                if bombe.x == _x and bombe.y == _y:
                     bombe.Raccrourci_Delais_Explosion()
                     
-    def Detection_Collision_Avec_Bombes(self, joueur):
+    def Detection_Collision_Avec_Bombes(self, _joueur):
         for bombe in self.LISTE:            
-            objet_bombe = (((bombe.x + bombe.xD) * VAR.tailleCellule), ((bombe.y + bombe.yD) * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
+            objet_bombe = ((bombe.x * VAR.tailleCellule), (bombe.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
             
-            if FCT.Collision(joueur, objet_bombe):    
+            if FCT.Collision(_joueur, objet_bombe):    
                 return True
         return False
         
@@ -43,19 +48,17 @@ class CBombe:
             
             
                 
-    def __init__(self, _bombes, _x, _y, _force):
+    def __init__(self, _bombes, _joueur):
         self.BOMBES = _bombes
         self.TERRAIN = _bombes.MOTEUR.TERRAIN
+        self.JOUEUR = _joueur
         
         self.delais = 3.0
         self.temps = time.time()
         self.animationId = 0
         
-        self.force = _force
-        
-        self.x, self.y = _x, _y
-        self.xD, self.yD = 0.0, 0.0
-
+        self.force = _joueur.puissance        
+        self.x, self.y = round(_joueur.x, 0), round(_joueur.y, 0)
         self.etat = "VA EXPLOSER"
     
     
@@ -64,8 +67,8 @@ class CBombe:
     def Afficher(self):       
                 
         if self.etat == "VA EXPLOSER":
-            posX = VAR.offSet[0] + ((self.x + self.xD) * VAR.tailleCellule) 
-            posY = VAR.offSet[1] + ((self.y + self.yD) * VAR.tailleCellule)     
+            posX = int(VAR.offSet[0] + (self.x * VAR.tailleCellule))
+            posY = int(VAR.offSet[1] + (self.y * VAR.tailleCellule))    
             animationId = int((time.time()*10) % 3)
               
             VAR.fenetre.blit(FCT.image_decoupe(VAR.image["objets"], animationId, 1, VAR.tailleCellule,  VAR.tailleCellule), (posX, posY))  
@@ -88,9 +91,10 @@ class CBombe:
     
     def Initiatiser_Explosion(self):
         self.FOYER = []
-        self.FOYER.append(CBombe.CFeu(self.x, self.y))         
+        self.FOYER.append(CBombe.CFeu(round(self.x, 0), round(self.y, 0)))         
         self.initialiser = False
         self.etat = "EXPLOSE"
+        self.JOUEUR.bombes_posees -= 1
     
     def Raccrourci_Delais_Explosion(self):
         self.delais = 0.05
@@ -106,17 +110,20 @@ class CBombe:
             grille = self.TERRAIN.GRILLE            
             for force in range(1, self.force):
                 for sens, xD, yD in (("DROITE", -force, 0), ("GAUCHE", force, 0), ("HAUT", 0, -force), ("BAS", 0, force)):
-                    if (self.x + xD) >=0 and (self.x + xD) < VAR.nbColonnes and (self.y + yD) >=0 and (self.y + yD) < VAR.nbLignes:
-                        feuSTOP[sens] = (grille[self.x+xD][self.y+yD].Traversable() and feuSTOP[sens])                    
-                        self.BOMBES.Explosion_En_Chaine(self.x+xD, self.y+yD)
+                    posX = int(round(self.x + xD, 0))
+                    posY = int(round(self.y + yD, 0))
+                    
+                    if posX >=0 and posX < VAR.nbColonnes and posY >=0 and posY < VAR.nbLignes:
+                        feuSTOP[sens] = (grille[posX][posY].Traversable() and feuSTOP[sens])                    
+                        self.BOMBES.Explosion_En_Chaine(posX, posY)
                         
                         if feuSTOP[sens]: 
-                            self.FOYER.append(CBombe.CFeu(self.x+xD, self.y+yD))
+                            self.FOYER.append(CBombe.CFeu(posX, posY))
                             feuSTOP_nb[sens] = force
                             
                         elif feuSTOP_nb[sens]+1 == force:
-                            if grille[self.x+xD][self.y+yD].Cassable():
-                                grille[self.x+xD][self.y+yD].Casser_Mur()
+                            if grille[posX][posY].Cassable():
+                                grille[posX][posY].Casser_Mur()
 
             self.initialiser = True
             
@@ -127,6 +134,7 @@ class CBombe:
                 
             if self.animationId > 5:
                 self.etat = "A EXPLOSE"
+                
                 
                 
             

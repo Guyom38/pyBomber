@@ -21,6 +21,7 @@ class CTerrain():
         
         
     def Construire_Terrain_De_Jeu(self):
+        
         for y in range(VAR.nbLignes):
             for x in range(VAR.nbColonnes):
                 mur = VAR.C_SOL
@@ -39,9 +40,10 @@ class CTerrain():
         for y in range(-_nb, _nb+1):
             for x in range(-_nb, _nb+1):    
                 xPos = _x + x
-                yPos = _y + y  
-                if self.MOTEUR.TERRAIN.GRILLE[xPos][yPos].objet > VAR.C_MUR:
-                    self.MOTEUR.TERRAIN.GRILLE[xPos][yPos].objet = VAR.C_SOL
+                yPos = _y + y 
+                if (0 <= xPos < VAR.nbColonnes) and (0 <= yPos < VAR.nbLignes):
+                    if self.GRILLE[xPos][yPos].objet == VAR.C_CASSABLE:
+                        self.GRILLE[xPos][yPos].objet = VAR.C_SOL
                    
                    
                    

@@ -31,7 +31,7 @@ class CObjets:
     
     def Detection_Collision_Avec_Objets(self, joueur):
         for objet in self.LISTE:            
-            objet_objet = (((objet.x + objet.xD) * VAR.tailleCellule), ((objet.y + objet.yD) * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
+            objet_objet = ((objet.x * VAR.tailleCellule), (objet.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
             
             if FCT.Collision(joueur, objet_objet):    
                 return objet
@@ -46,12 +46,11 @@ class CObjet:
         self.MOTEUR = _objets.MOTEUR
         
         self.x, self.y = _x, _y
-        self.xD, self.yD = 0.0, 0.0
         self.objet = _objet_hasard
     
     def Afficher(self):
-        posX = VAR.offSet[0] + ((self.x + self.xD) * VAR.tailleCellule) 
-        posY = VAR.offSet[1] + ((self.y + self.yD) * VAR.tailleCellule)             
+        posX = int(VAR.offSet[0] + (self.x * VAR.tailleCellule)) 
+        posY = int(VAR.offSet[1] + (self.y * VAR.tailleCellule))         
            
         animationId = int((time.time()*10) % 3)
         VAR.fenetre.blit(FCT.image_decoupe(VAR.image[self.objet], 0, 0, VAR.tailleCellule, VAR.tailleCellule), (posX, posY))
