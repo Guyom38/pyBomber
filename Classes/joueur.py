@@ -16,11 +16,15 @@ class CJoueurs():
         self.MOTEUR = _moteur
         self.LISTE = []
         self.LISTE.append(CJoueur(self.MOTEUR, 0, "Guyom"))
-        self.LISTE.append(CJoueur(self.MOTEUR, 1, "Arnaud"))
-        self.LISTE.append(CJoueur(self.MOTEUR, 2, "Bertrand"))
-        self.LISTE.append(CJoueur(self.MOTEUR, 3, "Hugo"))
-        self.LISTE.append(CJoueur(self.MOTEUR, 4, "Jimmy"))
-    
+        self.LISTE.append(CJoueur(self.MOTEUR, 1, "Amandine"))
+        self.LISTE.append(CJoueur(self.MOTEUR, 2, "Hugo"))
+        self.LISTE.append(CJoueur(self.MOTEUR, 3, "Lola"))
+        self.LISTE.append(CJoueur(self.MOTEUR, 4, "Louis"))
+        self.LISTE.append(CJoueur(self.MOTEUR, 5, "Benjamin"))
+        self.LISTE.append(CJoueur(self.MOTEUR, 6, "Emilie"))
+        self.LISTE.append(CJoueur(self.MOTEUR, 7, "Kimmy"))    
+        self.LISTE.append(CJoueur(self.MOTEUR, 8, "Lony"))    
+        
     def Afficher_Tous_Les_Joueurs(self):
         # --- retri les joueurs pour que si un joueur s'affiche devant l'autre, il soit afficher apres
         liste_joueurs_tries = sorted(self.LISTE, key=lambda joueur: joueur.y)
@@ -59,17 +63,22 @@ class CJoueur():
         if self.id == 3:            return (VAR.nbColonnes-2, 1.0)
         if self.id == 4:            return (round(VAR.nbColonnes/2,0), round(VAR.nbLignes/2,0))
         
+        if self.id == 5:            return (round(VAR.nbColonnes/2,0), 1.0)
+        if self.id == 6:            return (1.0, round(VAR.nbLignes/2,0))
+        if self.id == 7:            return (VAR.nbColonnes-2, round(VAR.nbLignes/2,0))
+        if self.id == 8:            return (round(VAR.nbColonnes/2,0), VAR.nbLignes-2)
+        
     def Initialiser(self):        
         self.x, self.y = self.Position_Initiale()
-        if self.x % 2 == 0: self.x +=1
-        if self.y % 2 == 0: self.y +=1
+        if self.x % 2 == 0: self.x -=1
+        if self.y % 2 == 0: self.y -=1
         
         self.direction = "BAS"
         self.enMouvement = False
         
         self.vitesseBase = 0.10
         self.vitesse = self.vitesseBase
-        self.pasVitesse = 0.02
+        self.pasVitesse = 0.01
         
         self.puissance = 2
         self.bombes = 1
@@ -180,7 +189,7 @@ class CJoueur():
             if self.Toujours_Sur_Le_Terrain(gX, gY):
                 if not self.Zone_Traversable(gX, gY):
                     
-                    pygame.draw.rect(VAR.fenetre, (128,255,0,0), ((x+2) * VAR.tailleCellule, (y+2 + (self.id*4)) * VAR.tailleCellule, VAR.tailleCellule-1, VAR.tailleCellule-1))
+                    pygame.draw.rect(VAR.fenetre, (128,255,0,0), ((x+2) * 16, (y+2 + (self.id*4)) * 16, 16-1, 16-1))
                     decors = ((gX) * VAR.tailleCellule, (gY) * VAR.tailleCellule, VAR.tailleCellule, VAR.tailleCellule)                
                     
                     if FCT.Collision(joueur, decors): 
@@ -189,13 +198,13 @@ class CJoueur():
                     #if not (coord == (0,0)) and self.Detection_Collision_Bombes():
                     #    return (gX, gY)
             else:
-                pygame.draw.rect(VAR.fenetre, (64,255,255,0), ((x+2) * VAR.tailleCellule, (y+2+ (self.id*4)) * VAR.tailleCellule, VAR.tailleCellule-1, VAR.tailleCellule-1))
+                pygame.draw.rect(VAR.fenetre, (64,255,255,0), ((x+2) * 16, (y+2+ (self.id*4)) * 16, 16-1, 16-1))
                 collision = VAR.C_HORS_TERRAIN
                 break
         
         pX = self.x - round(self.x, 0)
         pY = self.y - round(self.y, 0)
-        pygame.draw.rect(VAR.fenetre, (128,0,255,0), (int((2+pX)*VAR.tailleCellule), int((2+pY+ (self.id*4))*VAR.tailleCellule), VAR.tailleCellule-1, VAR.tailleCellule-1))  
+        pygame.draw.rect(VAR.fenetre, (128,0,255,0), (int((2+pX)*16), int((2+pY+ (self.id*4))*16), 16-1, 16-1))  
         
         return collision
 
