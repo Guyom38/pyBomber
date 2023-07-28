@@ -35,6 +35,10 @@ class CBombes:
         for bombe in self.LISTE:            
             objet_bombe = ((bombe.x * VAR.tailleCellule), (bombe.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
             
+            if int(round(bombe.x * VAR.tailleCellule, 0)) == int(round(_joueur[0], 0)) and int(round(bombe.y * VAR.tailleCellule, 0)) == int(round(_joueur[1], 0)): 
+                print("kk")
+                return False
+            
             if FCT.Collision(_joueur, objet_bombe):    
                 return True
         return False
@@ -60,6 +64,9 @@ class CBombe:
         self.force = _joueur.puissance+1        
         self.x, self.y = round(_joueur.x, 0), round(_joueur.y, 0)
         self.etat = "VA EXPLOSER"
+        
+        self.feuSTOP = {"" : True, "DROITE" : True, "GAUCHE" : True, "HAUT" : True, "BAS" : True}
+        self.feuSTOP_nb = {"" : 0, "DROITE" : 0, "GAUCHE" : 0, "HAUT" : 0, "BAS" : 0}
     
     
     
@@ -97,42 +104,46 @@ class CBombe:
         self.JOUEUR.bombes_posees -= 1
     
     def Raccrourci_Delais_Explosion(self):
-        self.delais = 0.05
+        self.delais = 0.01
         self.temps = time.time()
         
 
-          
+    def Detection_KesKi_Pete(self, _posX, _posY, _sens, _force):               
+        grille = self.TERRAIN.GRILLE               
+        if _posX >=0 and _posX < VAR.nbColonnes and _posY >=0 and _posY < VAR.nbLignes:
+            self.feuSTOP[_sens] = (grille[_posX][_posY].Traversable() and self.feuSTOP[_sens])                    
+            self.BOMBES.Explosion_En_Chaine(_posX, _posY)
+                        
+            if self.feuSTOP[_sens]: 
+                self.FOYER.append(CBombe.CFeu(_posX, _posY))
+                self.feuSTOP_nb[_sens] = _force
+                            
+                for joueur in self.BOMBES.MOTEUR.JOUEURS.LISTE:
+                    if _posX == joueur.iX() and _posY == joueur.iY():
+                        joueur.Mourir()
+                            
+            elif self.feuSTOP_nb[_sens]+1 == _force:
+                if grille[_posX][_posY].Cassable():
+                    grille[_posX][_posY].Casser_Mur()   
+                              
     def Gestion_Explosion(self):
         if not self.initialiser:
-            feuSTOP = {"DROITE" : True, "GAUCHE" : True, "HAUT" : True, "BAS" : True}
-            feuSTOP_nb = {"DROITE" : 0, "GAUCHE" : 0, "HAUT" : 0, "BAS" : 0}
+            self.feuSTOP = {"" : True, "DROITE" : True, "GAUCHE" : True, "HAUT" : True, "BAS" : True}
+            self.feuSTOP_nb = {"" : 0, "DROITE" : 0, "GAUCHE" : 0, "HAUT" : 0, "BAS" : 0}
+            self.initialiser = True
+
+            # --- ajoute la position sous le joueur
+            self.Detection_KesKi_Pete(int(round(self.x, 0)), int(round(self.y, 0)), "", 1) 
             
-            grille = self.TERRAIN.GRILLE            
+            # --- progresse tout autour
             for force in range(1, self.force):
                 for sens, xD, yD in (("DROITE", -force, 0), ("GAUCHE", force, 0), ("HAUT", 0, -force), ("BAS", 0, force)):
-                    posX = int(round(self.x + xD, 0))
-                    posY = int(round(self.y + yD, 0))
-                    
-                    if posX >=0 and posX < VAR.nbColonnes and posY >=0 and posY < VAR.nbLignes:
-                        feuSTOP[sens] = (grille[posX][posY].Traversable() and feuSTOP[sens])                    
-                        self.BOMBES.Explosion_En_Chaine(posX, posY)
-                        
-                        if feuSTOP[sens]: 
-                            self.FOYER.append(CBombe.CFeu(posX, posY))
-                            feuSTOP_nb[sens] = force
-                            
-                            for joueur in self.BOMBES.MOTEUR.JOUEURS.LISTE:
-                                if posX == joueur.iX() and posY == joueur.iY():
-                                    joueur.Mourir()
-                            
-                        elif feuSTOP_nb[sens]+1 == force:
-                            if grille[posX][posY].Cassable():
-                                grille[posX][posY].Casser_Mur()
-
-            self.initialiser = True
+                    posX, posY = int(round(self.x + xD, 0)), int(round(self.y + yD, 0))
+                    self.Detection_KesKi_Pete(posX, posY, sens, force) 
+            
             
         else:
-            if time.time() - self.temps > 0.10:
+            if time.time() - self.temps > 0.05:
                 self.temps = time.time()      
                 self.animationId += 1
                 

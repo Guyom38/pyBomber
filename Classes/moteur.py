@@ -6,7 +6,7 @@ from Classes.terrrain import *
 from Classes.joueur import *
 from Classes.bombe import *
 from Classes.particules import *
-
+from Classes.controlleur import *
 
 import variables as VAR
 import fonctions as FCT
@@ -16,34 +16,31 @@ class CMoteur():
     def __init__(self):
         pygame.init()   
         pygame.mixer.init()
-        self.nbManettes = pygame.joystick.get_count()
-        
-        self.MANETTES = []
-        for i in range(self.nbManettes):
-            self.MANETTES.append(pygame.joystick.Joystick(i))
-            pygame.joystick.Joystick(i).init()            
-            print("Manette "+str(i)+" :", pygame.joystick.Joystick(i).get_name())
+
     
     def Initialisation(self):
-        self.Chargement_Graphismes()
+        self.Chargement_Ressources()
+        
         
         self.TERRAIN = CTerrain(self)              
         self.JOUEURS = CJoueurs(self)
+        self.CONTROLLEUR = CCControlleur(self)
+        
         self.PARTICULES = CParticules(self)
         
         
         self.BOMBES = CBombes(self)   
         self.OBJETS = CObjets(self)
-        
+       
         
         
         VAR.offSet = ( (VAR.resolution[0] - (VAR.nbColonnes* VAR.tailleCellule)) /2,
                         (VAR.resolution[1] - (VAR.nbLignes* VAR.tailleCellule)) /2 )
         
-        
+        #self.CONTROLLEUR.Creer_Joueurs_Clavier_Manettes()
         
     
-    def Chargement_Graphismes(self):
+    def Chargement_Ressources(self):
         VAR.tailleCellule = 16 * VAR.zoom
         
         # --- Decors
@@ -75,6 +72,8 @@ class CMoteur():
         VAR.sons["poser_bombe"] = pygame.mixer.Sound('audios/bomb.wav')
         VAR.sons["prendre_objet"] = pygame.mixer.Sound('audios/prendre.wav')
          
+        pygame.mixer.music.load("musics/" + choice(['78','41','25']) + ".mp3")
+        
     def Demarrer(self):
         VAR.fenetre = pygame.display.set_mode(VAR.resolution, pygame.DOUBLEBUF, 32)
         pygame.display.set_caption("PyBomber 0.1")        
@@ -82,53 +81,13 @@ class CMoteur():
         
         self.Initialisation()
         self.Boucle()
-    
-    
-    
-    
         
     def Boucle(self):
+        pygame.mixer.music.play()
+        
         VAR.boucle_jeu = True
         while VAR.boucle_jeu:
-            # --- récupére l'ensemble des évènements
-            for event in pygame.event.get():        
-                if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE: VAR.boucle_jeu = False        
-                
-                if event.type == KEYDOWN:  
-                    if event.key == K_SPACE: 
-                        self.JOUEURS.LISTE[0].Poser_Une_Bombe()
-                    
-                if event.type == pygame.JOYBUTTONDOWN:
-                    if (event.button == 2):
-                        self.JOUEURS.LISTE[event.joy].Poser_Une_Bombe()
-                        
-            # --- Gestion Clavier Joueur #1           
-            keys = pygame.key.get_pressed()                    
-            if keys[K_LEFT] == 1:
-                self.JOUEURS.LISTE[0].direction = "GAUCHE"
-                self.JOUEURS.LISTE[0].enMouvement = True
-            if keys[K_RIGHT] == 1:
-                self.JOUEURS.LISTE[0].direction = "DROITE"
-                self.JOUEURS.LISTE[0].enMouvement = True
-            if keys[K_UP] == 1:
-                self.JOUEURS.LISTE[0].direction = "HAUT"
-                self.JOUEURS.LISTE[0].enMouvement = True
-            if keys[K_DOWN] == 1:
-                self.JOUEURS.LISTE[0].direction = "BAS"
-                self.JOUEURS.LISTE[0].enMouvement = True
-
-            # --- Gestion Manettes Joueur #1 a #9
-            for manette in self.MANETTES:
-                axis_id = manette.get_id()
-                axis_x = manette.get_axis(0)
-                axis_y = manette.get_axis(1)
-                if axis_x < -0.5: self.JOUEURS.LISTE[axis_id].direction = "GAUCHE"
-                if axis_x > 0.5: self.JOUEURS.LISTE[axis_id].direction = "DROITE"
-                if axis_y < -0.5: self.JOUEURS.LISTE[axis_id].direction = "HAUT"
-                if axis_y > 0.5: self.JOUEURS.LISTE[axis_id].direction = "BAS"                
-                if round(axis_x,0) != 0 or round(axis_y,0) != 0: self.JOUEURS.LISTE[axis_id].enMouvement = True
-                
-                
+            self.CONTROLLEUR.Gestion_Utilisateurs()
 
             # --- remplissage de la fenetre avec une couleur proche du noir
             VAR.fenetre.fill((16,16,16))
@@ -145,7 +104,7 @@ class CMoteur():
             pygame.display.update()
 
             # --- limite la fréquence de raffraichissement a 25 images seconde
-            self.horloge.tick(40)           
+            self.horloge.tick(60)           
                
 
         # --- en sortie de boucle, quitte le programme

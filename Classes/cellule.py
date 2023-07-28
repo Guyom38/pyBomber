@@ -27,6 +27,10 @@ class CCellule():
         self.casser = True
         
     def Animation_Explosion_Mur(self):
+        posX = VAR.offSet[0] + (self.x * VAR.tailleCellule)  + (VAR.tailleCellule / 2)
+        posY = VAR.offSet[1] + (self.y * VAR.tailleCellule)  + (VAR.tailleCellule / 2)             
+        self.MOTEUR.PARTICULES.Ajouter(posX, posY, (64,64,64,255))
+        
         if time.time() - self.temps > 0.1:
             self.animationId += 1
             self.temps = time.time() 

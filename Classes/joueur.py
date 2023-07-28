@@ -15,22 +15,18 @@ class CJoueurs():
     def __init__(self, _moteur):
         self.MOTEUR = _moteur
         self.LISTE = []
-        self.LISTE.append(CJoueur(self.MOTEUR, 0, "Guyom"))
-        self.LISTE.append(CJoueur(self.MOTEUR, 1, "Amandine"))
-        self.LISTE.append(CJoueur(self.MOTEUR, 2, "Hugo"))
-        self.LISTE.append(CJoueur(self.MOTEUR, 3, "Lola"))
-        #self.LISTE.append(CJoueur(self.MOTEUR, 4, "Louis"))
-        #self.LISTE.append(CJoueur(self.MOTEUR, 5, "Benjamin"))
-        #self.LISTE.append(CJoueur(self.MOTEUR, 6, "Emilie"))
-        #self.LISTE.append(CJoueur(self.MOTEUR, 7, "Kimmy"))    
-        #self.LISTE.append(CJoueur(self.MOTEUR, 8, "Lony"))    
+        
+        self.joueurs_EnVie  = 0
         
     def Afficher_Tous_Les_Joueurs(self):
         # --- retri les joueurs pour que si un joueur s'affiche devant l'autre, il soit afficher apres
         liste_joueurs_tries = sorted(self.LISTE, key=lambda joueur: joueur.y)
+        self.joueurs_EnVie = 0
         
         for joueur in liste_joueurs_tries:
             joueur.Afficher() 
+            
+            if joueur.mort: self.joueurs_EnVie += 1
             
 class CJoueur():
     
@@ -40,6 +36,9 @@ class CJoueur():
         self.id = _id
         self.pseudo = _pseudo
         self.couleur = (255,255,255,255)
+        
+        self.animationId = 0
+        self.temps = time.time()
         
         self.Initialiser()
         
@@ -108,10 +107,10 @@ class CJoueur():
     
     
     def Afficher(self):
-        if self.mort == False:              
-            posX = VAR.offSet[0] + self.offSetX + (self.x * VAR.tailleCellule) 
-            posY = VAR.offSet[1] + self.offSetY + (self.y * VAR.tailleCellule)             
-           
+        posX = VAR.offSet[0] + self.offSetX + (self.x * VAR.tailleCellule) 
+        posY = VAR.offSet[1] + self.offSetY + (self.y * VAR.tailleCellule)      
+            
+        if self.mort == False: 
             if (self.enMouvement):
                 animationId = int((time.time()*10) % 3)
             else:
@@ -121,21 +120,35 @@ class CJoueur():
 
             self.Gestion_Deplacement()  
             self.Detection_Collision_Decors()    
-            
+        
+        elif self.animationId >= 0:
+            if self.animationId < VAR.animation_MortFrameMax+1:
+                if time.time() - self.temps > 0.20:
+                    self.temps = time.time()
+                    self.animationId +=1
+                    
+                VAR.fenetre.blit(FCT.image_decoupe(self.image,  self.animationId, 5, VAR.tailleCellule, VAR.tailleCellule*2), (posX, posY))
+                
+            else:
+                self.Transmission_Heritage_Apres_Mort()
+                self.animationId = -1
+                
     def Mourir(self):
         # --- active l'animation de la mort
-        #self.mort = True
+        self.mort = True
         
+        
+    def Transmission_Heritage_Apres_Mort(self):
         # --- jete les objets
         for _ in range(self.bombes-1):
-            self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_BOMBE, True)
+            if randint(0,100) <25: self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_BOMBE, True)
         
         for _ in range(self.puissance-1):
-            self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_FLAMME, True)
+            if randint(0, 100) <15: self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_FLAMME, True)
         
         nbVitesse = int(round((self.vitesse-self.vitesseBase) / self.pasVitesse,0))
         for _ in range(nbVitesse):
-            self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_ROLLER, True)
+            if randint(0, 100) <15: self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_ROLLER, True)
         
         
     def Poser_Une_Bombe(self):
@@ -217,8 +230,9 @@ class CJoueur():
                     if FCT.Collision(joueur, decors): 
                         return (gX, gY)
                     
-                    #if not (coord == (0,0)) and self.Detection_Collision_Bombes():
-                    #    return (gX, gY)
+                    if self.Detection_Collision_Bombes():
+                        print("BOMBE")
+                        return (gX, gY)
             else:
                 pygame.draw.rect(VAR.fenetre, (64,255,255,0), ((x+2) * 16, (y+2+ (self.id*4)) * 16, 16-1, 16-1))
                 collision = VAR.C_HORS_TERRAIN

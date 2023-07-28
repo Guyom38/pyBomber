@@ -35,7 +35,7 @@ class CObjets:
         objet = CObjet(self, _x, _y, _objet_hasard)
         
         if (_jeter):
-            objet.xDest, objet.yDest = _x+4.0, _y
+            objet.xDest, objet.yDest = _x+6.0, _y
             objet.direction = random.choice(['DROITE', 'GAUCHE', 'HAUT', 'BAS']) 
             objet.etape = random.randint(0,4)     
               
