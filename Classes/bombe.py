@@ -35,10 +35,7 @@ class CBombes:
         for bombe in self.LISTE:            
             objet_bombe = ((bombe.x * VAR.tailleCellule), (bombe.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
             
-            if int(round(bombe.x * VAR.tailleCellule, 0)) == int(round(_joueur[0], 0)) and int(round(bombe.y * VAR.tailleCellule, 0)) == int(round(_joueur[1], 0)): 
-                print("kk")
-                return False
-            
+            if int(round(bombe.x * VAR.tailleCellule, 0)) == int(round(_joueur[0], 0)) and int(round(bombe.y * VAR.tailleCellule, 0)) == int(round(_joueur[1], 0)): return False
             if FCT.Collision(_joueur, objet_bombe):    
                 return True
         return False
