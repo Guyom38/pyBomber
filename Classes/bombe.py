@@ -125,7 +125,11 @@ class CBombe:
                             
                 for joueur in self.BOMBES.MOTEUR.JOUEURS.LISTE:
                     if _posX == joueur.iX() and _posY == joueur.iY():
-                        joueur.Mourir()
+                        joueur.Mourir()                
+                
+                for objet in self.BOMBES.MOTEUR.OBJETS.LISTE:
+                    if _posX == objet.iX() and _posY == objet.iY():
+                        objet.etat = "A EXPLOSE"                     
                             
             elif self.feuSTOP_nb[_sens]+1 == _force:
                 if grille[_posX][_posY].Cassable():

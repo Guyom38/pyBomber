@@ -21,6 +21,8 @@ class CObjets:
         random.shuffle(self.PIOCHES)        
             
     def Afficher_Tous_Les_Objets(self):
+        self.Purger_Objets_Exploses()
+        
         for objet in self.LISTE:
             objet.Afficher()
             
@@ -30,7 +32,9 @@ class CObjets:
             self.Ajouter_Un_Objet(_x, _y, objet_hasard)
     
     
-    
+    def Purger_Objets_Exploses(self):
+        self.LISTE = [bombe for bombe in self.LISTE if bombe.etat != "A EXPLOSE"]
+        
     def Ajouter_Un_Objet(self, _x, _y, _objet_hasard, _jeter = False):
         objet = CObjet(self, _x, _y, _objet_hasard)
         
@@ -63,8 +67,12 @@ class CObjet:
         self.xDest, self.yDest, self.etape = 0.0, 0.0, 0
         self.direction = "DROITE"
         self.animationTemps = time.time()
+        self.etat = "A EXPLOS"
         
         self.objet = _objet_hasard
+        
+    def iX(self): return int(round(self.x, 0))   
+    def iY(self): return int(round(self.y, 0))
     
     def Afficher(self):
         self.Gestion_Rebonds()
