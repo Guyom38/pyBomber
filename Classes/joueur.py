@@ -85,7 +85,9 @@ class CJoueur():
         self.puissance = 1
         self.bombes = 1
         self.bombes_posees = 0
+        self.bombes_protection = None
         
+        self.coup_de_point = False
         self.mort = False
         self.MOTEUR.TERRAIN.Libere_Zone(self.iX(), self.iY(), 2)    
         
@@ -156,7 +158,11 @@ class CJoueur():
             self.MOTEUR.BOMBES.Ajouter(self)    
             FCT.jouer_sons("poser_bombe")
         
-        
+    def Retire_Protection_Bombe_Si_A_Cote(self):
+        if self.bombes_protection == None: return
+        if not(self.bombes_protection.iX() == self.iX() and self.bombes_protection.iY() == self.iY()):            
+            self.bombes_protection = None
+            
     def Gestion_Deplacement(self):
         if self.enMouvement == False: return 
         
@@ -179,7 +185,8 @@ class CJoueur():
             
             if not coord_collision == VAR.C_HORS_TERRAIN:  
                 self.Algorithme_Drift(coord_collision)  
-             
+        
+        self.Retire_Protection_Bombe_Si_A_Cote()
         self.Detection_Collision_Objets()            
         self.enMouvement = False             
         
@@ -201,9 +208,8 @@ class CJoueur():
             self.MOTEUR.OBJETS.Detruire_Objet(objet_attrape)
             FCT.jouer_sons("prendre_objet")
     
-    def Detection_Collision_Bombes(self):
-        joueur = ((self.x * VAR.tailleCellule), (self.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
-        return self.MOTEUR.BOMBES.Detection_Collision_Avec_Bombes(joueur)
+    def Detection_Collision_Bombes(self):        
+        return self.MOTEUR.BOMBES.Detection_Collision_Avec_Bombes(self)
         
                     
     def Detection_Collision_Decors(self, pX=-1, pY=-1):

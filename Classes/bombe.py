@@ -22,7 +22,10 @@ class CBombes:
         self.LISTE = [bombe for bombe in self.LISTE if bombe.etat != "A EXPLOSE"]
             
     def Ajouter(self, _joueur):
-        self.LISTE.append(CBombe(self, _joueur))
+        bombe = CBombe(self, _joueur)
+        _joueur.bombes_protection = bombe
+        
+        self.LISTE.append(bombe)
         _joueur.bombes_posees += 1
         
     def Explosion_En_Chaine(self, _x, _y):
@@ -32,11 +35,14 @@ class CBombes:
                     bombe.Raccrourci_Delais_Explosion()
                     
     def Detection_Collision_Avec_Bombes(self, _joueur):
+        coordJoueur = ((_joueur.x * VAR.tailleCellule), (_joueur.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
         for bombe in self.LISTE:            
-            objet_bombe = ((bombe.x * VAR.tailleCellule), (bombe.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
+            coordBombe = ((bombe.x * VAR.tailleCellule), (bombe.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
             
-            if int(round(bombe.x * VAR.tailleCellule, 0)) == int(round(_joueur[0], 0)) and int(round(bombe.y * VAR.tailleCellule, 0)) == int(round(_joueur[1], 0)): return False
-            if FCT.Collision(_joueur, objet_bombe):    
+            if _joueur.bombes_protection == bombe: 
+                return False
+            
+            if FCT.Collision(coordJoueur, coordBombe):    
                 return True
         return False
         
@@ -64,7 +70,9 @@ class CBombe:
         
         self.feuSTOP = {"" : True, "DROITE" : True, "GAUCHE" : True, "HAUT" : True, "BAS" : True}
         self.feuSTOP_nb = {"" : 0, "DROITE" : 0, "GAUCHE" : 0, "HAUT" : 0, "BAS" : 0}
-    
+        
+    def iX(self): return int(round(self.x, 0))   
+    def iY(self): return int(round(self.y, 0))
     
     
     
