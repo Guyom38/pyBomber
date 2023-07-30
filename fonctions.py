@@ -2,8 +2,12 @@ import pygame
 from pygame.locals import *
 
 import variables as VAR
+import fonctions as FCT
+import time
 
-
+def Animation(_frequence, _nbImages):
+    return int((time.time()*_frequence) % _nbImages)
+    
 def jouer_sons(_fichier):
     #VAR.sons[_fichier].play()
     pass

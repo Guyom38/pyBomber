@@ -1,33 +1,12 @@
 import pygame
 from pygame.locals import *
+import pygame.mixer
+
 import variables as VAR
 import fonctions as FCT
 
-from Classes.moteur import *
-from Classes.bombe import *
-
-from random import *
-
-import time
-import pygame.mixer
-
-class CJoueurs():
-    def __init__(self, _moteur):
-        self.MOTEUR = _moteur
-        self.LISTE = []
-        
-        self.joueurs_EnVie  = 0
-        
-    def Afficher_Tous_Les_Joueurs(self):
-        # --- retri les joueurs pour que si un joueur s'affiche devant l'autre, il soit afficher apres
-        liste_joueurs_tries = sorted(self.LISTE, key=lambda joueur: joueur.y)
-        self.joueurs_EnVie = 0
-        
-        for joueur in liste_joueurs_tries:
-            joueur.Afficher() 
-            
-            if joueur.mort: self.joueurs_EnVie += 1
-            
+import time, random
+         
 class CJoueur():
     
     def __init__(self, _moteur, _id, _pseudo):         
@@ -44,7 +23,10 @@ class CJoueur():
         
         self.image = VAR.image["joueur0"].copy()        
         self.Colorisation()
-        
+
+    def iX(self): return int(round(self.x, 0))   
+    def iY(self): return int(round(self.y, 0))
+            
     def Colorisation(self):
         if self.id == 0: return
         
@@ -59,21 +41,23 @@ class CJoueur():
                         self.image.set_at((x,y), VAR.LISTE_COLOR[str(couleur)][self.id])   
     
     def Position_Initiale(self):
-        if self.id == 0:            return (1.0, 1.0)             
-        if self.id == 1:            return (VAR.nbColonnes-2, VAR.nbLignes-2)
-        if self.id == 2:            return (1.0, VAR.nbLignes-2)
-        if self.id == 3:            return (VAR.nbColonnes-2, 1.0)
-        if self.id == 4:            return (round(VAR.nbColonnes/2,0), round(VAR.nbLignes/2,0))
+        if self.id == 0:            x, y = (1.0, 1.0)             
+        if self.id == 1:            x, y = (VAR.nbColonnes-2, VAR.nbLignes-2)
+        if self.id == 2:            x, y = (1.0, VAR.nbLignes-2)
+        if self.id == 3:            x, y = (VAR.nbColonnes-2, 1.0)
+        if self.id == 4:            x, y = (round(VAR.nbColonnes/2,0), round(VAR.nbLignes/2,0))        
+        if self.id == 5:            x, y = (round(VAR.nbColonnes/2,0), 1.0)
+        if self.id == 6:            x, y = (1.0, round(VAR.nbLignes/2,0))
+        if self.id == 7:            x, y = (VAR.nbColonnes-2, round(VAR.nbLignes/2,0))
+        if self.id == 8:            x, y = (round(VAR.nbColonnes/2,0), VAR.nbLignes-2)
         
-        if self.id == 5:            return (round(VAR.nbColonnes/2,0), 1.0)
-        if self.id == 6:            return (1.0, round(VAR.nbLignes/2,0))
-        if self.id == 7:            return (VAR.nbColonnes-2, round(VAR.nbLignes/2,0))
-        if self.id == 8:            return (round(VAR.nbColonnes/2,0), VAR.nbLignes-2)
+        if x % 2 == 0: x -=1
+        if y % 2 == 0: y -=1
         
+        return (x, y)
+    
     def Initialiser(self):        
-        self.x, self.y = self.Position_Initiale()
-        if self.x % 2 == 0: self.x -=1
-        if self.y % 2 == 0: self.y -=1
+        self.x, self.y = self.Position_Initiale()        
         
         self.direction = "BAS"
         self.enMouvement = False
@@ -83,19 +67,18 @@ class CJoueur():
         self.pasVitesse = 0.005
         
         self.puissance = 1
-        self.bombes = 1
+        self.bombes = 3
         self.bombes_posees = 0
         self.bombes_protection = None
         
-        self.coup_de_point = False
+        self.coup_de_pied = True
         self.mort = False
         self.MOTEUR.TERRAIN.Libere_Zone(self.iX(), self.iY(), 2)    
         
         self.offSetX = 0
         self.offSetY = - 12 * VAR.zoom
         
-    def iX(self): return int(round(self.x, 0) )   
-    def iY(self): return int(round(self.y, 0))
+
          
         
     def direction_y_image(self):
@@ -143,21 +126,24 @@ class CJoueur():
     def Transmission_Heritage_Apres_Mort(self):
         # --- jete les objets
         for _ in range(self.bombes-1):
-            if randint(0,100) <25: self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_BOMBE, True)
+            if random.randint(0,100) <25: self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_BOMBE, True)
         
         for _ in range(self.puissance-1):
-            if randint(0, 100) <15: self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_FLAMME, True)
+            if random.randint(0, 100) <15: self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_FLAMME, True)
         
         nbVitesse = int(round((self.vitesse-self.vitesseBase) / self.pasVitesse,0))
         for _ in range(nbVitesse):
-            if randint(0, 100) <15: self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_ROLLER, True)
+            if random.randint(0, 100) <15: self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_ROLLER, True)
         
         
-    def Poser_Une_Bombe(self):
+    def Action_Poser_Une_Bombe(self):
         if self.bombes_posees < self.bombes:
             self.MOTEUR.BOMBES.Ajouter(self)    
             FCT.jouer_sons("poser_bombe")
-        
+    
+    def Action_Pousser_La_Bombe(self):
+        pass 
+    
     def Retire_Protection_Bombe_Si_A_Cote(self):
         if self.bombes_protection == None: return
         if not(self.bombes_protection.iX() == self.iX() and self.bombes_protection.iY() == self.iY()):            
@@ -203,7 +189,7 @@ class CJoueur():
         if not (objet_attrape == None):
             if (objet_attrape.objet == VAR.C_OBJ_BOMBE): self.bombes += 1
             if (objet_attrape.objet == VAR.C_OBJ_FLAMME): self.puissance += 1
-           # if (objet_attrape.objet == VAR.C_OBJ_COUP): self.bombes += 1
+            if (objet_attrape.objet == VAR.C_OBJ_COUP): self.coup_de_pied = True
             if (objet_attrape.objet == VAR.C_OBJ_ROLLER): self.vitesse += self.pasVitesse
             self.MOTEUR.OBJETS.Detruire_Objet(objet_attrape)
             FCT.jouer_sons("prendre_objet")
@@ -237,7 +223,6 @@ class CJoueur():
                         return (gX, gY)
                     
                     if self.Detection_Collision_Bombes():
-                        print("BOMBE")
                         return (gX, gY)
             else:
                 pygame.draw.rect(VAR.fenetre, (64,255,255,0), ((x+2) * 16, (y+2+ (self.id*4)) * 16, 16-1, 16-1))

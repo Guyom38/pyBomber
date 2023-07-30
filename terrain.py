@@ -1,8 +1,8 @@
 import variables as VAR
+import fonctions as FCT
 import random
 
-from Classes.cellule import *
-
+import cellule as CC
 
                 
 class CTerrain():       
@@ -11,17 +11,24 @@ class CTerrain():
         self.Initialiser()
         
         
-        
-        
     def Initialiser(self):
-        self.GRILLE =  [[CCellule(self.MOTEUR, x, y) for y in range(VAR.nbLignes)] for x in range(VAR.nbColonnes)]
+        self.GRILLE =  [[CC.CCellule(self.MOTEUR, x, y) for y in range(VAR.nbLignes)] for x in range(VAR.nbColonnes)]
         self.Construire_Terrain_De_Jeu()
         
+    
+    def Afficher(self):
+        # --- affiche première couche, le sol !
+        for y in range(VAR.nbLignes):
+            for x in range(VAR.nbColonnes): 
+                self.GRILLE[x][y].Afficher("SOL")
         
-        
-        
-    def Construire_Terrain_De_Jeu(self):
-        
+        # --- affiche couches suivantes, murs ...      
+        for y in range(VAR.nbLignes):
+            for x in range(VAR.nbColonnes):               
+                self.GRILLE[x][y].Afficher("DECORS")  
+                
+                              
+    def Construire_Terrain_De_Jeu(self):        
         for y in range(VAR.nbLignes):
             for x in range(VAR.nbColonnes):
                 mur = VAR.C_SOL
@@ -32,10 +39,8 @@ class CTerrain():
                 if x % 2 == 0 and y % 2 == 0: mur = VAR.C_MUR             
                 
                 self.GRILLE[x][y].objet = mur
-                
-                
-                
-                
+                       
+                       
     def Libere_Zone(self, _x, _y, _nb):
         for y in range(-_nb, _nb+1):
             for x in range(-_nb, _nb+1):    
@@ -44,19 +49,7 @@ class CTerrain():
                 if (0 <= xPos < VAR.nbColonnes) and (0 <= yPos < VAR.nbLignes):
                     if self.GRILLE[xPos][yPos].objet == VAR.C_CASSABLE:
                         self.GRILLE[xPos][yPos].objet = VAR.C_SOL
-                   
-                   
-                   
                     
-    def Afficher(self):
-        # --- affiche première couche, le sol !
-        for y in range(VAR.nbLignes):
-            for x in range(VAR.nbColonnes): 
-                self.GRILLE[x][y].Afficher("SOL")
-        
-        # --- affiche couches suivantes, murs ...      
-        for y in range(VAR.nbLignes):
-            for x in range(VAR.nbColonnes):               
-                self.GRILLE[x][y].Afficher("DECORS")
+
                           
     

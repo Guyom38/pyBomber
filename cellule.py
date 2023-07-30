@@ -1,8 +1,6 @@
 import variables as VAR
 import time
 
-from Classes.objet import *
-
 class CCellule():
     def __init__(self, _moteur, _x, _y):
         self.MOTEUR = _moteur  

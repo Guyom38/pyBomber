@@ -1,7 +1,7 @@
-from Classes.moteur import *
+import moteur as CM
 #from test import *
 
 
 
-MOTEUR = CMoteur()
+MOTEUR = CM.CMoteur()
 MOTEUR.Demarrer()

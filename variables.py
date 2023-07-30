@@ -2,16 +2,16 @@ image = {}
 sons = {}
 
 resolution = (1320, 768)
-zoom = 4
+zoom = 2
 offSet = (0, 0)
 
 boucle_jeu = True
 
-nbLignes, nbColonnes = 13,15 #int((resolution[1] /16)/2), int((resolution[0]/16)/2)-5 #
+nbLignes, nbColonnes = int((resolution[1] /16)/2), int((resolution[0]/16)/2)-5 
 tailleCellule = 16
 
 tauxRemplissage = 70
-    
+delaisExplosion = 10    
     
 animation_MortFrameMax = 5    
     

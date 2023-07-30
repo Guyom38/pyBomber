@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 
-from Classes.joueur import *
+import joueur as CJ
 import variables as VAR
 
 class CCControlleur:
@@ -19,9 +19,9 @@ class CCControlleur:
         self.Creer_Joueurs_Clavier_Manettes()
         
     def Creer_Joueurs_Clavier_Manettes(self):
-        self.JOUEURS.LISTE.append(CJoueur(self.MOTEUR, 0, ""))  
+        self.JOUEURS.LISTE.append(CJ.CJoueur(self.MOTEUR, 0, ""))  
         for i in range(1, self.nbManettes):
-            self.JOUEURS.LISTE.append(CJoueur(self.MOTEUR, i, ""))  
+            self.JOUEURS.LISTE.append(CJ.CJoueur(self.MOTEUR, i, ""))  
     
     def Gestion_Utilisateurs(self):
         # --- récupére l'ensemble des évènements
@@ -30,13 +30,17 @@ class CCControlleur:
                 
             if event.type == KEYDOWN:  
                 if event.key == K_SPACE: 
-                    self.JOUEURS.LISTE[0].Poser_Une_Bombe()
+                    self.JOUEURS.LISTE[0].Action_Poser_Une_Bombe()
+                if event.key == K_LCTRL: 
+                    self.JOUEURS.LISTE[0].Action_Pousser_La_Bombe()
                 
                     
             if event.type == pygame.JOYBUTTONDOWN:
                 if not self.JOUEURS.LISTE[event.joy].mort:
                     if (event.button == 2):
-                        self.JOUEURS.LISTE[event.joy].Poser_Une_Bombe()
+                        self.JOUEURS.LISTE[event.joy].Action_Poser_Une_Bombe()
+                    if (event.button == 1):
+                        self.JOUEURS.LISTE[event.joy].Action_Pousser_La_Bombe()
                         
         # --- Gestion Clavier Joueur #1  
         if not self.JOUEURS.LISTE[0].mort:         

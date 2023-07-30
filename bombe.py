@@ -4,63 +4,26 @@ from pygame.locals import *
 import variables as VAR
 import fonctions as FCT
 
-
 import time
-
-class CBombes:
-    def __init__(self, _moteur):
-        self.MOTEUR = _moteur
-        self.LISTE = []
-    
-    def Afficher_Toutes_Les_Bombes(self):
-        self.Purger_Bombes_Explosees()
-        
-        for bombe in self.LISTE:
-            bombe.Afficher()   
-
-    def Purger_Bombes_Explosees(self):
-        self.LISTE = [bombe for bombe in self.LISTE if bombe.etat != "A EXPLOSE"]
-            
-    def Ajouter(self, _joueur):
-        bombe = CBombe(self, _joueur)
-        _joueur.bombes_protection = bombe
-        
-        self.LISTE.append(bombe)
-        _joueur.bombes_posees += 1
-        
-    def Explosion_En_Chaine(self, _x, _y):
-        for bombe in self.LISTE:
-            if not bombe == self:
-                if bombe.x == _x and bombe.y == _y:
-                    bombe.Raccrourci_Delais_Explosion()
-                    
-    def Detection_Collision_Avec_Bombes(self, _joueur):
-        coordJoueur = ((_joueur.x * VAR.tailleCellule), (_joueur.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
-        for bombe in self.LISTE:            
-            coordBombe = ((bombe.x * VAR.tailleCellule), (bombe.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
-            
-            if _joueur.bombes_protection == bombe: 
-                return False
-            
-            if FCT.Collision(coordJoueur, coordBombe):    
-                return True
-        return False
         
 class CBombe:   
     class CFeu:
         def __init__(self, _x, _y):
             self.x = _x
-            self.y = _y
+            self.y = _y            
             
-            
-            
+    def iX(self): return int(round(self.x, 0))   
+    def iY(self): return int(round(self.y, 0))            
                 
     def __init__(self, _bombes, _joueur):
         self.BOMBES = _bombes
         self.TERRAIN = _bombes.MOTEUR.TERRAIN
         self.JOUEUR = _joueur
         
-        self.delais = 3.0
+        self.enMouvement = False
+        self.direction = "DROITE"
+        
+        self.delais = VAR.delaisExplosion
         self.temps = time.time()
         self.animationId = 0
         
@@ -70,46 +33,50 @@ class CBombe:
         
         self.feuSTOP = {"" : True, "DROITE" : True, "GAUCHE" : True, "HAUT" : True, "BAS" : True}
         self.feuSTOP_nb = {"" : 0, "DROITE" : 0, "GAUCHE" : 0, "HAUT" : 0, "BAS" : 0}
-        
-    def iX(self): return int(round(self.x, 0))   
-    def iY(self): return int(round(self.y, 0))
-    
-    
-    
-    def Afficher(self):       
-                
-        if self.etat == "VA EXPLOSER":
-            posX = int(VAR.offSet[0] + (self.x * VAR.tailleCellule))
-            posY = int(VAR.offSet[1] + (self.y * VAR.tailleCellule))    
-            animationId = int((time.time()*10) % 3)
-              
-            VAR.fenetre.blit(FCT.image_decoupe(VAR.image["objets"], animationId, 1, VAR.tailleCellule,  VAR.tailleCellule), (posX, posY))  
-            
-            if time.time() - self.temps > self.delais:
-                self.Initiatiser_Explosion()
-               
-                
-        elif self.etat == "EXPLOSE": 
-            self.Gestion_Explosion()
-            
-            for i in range(0, len(self.FOYER)):
-                posX = VAR.offSet[0] + (self.FOYER[i].x * VAR.tailleCellule)
-                posY = VAR.offSet[1] + (self.FOYER[i].y * VAR.tailleCellule)
-                animationId = self.animationId *2
-                pygame.draw.rect(VAR.fenetre, (255,0,0), (posX+(animationId/2), posY+(animationId/2), VAR.tailleCellule-animationId, VAR.tailleCellule-animationId))  
-        
-        
-
     
     def Initiatiser_Explosion(self):
         self.FOYER = []
         self.FOYER.append(CBombe.CFeu(round(self.x, 0), round(self.y, 0)))         
         self.initialiser = False
         self.etat = "EXPLOSE"
-        self.JOUEUR.bombes_posees -= 1
+        self.JOUEUR.bombes_posees -= 1    
+
+    
+    
+    
+    def Afficher(self):  
+        if self.etat == "VA EXPLOSER":
+            self.Gestion_Bombe_Qui_Roule()
+            self.Afficher_Animation_Bombe_Qui_Va_Peter()             
+                
+        elif self.etat == "EXPLOSE": 
+            self.Afficher_Explosion_De_La_Bombe()
+            
+            
+    def Afficher_Animation_Bombe_Qui_Va_Peter(self):
+        posX = int(VAR.offSet[0] + (self.x * VAR.tailleCellule))
+        posY = int(VAR.offSet[1] + (self.y * VAR.tailleCellule))                
+        VAR.fenetre.blit(FCT.image_decoupe(VAR.image["objets"], FCT.Animation(10, 3), 1, VAR.tailleCellule,  VAR.tailleCellule), (posX, posY))  
+            
+        # --- si delais bombe expiré, alors BOOM
+        if time.time() - self.temps > self.delais:
+            self.Initiatiser_Explosion()
+            
+
+    def Afficher_Explosion_De_La_Bombe(self):
+        self.Gestion_Explosion()
+            
+        for i in range(0, len(self.FOYER)):
+            posX = VAR.offSet[0] + (self.FOYER[i].x * VAR.tailleCellule)
+            posY = VAR.offSet[1] + (self.FOYER[i].y * VAR.tailleCellule)
+            animationId = self.animationId *2
+            pygame.draw.rect(VAR.fenetre, (255,0,0), (posX+(animationId/2), posY+(animationId/2), VAR.tailleCellule-animationId, VAR.tailleCellule-animationId))  
+        
+    
+    
     
     def Raccrourci_Delais_Explosion(self):
-        self.delais = 0.01
+        self.delais = 0.00
         self.temps = time.time()
         
 
@@ -134,7 +101,32 @@ class CBombe:
             elif self.feuSTOP_nb[_sens]+1 == _force:
                 if grille[_posX][_posY].Cassable():
                     grille[_posX][_posY].Casser_Mur()   
-                              
+    
+    def Gestion_Bombe_Qui_Roule(self):
+        if not self.enMouvement: return
+        
+        oldPosition = self.x, self.y
+        if self.direction == "DROITE": self.x += 0.05
+        if self.direction == "GAUCHE": self.x -= 0.05
+        if self.direction == "HAUT": self.y -= 0.05
+        if self.direction == "BAS": self.y += 0.05
+        
+        if self.Detection_Collision_Avec_Decors():
+            self.x, self.y = oldPosition
+            self.x, self.y = self.iX(), self.iY()
+            self.enMouvement = False
+        
+    def Detection_Collision_Avec_Decors(self):
+        # --- Controle sortie de terrain
+        if (0 > self.iX() < VAR.nbColonnes) or (0 > self.iY() < VAR.nbLignes): return True
+        
+        # --- Collision avec mur
+        if not self.TERRAIN.GRILLE[self.iX()][self.iY()].Traversable(): return True
+        
+        # --- Collision avec Bombe
+        # --- Collision avec Objet
+        # --- Collision avec Joueur
+                                 
     def Gestion_Explosion(self):
         if not self.initialiser:
             self.feuSTOP = {"" : True, "DROITE" : True, "GAUCHE" : True, "HAUT" : True, "BAS" : True}

@@ -1,16 +1,19 @@
 import pygame
 import pygame.midi
+import pygame.mixer
 from pygame.locals import *
 
-from Classes.terrrain import *
-from Classes.joueur import *
-from Classes.bombe import *
-from Classes.particules import *
-from Classes.controlleur import *
+import terrain as CT
+import joueurs as CJS
+import bombes as CBS
+import particules as CP
+import controlleur as CC
+import objets as COS
 
 import variables as VAR
 import fonctions as FCT
-import pygame.mixer
+
+import random
 
 class CMoteur():
     def __init__(self):
@@ -22,15 +25,15 @@ class CMoteur():
         self.Chargement_Ressources()
         
         
-        self.TERRAIN = CTerrain(self)              
-        self.JOUEURS = CJoueurs(self)
-        self.CONTROLLEUR = CCControlleur(self)
+        self.TERRAIN = CT.CTerrain(self)              
+        self.JOUEURS = CJS.CJoueurs(self)
+        self.CONTROLLEUR = CC.CCControlleur(self)
         
-        self.PARTICULES = CParticules(self)
+        self.PARTICULES = CP.CParticules(self)
         
         
-        self.BOMBES = CBombes(self)   
-        self.OBJETS = CObjets(self)
+        self.BOMBES = CBS.CBombes(self)   
+        self.OBJETS = COS.CObjets(self)
        
         
         
@@ -72,7 +75,7 @@ class CMoteur():
         VAR.sons["poser_bombe"] = pygame.mixer.Sound('audios/bomb.wav')
         VAR.sons["prendre_objet"] = pygame.mixer.Sound('audios/prendre.wav')
          
-        pygame.mixer.music.load("musics/" + choice(['78','41','25']) + ".mp3")
+        pygame.mixer.music.load("musics/" + random.choice(['78','41','25']) + ".mp3")
         
     def Demarrer(self):
         VAR.fenetre = pygame.display.set_mode(VAR.resolution, pygame.DOUBLEBUF, 32)
