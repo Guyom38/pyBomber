@@ -62,7 +62,7 @@ class CJoueur():
         self.direction = "BAS"
         self.enMouvement = False
         
-        self.vitesseBase = 0.10
+        self.vitesseBase = 0.06
         self.vitesse = self.vitesseBase
         self.pasVitesse = 0.005
         
@@ -146,8 +146,10 @@ class CJoueur():
     
     def Retire_Protection_Bombe_Si_A_Cote(self):
         if self.bombes_protection == None: return
-        if not(self.bombes_protection.iX() == self.iX() and self.bombes_protection.iY() == self.iY()):            
+        
+        if not self.MOTEUR.BOMBES.Detection_Collision_Avec_Une_Bombe(self, self.bombes_protection):
             self.bombes_protection = None
+ 
             
     def Gestion_Deplacement(self):
         if self.enMouvement == False: return 
@@ -195,7 +197,7 @@ class CJoueur():
             FCT.jouer_sons("prendre_objet")
     
     def Detection_Collision_Bombes(self):        
-        return self.MOTEUR.BOMBES.Detection_Collision_Avec_Bombes(self)
+        return self.MOTEUR.BOMBES.Detection_Collision_Avec_Les_Bombes(self)
         
                     
     def Detection_Collision_Decors(self, pX=-1, pY=-1):

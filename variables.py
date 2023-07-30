@@ -11,7 +11,7 @@ nbLignes, nbColonnes = int((resolution[1] /16)/2), int((resolution[0]/16)/2)-5
 tailleCellule = 16
 
 tauxRemplissage = 70
-delaisExplosion = 10    
+delaisExplosion = 3    
     
 animation_MortFrameMax = 5    
     

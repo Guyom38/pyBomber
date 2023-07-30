@@ -18,6 +18,7 @@ class CBombe:
     def __init__(self, _bombes, _joueur):
         self.BOMBES = _bombes
         self.TERRAIN = _bombes.MOTEUR.TERRAIN
+        self.OBJETS = _bombes.MOTEUR.OBJETS
         self.JOUEUR = _joueur
         
         self.enMouvement = False
@@ -124,7 +125,11 @@ class CBombe:
         if not self.TERRAIN.GRILLE[self.iX()][self.iY()].Traversable(): return True
         
         # --- Collision avec Bombe
+        if self.BOMBES.Detection_Collision_Avec_Autres_Bombes(self): return True
         # --- Collision avec Objet
+        
+        bombe = ((self.x * VAR.tailleCellule), (self.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
+        if self.OBJETS.Detection_Collision_Avec_Objets(bombe): return True
         # --- Collision avec Joueur
                                  
     def Gestion_Explosion(self):

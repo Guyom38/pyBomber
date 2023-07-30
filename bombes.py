@@ -33,15 +33,32 @@ class CBombes:
             if not bombe == self:
                 if bombe.x == _x and bombe.y == _y:
                     bombe.Raccrourci_Delais_Explosion()
-                    
-    def Detection_Collision_Avec_Bombes(self, _joueur):
+                    print("BBB")
+    
+    def Detection_Collision_Avec_Une_Bombe(self, _joueur, _bombe):
+        coordBombe = ((_bombe.x * VAR.tailleCellule), (_bombe.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
+        coordJoueur = ((_joueur.x * VAR.tailleCellule), (_joueur.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
+        return FCT.Collision(coordJoueur, coordBombe)
+    
+    def Detection_Collision_Avec_Autres_Bombes(self, _bombe):
+        coordBombe1 = ((_bombe.x * VAR.tailleCellule), (_bombe.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
+        for bombe in self.LISTE:            
+            coordBombe2 = ((bombe.x * VAR.tailleCellule), (bombe.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
+            if not bombe == _bombe:
+                if FCT.Collision(coordBombe1, coordBombe2):
+                    return True                
+        return False
+                           
+    def Detection_Collision_Avec_Les_Bombes(self, _joueur):
         coordJoueur = ((_joueur.x * VAR.tailleCellule), (_joueur.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
         for bombe in self.LISTE:            
             coordBombe = ((bombe.x * VAR.tailleCellule), (bombe.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
             
+            # --- Joueur protection activée, le joueur passe sur la bombe
             if _joueur.bombes_protection == bombe: 
                 return False
             
+            # --- Teste collision entre bombe et joueur
             if FCT.Collision(coordJoueur, coordBombe):
                 if _joueur.coup_de_pied and not bombe.enMouvement: 
                     bombe.direction = _joueur.direction
