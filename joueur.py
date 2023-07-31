@@ -6,13 +6,15 @@ import variables as VAR
 import fonctions as FCT
 
 import time, random
-         
+from enum import Enum  
+
 class CJoueur():
     
     def __init__(self, _moteur, _id, _pseudo):         
         self.MOTEUR = _moteur  
-        self.JOUEURS = _moteur .JOUEURS    
-                 
+        self.JOUEURS = _moteur.JOUEURS    
+        self.OBJETS = _moteur.OBJETS 
+          
         self.id = _id
         self.pseudo = _pseudo
         self.couleur = (255,255,255,255)
@@ -28,7 +30,7 @@ class CJoueur():
 
     def iX(self): return int(round(self.x, 0))   
     def iY(self): return int(round(self.y, 0))
-    def estMalade(self): return not (self.maladie == "")
+    def estMalade(self): return not (self.maladie == 0)
     
                         
     def Colorisation(self):
@@ -76,7 +78,7 @@ class CJoueur():
         
         self.coup_de_pied = False
         self.coup_de_poing = False
-        self.maladie = ""
+        self.maladie = 0
         self.maladie_Temps_fige = -1
         
         self.mort = False
@@ -102,13 +104,13 @@ class CJoueur():
         posX = VAR.offSet[0] + self.offSetX + (self.x * VAR.tailleCellule) 
         posY = VAR.offSet[1] + self.offSetY + (self.y * VAR.tailleCellule)      
             
-        if self.mort == False: 
+        if not self.mort: 
             if (self.enMouvement):
                 animationId = FCT.Animation(10, 3)
             else:
                 animationId = 0
             
-            if not self.maladie == "" and FCT.Animation(10, 2) == 0:
+            if self.estMalade() and FCT.Animation(10, 2) == 0:
                 image = self.JOUEURS.image_masque                
             else:   
                 image = self.image
@@ -139,14 +141,14 @@ class CJoueur():
     def Transmission_Heritage_Apres_Mort(self):
         # --- jete les objets
         for _ in range(self.bombes-1):
-            if random.randint(0,100) <25: self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_BOMBE, True)
+            if random.randint(0,100) <25: self.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_BOMBE, True)
         
         for _ in range(self.puissance-1):
-            if random.randint(0, 100) <15: self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_FLAMME, True)
+            if random.randint(0, 100) <15: self.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_FLAMME, True)
         
         nbVitesse = int(round((self.vitesse-self.vitesseBase) / self.pasVitesse,0))
         for _ in range(nbVitesse):
-            if random.randint(0, 100) <15: self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_ROLLER, True)
+            if random.randint(0, 100) <15: self.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_ROLLER, True)
         
         
     def Action_Poser_Une_Bombe(self):
@@ -154,9 +156,7 @@ class CJoueur():
             self.MOTEUR.BOMBES.Ajouter(self)    
             FCT.jouer_sons("poser_bombe")
     
-    def Action_Pousser_La_Bombe(self):
-        pass 
-    
+
     def Retire_Protection_Bombe_Si_A_Cote(self):
         if self.bombes_protection == None: return
         
@@ -168,15 +168,15 @@ class CJoueur():
         if self.enMouvement == False: return 
         
         vitesseDeBase = self.vitesse
-        if self.maladie == VAR.C_MALADIE_RALENTI: vitesseDeBase = 0.002
-        if self.maladie == VAR.C_MALADIE_FIGE:
+        if self.maladie == VAR.C_MALADIE.RALENTISSEMENT: vitesseDeBase = 0.01
+        if self.maladie == VAR.C_MALADIE.FIGER:
             if self.maladie_Temps_fige == -1: self.maladie_Temps_fige = time.time()
             if time.time() - self.maladie_Temps_fige < VAR.delaisExplosion + 1:
                 return 
             else:
-                self.maladie = ""
-                self.maladie_Temps_fige == -1
-        
+                self.Se_Soigne()
+                
+
         # --- mouvement en fonction de la direction
         if self.direction == "HAUT":   self.y -= vitesseDeBase
         if self.direction == "BAS":    self.y += vitesseDeBase
@@ -209,11 +209,13 @@ class CJoueur():
     
     
     def Attrape_Objet(self, _objet_attrape):
-              
+        
+        # --- Si malade se debarrasse de sa maladie
         if self.estMalade():
-            self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_MALADIE, True, 4, 4)
+            self.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_MALADIE, True, 4, 4)
             self.Se_Soigne()
-                
+        
+        # --- Prend le nouvel objet    
         if (_objet_attrape.objet == VAR.C_OBJ_BOMBE): self.bombes += 1
         if (_objet_attrape.objet == VAR.C_OBJ_FLAMME): self.puissance += 1
         if (_objet_attrape.objet == VAR.C_OBJ_SUPER_FLAMME): self.puissance += 5
@@ -222,13 +224,14 @@ class CJoueur():
         if (_objet_attrape.objet == VAR.C_OBJ_ROLLER): self.vitesse += self.pasVitesse
         if (_objet_attrape.objet == VAR.C_OBJ_MALADIE): self.Tombe_Malade()
 
+        # --- Detruit l'objet a l'écran
         self.MOTEUR.OBJETS.Detruire_Objet(_objet_attrape)
         FCT.jouer_sons("prendre_objet")
             
         
     def Detection_Collision_Objets(self):
         joueur = ((self.x * VAR.tailleCellule), (self.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
-        objet_attrape = self.MOTEUR.OBJETS.Detection_Collision_Avec_Objets(joueur)
+        objet_attrape = self.OBJETS.Detection_Collision_Avec_Objets(joueur)
         
         if not (objet_attrape == None):     
             if not objet_attrape.enMouvement:
@@ -236,22 +239,20 @@ class CJoueur():
         
             
     def Se_Soigne(self):
-        self.maladie = ""
+        self.maladie = 0
+        self.maladie_Temps_fige == -1
            
     def Tombe_Malade(self):
-        self.maladie = random.choices(VAR.LISTE_MALADIES)
+        self.maladie = random.choices(list(VAR.C_MALADIE))[0]
         print(self.maladie)
         
-    def Detection_Collision_Bombes(self):        
-        return self.MOTEUR.BOMBES.Detection_Collision_Avec_Les_Bombes(self)
-        
-                    
+                   
     def Detection_Collision_Decors(self, pX=-1, pY=-1):
         
-        if pX == -1 and pY == -1: 
-            joueur = ((self.x * VAR.tailleCellule), (self.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
-        else:
-            joueur = ((pX * VAR.tailleCellule), (pY * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
+        #if pX == -1 and pY == -1: 
+        joueur = ((self.x * VAR.tailleCellule), (self.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
+        #else:
+        #    joueur = ((pX * VAR.tailleCellule), (pY * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
         
         collision = VAR.C_AUCUNE_COLLISION
         for coord in ((-1,-1), (0,-1), (1, -1),
@@ -264,22 +265,19 @@ class CJoueur():
             if self.Toujours_Sur_Le_Terrain(gX, gY):
                 if not self.Zone_Traversable(gX, gY):
                     
-                    pygame.draw.rect(VAR.fenetre, (128,255,0,0), ((x+2) * 16, (y+2 + (self.id*4)) * 16, 16-1, 16-1))
-                    decors = ((gX) * VAR.tailleCellule, (gY) * VAR.tailleCellule, VAR.tailleCellule, VAR.tailleCellule)                
+                    #pygame.draw.rect(VAR.fenetre, (128,255,0,0), ((x+2) * 16, (y+2 + (self.id*4)) * 16, 16-1, 16-1))
                     
-                    if FCT.Collision(joueur, decors): 
-                        return (gX, gY)
-                    
-                    if self.Detection_Collision_Bombes():
-                        return (gX, gY)
+                    decors = (gX * VAR.tailleCellule, gY * VAR.tailleCellule, VAR.tailleCellule, VAR.tailleCellule)
+                    if FCT.Collision(joueur, decors): return (gX, gY)
+                    if self.MOTEUR.BOMBES.Detection_Collision_Avec_Les_Bombes(self): return (gX, gY)
             else:
-                pygame.draw.rect(VAR.fenetre, (64,255,255,0), ((x+2) * 16, (y+2+ (self.id*4)) * 16, 16-1, 16-1))
+                #pygame.draw.rect(VAR.fenetre, (64,255,255,0), ((x+2) * 16, (y+2+ (self.id*4)) * 16, 16-1, 16-1))
                 collision = VAR.C_HORS_TERRAIN
                 break
         
-        pX = self.x - round(self.x, 0)
-        pY = self.y - round(self.y, 0)
-        pygame.draw.rect(VAR.fenetre, (128,0,255,0), (int((2+pX)*16), int((2+pY+ (self.id*4))*16), 16-1, 16-1))  
+        #pX = self.x - round(self.x, 0)
+        #pY = self.y - round(self.y, 0)
+        #pygame.draw.rect(VAR.fenetre, (128,0,255,0), (int((2+pX)*16), int((2+pY+ (self.id*4))*16), 16-1, 16-1))  
         
         return collision
 

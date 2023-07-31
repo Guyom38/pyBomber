@@ -26,15 +26,16 @@ class CMoteur():
         self.Chargement_Ressources()
         
         self.INTERFACE = CI.CInterface(self)
-        self.TERRAIN = CT.CTerrain(self)              
+        self.TERRAIN = CT.CTerrain(self)   
+        self.BOMBES = CBS.CBombes(self)   
+        self.OBJETS = COS.CObjets(self)           
         self.JOUEURS = CJS.CJoueurs(self)
         self.CONTROLLEUR = CC.CCControlleur(self)
         
         self.PARTICULES = CP.CParticules(self)
         
         
-        self.BOMBES = CBS.CBombes(self)   
-        self.OBJETS = COS.CObjets(self)
+        
        
         
         

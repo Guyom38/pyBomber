@@ -37,19 +37,23 @@ class CCControlleur:
         self.Gestion_Manettes_Directions()
     
     def Gestion_Clavier(self):
-        if not self.JOUEURS.LISTE[0].mort:         
+        if not self.JOUEURS.LISTE[0].mort:     
+            BONNE_DIRECTION = ['GAUCHE', 'DROITE', 'HAUT', 'BAS']
+            if self.JOUEURS.LISTE[0].maladie == VAR.C_MALADIE.TOUCHES_INVERSEES:
+                BONNE_DIRECTION = ['DROITE', 'GAUCHE', 'BAS', 'HAUT']
+                        
             keys = pygame.key.get_pressed()                    
             if keys[K_LEFT] == 1:
-                self.JOUEURS.LISTE[0].direction = "GAUCHE"
+                self.JOUEURS.LISTE[0].direction = BONNE_DIRECTION[0]
                 self.JOUEURS.LISTE[0].enMouvement = True
             if keys[K_RIGHT] == 1:
-                self.JOUEURS.LISTE[0].direction = "DROITE"
+                self.JOUEURS.LISTE[0].direction = BONNE_DIRECTION[1]
                 self.JOUEURS.LISTE[0].enMouvement = True
             if keys[K_UP] == 1:
-                self.JOUEURS.LISTE[0].direction = "HAUT"
+                self.JOUEURS.LISTE[0].direction = BONNE_DIRECTION[2]
                 self.JOUEURS.LISTE[0].enMouvement = True
             if keys[K_DOWN] == 1:
-                self.JOUEURS.LISTE[0].direction = "BAS"
+                self.JOUEURS.LISTE[0].direction = BONNE_DIRECTION[3]
                 self.JOUEURS.LISTE[0].enMouvement = True
                 
     def Gestion_Manettes_Boutons(self, _event):
@@ -76,7 +80,7 @@ class CCControlleur:
                 if round(axis_x,0) != 0 or round(axis_y,0) != 0: self.JOUEURS.LISTE[axis_id].enMouvement = True 
                 
                 BONNE_DIRECTION = ['GAUCHE', 'DROITE', 'HAUT', 'BAS']
-                if self.JOUEURS.LISTE[axis_id].maladie == VAR.C_MALADIE_TOUCHE_INVERSEE:
+                if self.JOUEURS.LISTE[axis_id].maladie == VAR.C_MALADIE.TOUCHES_INVERSEES:
                     BONNE_DIRECTION = ['DROITE', 'GAUCHE', 'BAS', 'HAUT']
                 
                 if axis_x < -0.5: self.JOUEURS.LISTE[axis_id].direction = BONNE_DIRECTION[0]

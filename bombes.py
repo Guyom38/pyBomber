@@ -23,7 +23,7 @@ class CBombes:
             
     def Ajouter(self, _joueur):
         bombe = CB.CBombe(self, _joueur)
-        if _joueur.maladie == VAR.C_MALADIE_BOMBE_RETARD: bombe.delais = random.randint(4, 10)
+        if _joueur.maladie == VAR.C_MALADIE.BOMBES_A_RETARDEMENT: bombe.delais = random.randint(4, 20)
         
         _joueur.bombes_protection = bombe
         
