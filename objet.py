@@ -16,6 +16,7 @@ class CObjet:
         self.etat = "A EXPLOS"
         
         self.objet = _objet_hasard
+        self.couleur = [(255,0,0), (0, 255, 0), (0, 0, 255)]
         
     def iX(self): return int(round(self.x, 0))   
     def iY(self): return int(round(self.y, 0))
@@ -25,9 +26,9 @@ class CObjet:
         
         posX = int(VAR.offSet[0] + (self.x * VAR.tailleCellule)) 
         posY = int(VAR.offSet[1] + (self.y * VAR.tailleCellule))         
-           
-        animationId = int((time.time()*10) % 3)
+
         VAR.fenetre.blit(FCT.image_decoupe(VAR.image[self.objet], 0, 0, VAR.tailleCellule, VAR.tailleCellule), (posX, posY))
+        pygame.draw.rect(VAR.fenetre, self.couleur[FCT.Animation(10, 3)], (posX, posY, VAR.tailleCellule, VAR.tailleCellule), VAR.zoom)
     
     def Objet_Present_Sur_Place(self, _x, _y):
         for objet in self.OBJETS.LISTE:

@@ -5,7 +5,7 @@ import variables as VAR
 import fonctions as FCT
 
 import bombe as CB
-
+import random
 
 class CBombes:
     def __init__(self, _moteur):
@@ -23,6 +23,8 @@ class CBombes:
             
     def Ajouter(self, _joueur):
         bombe = CB.CBombe(self, _joueur)
+        if _joueur.maladie == VAR.C_MALADIE_BOMBE_RETARD: bombe.delais = random.randint(4, 10)
+        
         _joueur.bombes_protection = bombe
         
         self.LISTE.append(bombe)
@@ -33,7 +35,6 @@ class CBombes:
             if not bombe == self:
                 if bombe.x == _x and bombe.y == _y:
                     bombe.Raccrourci_Delais_Explosion()
-                    print("BBB")
     
     def Detection_Collision_Avec_Une_Bombe(self, _joueur, _bombe):
         coordBombe = ((_bombe.x * VAR.tailleCellule), (_bombe.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)

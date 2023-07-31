@@ -10,7 +10,8 @@ import time, random
 class CJoueur():
     
     def __init__(self, _moteur, _id, _pseudo):         
-        self.MOTEUR = _moteur     
+        self.MOTEUR = _moteur  
+        self.JOUEURS = _moteur .JOUEURS    
                  
         self.id = _id
         self.pseudo = _pseudo
@@ -21,22 +22,24 @@ class CJoueur():
         
         self.Initialiser()
         
-        self.image = VAR.image["joueur0"].copy()        
+        self.image = VAR.image["joueur0"].copy() 
+            
         self.Colorisation()
 
     def iX(self): return int(round(self.x, 0))   
     def iY(self): return int(round(self.y, 0))
-            
+    
+    
+                        
     def Colorisation(self):
         if self.id == 0: return
         
-        C_COLOR_TRANSPARENT = (255, 255, 255, 0)
         self.couleur = VAR.LISTE_COLOR['(232, 232, 232, 255)'][self.id]
         
         for y in range(self.image.get_height()):
             for x in range(self.image.get_width()):
                 couleur = self.image.get_at((x, y))
-                if not C_COLOR_TRANSPARENT == couleur:
+                if not VAR.C_COLOR_TRANSPARENT == couleur:
                     if str(couleur) in VAR.LISTE_COLOR:
                         self.image.set_at((x,y), VAR.LISTE_COLOR[str(couleur)][self.id])   
     
@@ -67,11 +70,15 @@ class CJoueur():
         self.pasVitesse = 0.005
         
         self.puissance = 1
-        self.bombes = 3
+        self.bombes = 2
         self.bombes_posees = 0
         self.bombes_protection = None
         
-        self.coup_de_pied = True
+        self.coup_de_pied = False
+        self.coup_de_poing = False
+        self.maladie = False
+        self.maladie_Temps_fige = -1
+        
         self.mort = False
         self.MOTEUR.TERRAIN.Libere_Zone(self.iX(), self.iY(), 2)    
         
@@ -97,11 +104,16 @@ class CJoueur():
             
         if self.mort == False: 
             if (self.enMouvement):
-                animationId = int((time.time()*10) % 3)
+                animationId = FCT.Animation(10, 3)
             else:
                 animationId = 0
+            
+            if self.maladie and FCT.Animation(10, 2) == 0:
+                image = self.JOUEURS.image_masque                
+            else:   
+                image = self.image
                 
-            VAR.fenetre.blit(FCT.image_decoupe(self.image,  animationId, self.direction_y_image(), VAR.tailleCellule, VAR.tailleCellule*2), (posX, posY))
+            VAR.fenetre.blit(FCT.image_decoupe(image,  animationId, self.direction_y_image(), VAR.tailleCellule, VAR.tailleCellule*2), (posX, posY))
 
             self.Gestion_Deplacement()  
             self.Detection_Collision_Decors()    
@@ -121,6 +133,7 @@ class CJoueur():
     def Mourir(self):
         # --- active l'animation de la mort
         self.mort = True
+        
         
         
     def Transmission_Heritage_Apres_Mort(self):
@@ -154,11 +167,21 @@ class CJoueur():
     def Gestion_Deplacement(self):
         if self.enMouvement == False: return 
         
+        vitesseDeBase = self.vitesse
+        if self.maladie == VAR.C_MALADIE_RALENTI: vitesseDeBase = 0.002
+        if self.maladie == VAR.C_MALADIE_FIGE:
+            if self.maladie_Temps_fige == -1: self.maladie_Temps_fige = time.time()
+            if time.time() - self.maladie_Temps_fige < VAR.delaisExplosion + 1:
+                return 
+            else:
+                self.maladie = ""
+                self.maladie_Temps_fige == -1
+        
         # --- mouvement en fonction de la direction
-        if self.direction == "HAUT":   self.y -= self.vitesse
-        if self.direction == "BAS":    self.y += self.vitesse
-        if self.direction == "GAUCHE": self.x -= self.vitesse
-        if self.direction == "DROITE": self.x += self.vitesse        
+        if self.direction == "HAUT":   self.y -= vitesseDeBase
+        if self.direction == "BAS":    self.y += vitesseDeBase
+        if self.direction == "GAUCHE": self.x -= vitesseDeBase
+        if self.direction == "DROITE": self.x += vitesseDeBase        
 
         posX = VAR.offSet[0] + self.offSetX + (self.x * VAR.tailleCellule)  + (VAR.tailleCellule / 2)
         posY = VAR.offSet[1] + self.offSetY + (self.y * VAR.tailleCellule)  + (VAR.tailleCellule / 2)             
@@ -188,14 +211,30 @@ class CJoueur():
     def Detection_Collision_Objets(self):
         joueur = ((self.x * VAR.tailleCellule), (self.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
         objet_attrape = self.MOTEUR.OBJETS.Detection_Collision_Avec_Objets(joueur)
-        if not (objet_attrape == None):
+        
+        
+            
+        if not (objet_attrape == None):           
+            if not self.maladie == "":
+                self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_MALADIE, True, 4, 4)
+                self.maladie = False
+                
             if (objet_attrape.objet == VAR.C_OBJ_BOMBE): self.bombes += 1
             if (objet_attrape.objet == VAR.C_OBJ_FLAMME): self.puissance += 1
-            if (objet_attrape.objet == VAR.C_OBJ_COUP): self.coup_de_pied = True
+            if (objet_attrape.objet == VAR.C_OBJ_SUPER_FLAMME): self.puissance += 5
+            if (objet_attrape.objet == VAR.C_OBJ_COUP_PIED): self.coup_de_pied = True
+            if (objet_attrape.objet == VAR.C_OBJ_COUP_POING): self.coup_de_poing = True
             if (objet_attrape.objet == VAR.C_OBJ_ROLLER): self.vitesse += self.pasVitesse
+            if (objet_attrape.objet == VAR.C_OBJ_MALADIE): self.Tombe_Malade()
+
             self.MOTEUR.OBJETS.Detruire_Objet(objet_attrape)
             FCT.jouer_sons("prendre_objet")
-    
+            
+           
+    def Tombe_Malade(self):
+        self.maladie = random.choices(VAR.LISTE_MALADIES)
+        print(self.maladie)
+        
     def Detection_Collision_Bombes(self):        
         return self.MOTEUR.BOMBES.Detection_Collision_Avec_Les_Bombes(self)
         

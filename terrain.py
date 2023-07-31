@@ -49,6 +49,8 @@ class CTerrain():
                 if (0 <= xPos < VAR.nbColonnes) and (0 <= yPos < VAR.nbLignes):
                     if self.GRILLE[xPos][yPos].objet == VAR.C_CASSABLE:
                         self.GRILLE[xPos][yPos].objet = VAR.C_SOL
+                        
+    
                     
 
                           

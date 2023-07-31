@@ -28,21 +28,15 @@ class CCControlleur:
         for event in pygame.event.get():        
             if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE: VAR.boucle_jeu = False        
                 
-            if event.type == KEYDOWN:  
-                if event.key == K_SPACE: 
-                    self.JOUEURS.LISTE[0].Action_Poser_Une_Bombe()
-                if event.key == K_LCTRL: 
-                    self.JOUEURS.LISTE[0].Action_Pousser_La_Bombe()
-                
-                    
-            if event.type == pygame.JOYBUTTONDOWN:
-                if not self.JOUEURS.LISTE[event.joy].mort:
-                    if (event.button == 2):
-                        self.JOUEURS.LISTE[event.joy].Action_Poser_Une_Bombe()
-                    if (event.button == 1):
-                        self.JOUEURS.LISTE[event.joy].Action_Pousser_La_Bombe()
+            self.Gestion_Manettes_Boutons(event)
                         
         # --- Gestion Clavier Joueur #1  
+        self.Gestion_Clavier()
+
+        # --- Gestion Manettes Joueur #1 a #9
+        self.Gestion_Manettes_Directions()
+    
+    def Gestion_Clavier(self):
         if not self.JOUEURS.LISTE[0].mort:         
             keys = pygame.key.get_pressed()                    
             if keys[K_LEFT] == 1:
@@ -57,15 +51,35 @@ class CCControlleur:
             if keys[K_DOWN] == 1:
                 self.JOUEURS.LISTE[0].direction = "BAS"
                 self.JOUEURS.LISTE[0].enMouvement = True
-
-        # --- Gestion Manettes Joueur #1 a #9
+                
+    def Gestion_Manettes_Boutons(self, _event):
+        if _event.type == KEYDOWN:  
+            if _event.key == K_SPACE: 
+                self.JOUEURS.LISTE[0].Action_Poser_Une_Bombe()
+            if _event.key == K_LCTRL: 
+                self.JOUEURS.LISTE[0].Action_Pousser_La_Bombe()
+                
+                    
+        if _event.type == pygame.JOYBUTTONDOWN:
+            if not self.JOUEURS.LISTE[_event.joy].mort:
+                if (_event.button == 2):
+                    self.JOUEURS.LISTE[_event.joy].Action_Poser_Une_Bombe()
+                if (_event.button == 1):
+                    self.JOUEURS.LISTE[_event.joy].Action_Pousser_La_Bombe()
+    
+    def Gestion_Manettes_Directions(self):
+       
+        
         for manette in self.MANETTES:
             axis_id, axis_x, axis_y = manette.get_id(), manette.get_axis(0), manette.get_axis(1)
             if not self.JOUEURS.LISTE[axis_id].mort:                
                 if round(axis_x,0) != 0 or round(axis_y,0) != 0: self.JOUEURS.LISTE[axis_id].enMouvement = True 
                 
-                if axis_x < -0.5: self.JOUEURS.LISTE[axis_id].direction = "GAUCHE"
-                if axis_x > 0.5: self.JOUEURS.LISTE[axis_id].direction = "DROITE"
-                if axis_y < -0.5: self.JOUEURS.LISTE[axis_id].direction = "HAUT"
-                if axis_y > 0.5: self.JOUEURS.LISTE[axis_id].direction = "BAS"                
+                BONNE_DIRECTION = ['GAUCHE', 'DROITE', 'HAUT', 'BAS']
+                if self.JOUEURS.LISTE[axis_id].maladie == VAR.C_MALADIE_TOUCHE_INVERSEE:
+                    BONNE_DIRECTION = ['DROITE', 'GAUCHE', 'BAS', 'HAUT']
                 
+                if axis_x < -0.5: self.JOUEURS.LISTE[axis_id].direction = BONNE_DIRECTION[0]
+                if axis_x > 0.5: self.JOUEURS.LISTE[axis_id].direction =  BONNE_DIRECTION[1]
+                if axis_y < -0.5: self.JOUEURS.LISTE[axis_id].direction = BONNE_DIRECTION[2]
+                if axis_y > 0.5: self.JOUEURS.LISTE[axis_id].direction =  BONNE_DIRECTION[3]                

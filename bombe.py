@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 
+
 import variables as VAR
 import fonctions as FCT
 
@@ -27,6 +28,7 @@ class CBombe:
         self.delais = VAR.delaisExplosion
         self.temps = time.time()
         self.animationId = 0
+        self.bruit = False
         
         self.force = _joueur.puissance+1        
         self.x, self.y = round(_joueur.x, 0), round(_joueur.y, 0)
@@ -59,12 +61,17 @@ class CBombe:
         posY = int(VAR.offSet[1] + (self.y * VAR.tailleCellule))                
         VAR.fenetre.blit(FCT.image_decoupe(VAR.image["objets"], FCT.Animation(10, 3), 1, VAR.tailleCellule,  VAR.tailleCellule), (posX, posY))  
             
-        # --- si delais bombe expiré, alors BOOM
-        if time.time() - self.temps > self.delais:
+        
+        if time.time() - self.temps > self.delais - 0.10 and not self.bruit:
+            FCT.jouer_sons("explosion")
+            self.bruit = True
+        
+        # --- si delais bombe expiré, alors BOOM    
+        if time.time() - self.temps > self.delais:            
             self.Initiatiser_Explosion()
             
 
-    def Afficher_Explosion_De_La_Bombe(self):
+    def Afficher_Explosion_De_La_Bombe(self):        
         self.Gestion_Explosion()
             
         for i in range(0, len(self.FOYER)):
@@ -83,7 +90,7 @@ class CBombe:
 
     def Detection_KesKi_Pete(self, _posX, _posY, _sens, _force):               
         grille = self.TERRAIN.GRILLE               
-        if _posX >=0 and _posX < VAR.nbColonnes and _posY >=0 and _posY < VAR.nbLignes:
+        if FCT.Position_Sur_Terrain(_posX, _posY):
             self.feuSTOP[_sens] = (grille[_posX][_posY].Traversable() and self.feuSTOP[_sens])                    
             self.BOMBES.Explosion_En_Chaine(_posX, _posY)
                         
@@ -119,7 +126,7 @@ class CBombe:
         
     def Detection_Collision_Avec_Decors(self):
         # --- Controle sortie de terrain
-        if (0 > self.iX() < VAR.nbColonnes) or (0 > self.iY() < VAR.nbLignes): return True
+        if not FCT.Position_Sur_Terrain(self.iX(), self.iY()): return True
         
         # --- Collision avec mur
         if not self.TERRAIN.GRILLE[self.iX()][self.iY()].Traversable(): return True
@@ -130,6 +137,7 @@ class CBombe:
         
         bombe = ((self.x * VAR.tailleCellule), (self.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
         if self.OBJETS.Detection_Collision_Avec_Objets(bombe): return True
+        
         # --- Collision avec Joueur
                                  
     def Gestion_Explosion(self):
@@ -144,8 +152,9 @@ class CBombe:
             # --- progresse tout autour
             for force in range(1, self.force):
                 for sens, xD, yD in (("DROITE", -force, 0), ("GAUCHE", force, 0), ("HAUT", 0, -force), ("BAS", 0, force)):
-                    posX, posY = int(round(self.x + xD, 0)), int(round(self.y + yD, 0))
-                    self.Detection_KesKi_Pete(posX, posY, sens, force) 
+                    if (self.feuSTOP[sens]):
+                        posX, posY = int(round(self.x + xD, 0)), int(round(self.y + yD, 0))
+                        self.Detection_KesKi_Pete(posX, posY, sens, force) 
             
             
         else:

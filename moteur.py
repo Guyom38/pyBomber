@@ -9,6 +9,7 @@ import bombes as CBS
 import particules as CP
 import controlleur as CC
 import objets as COS
+import interface as CI
 
 import variables as VAR
 import fonctions as FCT
@@ -24,7 +25,7 @@ class CMoteur():
     def Initialisation(self):
         self.Chargement_Ressources()
         
-        
+        self.INTERFACE = CI.CInterface(self)
         self.TERRAIN = CT.CTerrain(self)              
         self.JOUEURS = CJS.CJoueurs(self)
         self.CONTROLLEUR = CC.CCControlleur(self)
@@ -67,15 +68,21 @@ class CMoteur():
         if VAR.zoom > 1: VAR.image["objets"] = pygame.transform.scale(VAR.image["objets"], (VAR.image["objets"].get_width() * VAR.zoom, VAR.image["objets"].get_height() * VAR.zoom)) 
      
         
-        VAR.image[VAR.C_OBJ_BOMBE] = FCT.image_decoupe(VAR.image["objets"], 0, 0, VAR.tailleCellule, VAR.tailleCellule  )
-        VAR.image[VAR.C_OBJ_COUP] = FCT.image_decoupe(VAR.image["objets"], 1, 0, VAR.tailleCellule, VAR.tailleCellule )
-        VAR.image[VAR.C_OBJ_ROLLER] = FCT.image_decoupe(VAR.image["objets"], 2, 0, VAR.tailleCellule, VAR.tailleCellule )
-        VAR.image[VAR.C_OBJ_FLAMME] = FCT.image_decoupe(VAR.image["objets"], 3, 0, VAR.tailleCellule, VAR.tailleCellule )
+        VAR.image[VAR.C_OBJ_BOMBE] =        FCT.image_decoupe(VAR.image["objets"], 0, 0, VAR.tailleCellule, VAR.tailleCellule  )
+        VAR.image[VAR.C_OBJ_COUP_PIED] =    FCT.image_decoupe(VAR.image["objets"], 1, 0, VAR.tailleCellule, VAR.tailleCellule )
+        VAR.image[VAR.C_OBJ_ROLLER] =       FCT.image_decoupe(VAR.image["objets"], 2, 0, VAR.tailleCellule, VAR.tailleCellule )
+        VAR.image[VAR.C_OBJ_FLAMME] =       FCT.image_decoupe(VAR.image["objets"], 3, 0, VAR.tailleCellule, VAR.tailleCellule )
+        VAR.image[VAR.C_OBJ_COUP_POING] =   FCT.image_decoupe(VAR.image["objets"], 4, 0, VAR.tailleCellule, VAR.tailleCellule )
+        VAR.image[VAR.C_OBJ_MALADIE] =      FCT.image_decoupe(VAR.image["objets"], 5, 0, VAR.tailleCellule, VAR.tailleCellule )
+        VAR.image[VAR.C_OBJ_SUPER_FLAMME] = FCT.image_decoupe(VAR.image["objets"], 6, 0, VAR.tailleCellule, VAR.tailleCellule )
         
         VAR.sons["poser_bombe"] = pygame.mixer.Sound('audios/bomb.wav')
         VAR.sons["prendre_objet"] = pygame.mixer.Sound('audios/prendre.wav')
+        VAR.sons["explosion"] = pygame.mixer.Sound('audios/boom2.wav')
          
         pygame.mixer.music.load("musics/" + random.choice(['78','41','25']) + ".mp3")
+        
+        
         
     def Demarrer(self):
         VAR.fenetre = pygame.display.set_mode(VAR.resolution, pygame.DOUBLEBUF, 32)
@@ -91,16 +98,22 @@ class CMoteur():
         VAR.boucle_jeu = True
         while VAR.boucle_jeu:
             self.CONTROLLEUR.Gestion_Utilisateurs()
+            
+            if VAR.phase_jeu == "TITRE":
+                self.INTERFACE.Afficher()
+                
+            else:
+                
 
-            # --- remplissage de la fenetre avec une couleur proche du noir
-            VAR.fenetre.fill((16,16,16))
-            self.TERRAIN.Afficher()  
-            
-            self.BOMBES.Afficher_Toutes_Les_Bombes()
-            self.OBJETS.Afficher_Tous_Les_Objets()
-            
-            self.PARTICULES.Afficher_Les_Particules()
-            self.JOUEURS.Afficher_Tous_Les_Joueurs()
+                # --- remplissage de la fenetre avec une couleur proche du noir
+                VAR.fenetre.fill((16,16,16))
+                self.TERRAIN.Afficher()  
+                
+                self.BOMBES.Afficher_Toutes_Les_Bombes()
+                self.OBJETS.Afficher_Tous_Les_Objets()
+                
+                self.PARTICULES.Afficher_Les_Particules()
+                self.JOUEURS.Afficher_Tous_Les_Joueurs()
             
             
             # --- afficher le résultat

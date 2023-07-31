@@ -17,7 +17,10 @@ class CObjets:
         for _ in range(10): self.PIOCHES.append(VAR.C_OBJ_BOMBE)
         for _ in range(10): self.PIOCHES.append(VAR.C_OBJ_FLAMME)
         for _ in range(5): self.PIOCHES.append(VAR.C_OBJ_ROLLER)
-        for _ in range(2): self.PIOCHES.append(VAR.C_OBJ_COUP)
+        for _ in range(2): self.PIOCHES.append(VAR.C_OBJ_COUP_PIED)
+        for _ in range(2): self.PIOCHES.append(VAR.C_OBJ_COUP_POING)
+        for _ in range(10): self.PIOCHES.append(VAR.C_OBJ_MALADIE)
+        for _ in range(2): self.PIOCHES.append(VAR.C_OBJ_SUPER_FLAMME)
         for _ in range(30): self.PIOCHES.append(None)            
         random.shuffle(self.PIOCHES)        
             
@@ -36,12 +39,13 @@ class CObjets:
     def Purger_Objets_Exploses(self):
         self.LISTE = [bombe for bombe in self.LISTE if bombe.etat != "A EXPLOSE"]
         
-    def Ajouter_Un_Objet(self, _x, _y, _objet_hasard, _jeter = False):
+    def Ajouter_Un_Objet(self, _x, _y, _objet_hasard, _jeter = False, _oX = 0, _oY =0):
         objet = CO.CObjet(self, _x, _y, _objet_hasard)
         
         if (_jeter):
-            objet.xDest, objet.yDest = _x+6.0, _y
-            objet.direction = random.choice(['DROITE', 'GAUCHE', 'HAUT', 'BAS']) 
+            sens, dX, dY = random.choice([('DROITE',_oX,0), ('GAUCHE',-_oX,0) , ('HAUT',0,-_oY), ('BAS',0,_oY)])
+            objet.xDest, objet.yDest = _x+dX, _y+dY
+            objet.direction = sens
             objet.etape = random.randint(0,4)     
               
         self.LISTE.append(objet)

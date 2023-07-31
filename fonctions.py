@@ -9,8 +9,8 @@ def Animation(_frequence, _nbImages):
     return int((time.time()*_frequence) % _nbImages)
     
 def jouer_sons(_fichier):
-    #VAR.sons[_fichier].play()
-    pass
+    VAR.sons[_fichier].play()
+
 
 def image_decoupe(img, x, y, dimx, dimy, dimxZ = -1, dimyZ = -1):
     tmp = pygame.Surface((dimx, dimy),pygame.SRCALPHA,32)
@@ -49,3 +49,14 @@ def Collision(objet1, objet2):
     else:
         return True
   
+  
+LISTE_FONTS = {}
+def Init_Texte(_taille):
+    LISTE_FONTS[_taille] = pygame.font.SysFont('arial', _taille) 
+    
+def Texte(_texte, _couleur, _taille, _x, _y):    
+    image_texte = LISTE_FONTS[_taille].render(_texte, True, _couleur) 
+    VAR.fenetre.blit(image_texte, (_x, _y))
+    
+def Position_Sur_Terrain(_x, _y):
+    return (_x >=0 and _x < VAR.nbColonnes and _y >=0 and _y < VAR.nbLignes)
