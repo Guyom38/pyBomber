@@ -44,7 +44,8 @@ class C_MALADIE(Enum):
     BOMBES_A_RETARDEMENT = 3
     RALENTISSEMENT = 4
     FIGER = 5
-    
+
+
 
 
 # --- code couleur joueurs

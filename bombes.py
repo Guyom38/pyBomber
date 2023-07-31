@@ -34,7 +34,7 @@ class CBombes:
         for bombe in self.LISTE:
             if not bombe == self:
                 if bombe.x == _x and bombe.y == _y:
-                    bombe.Raccrourci_Delais_Explosion()
+                    bombe.EXPLOSION.Raccrourci_Delais_Explosion()
     
     def Detection_Collision_Avec_Une_Bombe(self, _joueur, _bombe):
         coordBombe = ((_bombe.x * VAR.tailleCellule), (_bombe.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)

@@ -67,7 +67,9 @@ class CMoteur():
         
         VAR.image["objets"] = pygame.image.load("images/objets.png").convert_alpha() 
         if VAR.zoom > 1: VAR.image["objets"] = pygame.transform.scale(VAR.image["objets"], (VAR.image["objets"].get_width() * VAR.zoom, VAR.image["objets"].get_height() * VAR.zoom)) 
-     
+        VAR.image["explosion"] = pygame.image.load("images/explosion2.png").convert_alpha() 
+        if VAR.zoom > 1: VAR.image["explosion"] = pygame.transform.scale(VAR.image["explosion"], (VAR.image["explosion"].get_width() * VAR.zoom, VAR.image["explosion"].get_height() * VAR.zoom)) 
+        
         
         VAR.image[VAR.C_OBJ_BOMBE] =        FCT.image_decoupe(VAR.image["objets"], 0, 0, VAR.tailleCellule, VAR.tailleCellule  )
         VAR.image[VAR.C_OBJ_COUP_PIED] =    FCT.image_decoupe(VAR.image["objets"], 1, 0, VAR.tailleCellule, VAR.tailleCellule )
