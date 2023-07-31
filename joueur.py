@@ -28,7 +28,7 @@ class CJoueur():
 
     def iX(self): return int(round(self.x, 0))   
     def iY(self): return int(round(self.y, 0))
-    
+    def estMalade(self): return not (self.maladie == "")
     
                         
     def Colorisation(self):
@@ -76,7 +76,7 @@ class CJoueur():
         
         self.coup_de_pied = False
         self.coup_de_poing = False
-        self.maladie = False
+        self.maladie = ""
         self.maladie_Temps_fige = -1
         
         self.mort = False
@@ -108,7 +108,7 @@ class CJoueur():
             else:
                 animationId = 0
             
-            if self.maladie and FCT.Animation(10, 2) == 0:
+            if not self.maladie == "" and FCT.Animation(10, 2) == 0:
                 image = self.JOUEURS.image_masque                
             else:   
                 image = self.image
@@ -208,28 +208,35 @@ class CJoueur():
         return (self.MOTEUR.TERRAIN.GRILLE[gX][gY].Traversable())
     
     
+    def Attrape_Objet(self, _objet_attrape):
+              
+        if self.estMalade():
+            self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_MALADIE, True, 4, 4)
+            self.Se_Soigne()
+                
+        if (_objet_attrape.objet == VAR.C_OBJ_BOMBE): self.bombes += 1
+        if (_objet_attrape.objet == VAR.C_OBJ_FLAMME): self.puissance += 1
+        if (_objet_attrape.objet == VAR.C_OBJ_SUPER_FLAMME): self.puissance += 5
+        if (_objet_attrape.objet == VAR.C_OBJ_COUP_PIED): self.coup_de_pied = True
+        if (_objet_attrape.objet == VAR.C_OBJ_COUP_POING): self.coup_de_poing = True
+        if (_objet_attrape.objet == VAR.C_OBJ_ROLLER): self.vitesse += self.pasVitesse
+        if (_objet_attrape.objet == VAR.C_OBJ_MALADIE): self.Tombe_Malade()
+
+        self.MOTEUR.OBJETS.Detruire_Objet(_objet_attrape)
+        FCT.jouer_sons("prendre_objet")
+            
+        
     def Detection_Collision_Objets(self):
         joueur = ((self.x * VAR.tailleCellule), (self.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
         objet_attrape = self.MOTEUR.OBJETS.Detection_Collision_Avec_Objets(joueur)
         
+        if not (objet_attrape == None):     
+            if not objet_attrape.enMouvement:
+                self.Attrape_Objet(objet_attrape)
         
             
-        if not (objet_attrape == None):           
-            if not self.maladie == "":
-                self.MOTEUR.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), VAR.C_OBJ_MALADIE, True, 4, 4)
-                self.maladie = False
-                
-            if (objet_attrape.objet == VAR.C_OBJ_BOMBE): self.bombes += 1
-            if (objet_attrape.objet == VAR.C_OBJ_FLAMME): self.puissance += 1
-            if (objet_attrape.objet == VAR.C_OBJ_SUPER_FLAMME): self.puissance += 5
-            if (objet_attrape.objet == VAR.C_OBJ_COUP_PIED): self.coup_de_pied = True
-            if (objet_attrape.objet == VAR.C_OBJ_COUP_POING): self.coup_de_poing = True
-            if (objet_attrape.objet == VAR.C_OBJ_ROLLER): self.vitesse += self.pasVitesse
-            if (objet_attrape.objet == VAR.C_OBJ_MALADIE): self.Tombe_Malade()
-
-            self.MOTEUR.OBJETS.Detruire_Objet(objet_attrape)
-            FCT.jouer_sons("prendre_objet")
-            
+    def Se_Soigne(self):
+        self.maladie = ""
            
     def Tombe_Malade(self):
         self.maladie = random.choices(VAR.LISTE_MALADIES)

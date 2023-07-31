@@ -13,8 +13,9 @@ class CObjet:
         self.xDest, self.yDest, self.etape = 0.0, 0.0, 0
         self.direction = "DROITE"
         self.animationTemps = time.time()
-        self.etat = "A EXPLOS"
-        
+        self.enMouvement = False
+        self.etat = ""
+    
         self.objet = _objet_hasard
         self.couleur = [(255,0,0), (0, 255, 0), (0, 0, 255)]
         
@@ -39,7 +40,7 @@ class CObjet:
     
     
     def Gestion_Rebonds(self):
-        if (self.xDest, self.yDest) == (0.0, 0.0) or self.direction == "": return
+        if not self.enMouvement: return
         
         if (time.time() - self.animationTemps > 0.05):
             self.animationTemps = time.time()
@@ -80,5 +81,5 @@ class CObjet:
                         
                     if not deja_Occupe and zone_Libre:
                         self.x, self.y = posX, posY
-                        self.xDest, self.yDest,self.direction = 0.0, 0.0, ""
+                        self.enMouvement = False
 
