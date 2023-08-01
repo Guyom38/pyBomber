@@ -4,23 +4,21 @@ image = {}
 sons = {}
 
 resolution = (1320, 768)
-zoom = 4
+zoom = 2
 offSet = (0, 0)
-
-boucle_jeu = True
-phase_jeu = ""
-
-
-nbLignes, nbColonnes = 13, 15 #int((resolution[1] /16)/2), int((resolution[0]/16)/2)-5 
 tailleCellule = 16
+boucle_jeu = True
+
+
+
+nbLignes, nbColonnes = int((resolution[1] /tailleCellule)/zoom)-2, int((resolution[0]/tailleCellule)/zoom)-5 
+
 
 tauxRemplissage = 70
 delaisExplosion = 3    
     
 animation_MortFrameMax = 5    
 
-
-BONNE_DIRECTION = ['GAUCHE', 'DROITE', 'HAUT', 'BAS']
 
 # --- constantes
 C_SOL = 0
@@ -31,14 +29,7 @@ C_HORS_TERRAIN = (-2, -2)
 C_AUCUNE_COLLISION = (-99, -99)
 
 
-    
-C_OBJ_BOMBE = "BOMB"
-C_OBJ_COUP_PIED = "COUP_PIED"
-C_OBJ_ROLLER = "ROLLER"
-C_OBJ_FLAMME = "FLAMME"
-C_OBJ_COUP_POING = "COUP_POING"
-C_OBJ_MALADIE = "MALADIE"
-C_OBJ_SUPER_FLAMME = "SFLAMME"
+
 
 
 

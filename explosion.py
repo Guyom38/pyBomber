@@ -28,7 +28,7 @@ class CExplosion:
         #self.Ajoute_Schema_Explosion(self.BOMBE.iX(), self.BOMBE.iY(), 0)   
             
         self.initialiser = False
-        self.BOMBE.etat = "EXPLOSE"
+        self.BOMBE.etat = C_ETAPE_BOMBE.EXPLOSE
         self.JOUEUR.bombes_posees -= 1  
         
     def Afficher_Explosion_De_La_Bombe(self):        
@@ -67,7 +67,7 @@ class CExplosion:
                 self.BOMBE.animationId += 1
                 
             if self.BOMBE.animationId > 5:
-                self.BOMBE.etat = "A EXPLOSE"    
+                self.BOMBE.etat = C_ETAPE_BOMBE.A_EXPLOSE    
 
     def Detection_KesKi_Pete(self, _posX, _posY, _sens, _force):               
         grille = self.MOTEUR.TERRAIN.GRILLE               
@@ -86,7 +86,7 @@ class CExplosion:
                 # --- Detruit les objets sur la zone
                 for objet in self.BOMBES.MOTEUR.OBJETS.LISTE:
                     if _posX == objet.iX() and _posY == objet.iY():
-                        objet.etat = "A EXPLOSE"                     
+                        objet.etat = C_ETAPE_BOMBE.A_EXPLOSE                    
                             
             elif self.feuSTOP_nb[_sens]+1 == _force:
                 if grille[_posX][_posY].Cassable():

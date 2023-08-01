@@ -21,3 +21,14 @@ class C_OBJET(Enum):
     COUP_POING = 5
     MALADIE = 6
     SUPER_FLAMME = 7
+    
+class C_PHASE_DE_JEU(Enum):
+    TITRE = 0
+    MENU = 1
+    JEU = 2
+    HIGH_SCORE = 3
+    
+class C_ETAPE_BOMBE(Enum):
+    VA_PETER = 0
+    EXPLOSE = 1
+    A_EXPLOSE = 2

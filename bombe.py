@@ -13,7 +13,7 @@ class CBombe(item.CItem):
                
                 
     def __init__(self, _bombes, _joueur):
-        super().__init__(_bombes.MOTEUR, _joueur.iX(), _joueur.iY(), "VA EXPLOSER")    
+        super().__init__(_bombes.MOTEUR, _joueur.iX(), _joueur.iY(), C_ETAPE_BOMBE.VA_PETER)    
         
         self.JOUEUR = _joueur        
         self.EXPLOSION = CExplosion(self)
@@ -23,12 +23,12 @@ class CBombe(item.CItem):
              
     
     def Afficher(self):  
-        if self.etat == "VA EXPLOSER":
+        if self.etat == C_ETAPE_BOMBE.VA_PETER:
             self.Gestion_Bombe_Qui_Roule()
             self.Gestion_CompteARebourd_Bombe()  
             self.Afficher_La_Bombe()                       
                 
-        elif self.etat == "EXPLOSE": 
+        elif self.etat == C_ETAPE_BOMBE.EXPLOSE: 
             self.EXPLOSION.Afficher_Explosion_De_La_Bombe()
             
             

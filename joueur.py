@@ -244,7 +244,7 @@ class CJoueur(item.CItem):
         print(self.maladie)
         
                    
-    def Detection_Collision_Decors(self, pX=-1, pY=-1):
+    def Detection_Collision_Decors(self):
         
         joueur = ((self.x * VAR.tailleCellule), (self.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
 

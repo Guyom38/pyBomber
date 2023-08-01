@@ -47,7 +47,7 @@ class CMoteur():
                         (VAR.resolution[1] - (VAR.nbLignes* VAR.tailleCellule)) /2 )
         
         #self.CONTROLLEUR.Creer_Joueurs_Clavier_Manettes()
-        
+        self.phase_jeu = C_PHASE_DE_JEU.JEU
     
     def Chargement_Ressources(self):
         VAR.tailleCellule = 16 * VAR.zoom
@@ -106,11 +106,10 @@ class CMoteur():
         while VAR.boucle_jeu:
             self.CONTROLLEUR.Gestion_Utilisateurs()
             
-            if VAR.phase_jeu == "TITRE":
+            if self.phase_jeu != C_PHASE_DE_JEU.JEU:
                 self.INTERFACE.Afficher()
-                
-            else:
-                
+   
+            else:                
 
                 # --- remplissage de la fenetre avec une couleur proche du noir
                 VAR.fenetre.fill((16,16,16))

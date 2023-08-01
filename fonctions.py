@@ -2,7 +2,6 @@ import pygame
 from pygame.locals import *
 
 import variables as VAR
-import fonctions as FCT
 import time
 
 def Animation(_frequence, _nbImages):
@@ -21,8 +20,16 @@ def image_decoupe(img, x, y, dimx, dimy, dimxZ = -1, dimyZ = -1):
         tmp = pygame.transform.scale(tmp, (dimxZ, dimyZ))
     return tmp
 
-
-
+# -- image rempli de blanc, lorsque le joueur clignotte !    
+def Colorisation_Masque(_image_masque, _couleurRemplacement = (255,255,255,255)):
+    image = _image_masque.copy()
+    
+    for y in range(image.get_height()):
+        for x in range(image.get_width()):
+            couleur = image.get_at((x, y))
+            if not VAR.C_COLOR_TRANSPARENT == couleur:
+                image.set_at((x,y), _couleurRemplacement)   
+    return image
 
 def image_vide(dimx, dimy):
     return pygame.Surface((dimx, dimy),pygame.SRCALPHA,32)
@@ -54,9 +61,10 @@ LISTE_FONTS = {}
 def Init_Texte(_taille):
     LISTE_FONTS[_taille] = pygame.font.SysFont('arial', _taille) 
     
-def Texte(_texte, _couleur, _taille, _x, _y):    
+def Image_Texte(_texte, _couleur, _taille):    
     image_texte = LISTE_FONTS[_taille].render(_texte, True, _couleur) 
-    VAR.fenetre.blit(image_texte, (_x, _y))
-    
+    return image_texte
+
+
 def Position_Sur_Terrain(_x, _y):
     return (_x >=0 and _x < VAR.nbColonnes and _y >=0 and _y < VAR.nbLignes)

@@ -24,16 +24,17 @@ class CBombes:
             bombe.Afficher()   
 
     def Purger_Bombes_Explosees(self):
-        self.LISTE = [bombe for bombe in self.LISTE if bombe.etat != "A EXPLOSE"]
+        self.LISTE = [bombe for bombe in self.LISTE if bombe.etat != C_ETAPE_BOMBE.A_EXPLOSE]
             
     def Ajouter(self, _joueur):
         bombe = CB.CBombe(self, _joueur)
         if _joueur.maladie == C_MALADIE.BOMBES_A_RETARDEMENT: bombe.delais = random.randint(4, 20)
         
         _joueur.bombes_protection = bombe
+        _joueur.bombes_posees += 1
         
         self.LISTE.append(bombe)
-        _joueur.bombes_posees += 1
+        
         
     def Explosion_En_Chaine(self, _x, _y):
         for bombe in self.LISTE:

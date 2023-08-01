@@ -4,20 +4,33 @@ from pygame.locals import *
 import variables as VAR
 import fonctions as FCT
 
+from enums import *
+
 class CInterface:
     def __init__(self, _moteur):
         self.MOTEUR = _moteur
     
     def Initialiser(self):
-        FCT.Init_Texte(50)
+        VAR.image["titre"] = pygame.transform.scale(pygame.image.load("images/R.jpg"), VAR.resolution)
+        
+        FCT.Init_Texte(150)
     
     def Afficher(self):
-        if VAR.phase_jeu == "TITRE":
-            self.Afficher_Cadre()
-            FCT.Texte("PyBomber", (255,255,255), 50, 100, 100)
+        if self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.TITRE:
+            #self.Afficher_Cadre()
+            self.Afficher_Fond()
+            
+            image = FCT.Image_Texte("PyBomber", (32,0,0,0), 150)
+            x = (VAR.resolution[0] - image.get_width()) / 2
+            VAR.fenetre.blit(image, (x, 100))
+            
+            image = FCT.Image_Texte("PyBomber", (255,255,255,255), 150)            
+            VAR.fenetre.blit(image, (x-10, 100-10))
+            
+            
     
     def Afficher_Fond(self):        
-        self.Afficher_Cadre()
+        VAR.fenetre.blit(VAR.image["titre"] , (0, 0))
         
  
            
