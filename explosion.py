@@ -25,8 +25,7 @@ class CExplosion:
 
     def Initiatiser_Explosion(self):
         self.FOYER = {}
-        #self.Ajoute_Schema_Explosion(self.BOMBE.iX(), self.BOMBE.iY(), 0)   
-            
+
         self.initialiser = False
         self.BOMBE.etat = C_ETAPE_BOMBE.EXPLOSE
         self.JOUEUR.bombes_posees -= 1  
@@ -35,12 +34,7 @@ class CExplosion:
         self.Gestion_Explosion()
             
         for _, foyer in self.FOYER.items():
-            posX = VAR.offSet[0] + (foyer.x * VAR.tailleCellule)
-            posY = VAR.offSet[1] + (foyer.y * VAR.tailleCellule)
-            animationId = self.BOMBE.animationId *2
-            #pygame.draw.rect(VAR.fenetre, (255,0,0), (posX+(animationId/2), posY+(animationId/2), VAR.tailleCellule-animationId, VAR.tailleCellule-animationId))  
-            
-            VAR.fenetre.blit(FCT.image_decoupe(VAR.image["explosion"], FCT.Animation(10, 4), foyer.imageY, VAR.tailleCellule,  VAR.tailleCellule), (posX, posY))  
+            VAR.fenetre.blit(FCT.image_decoupe(VAR.image["explosion"], FCT.Animation(10, 4), foyer.imageY, VAR.tailleCellule,  VAR.tailleCellule), (foyer.oX(), foyer.oY()))  
         
         
     def Gestion_Explosion(self):
@@ -124,6 +118,4 @@ class CExplosion:
                 self.FOYER[key].imageY = 6
             
             
-    def Raccrourci_Delais_Explosion(self):
-        self.delais = 0.00
-        self.temps = time.time()
+  

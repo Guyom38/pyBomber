@@ -18,6 +18,8 @@ class CJoueur(item.CItem):
           
         self.id = _id
         self.pseudo = _pseudo
+        self.score = 0
+        
         self.couleur = (255,255,255,255)        
     
         self.Initialiser()
@@ -25,6 +27,7 @@ class CJoueur(item.CItem):
 
     
     def estMalade(self): return not (self.maladie == 0)
+    def vraimentMort(self): return (self.mort and self.animationId == -1)
     
     def Initialiser(self):        
         self.x, self.y = self.Position_Initiale()        
@@ -46,6 +49,8 @@ class CJoueur(item.CItem):
         self.maladie = 0
         self.maladie_Temps_fige = -1
         
+        self.maladie_temps_touche = -1
+        
         self.mort = False
         self.TERRAIN.Libere_Zone(self.iX(), self.iY(), 2)    
         
@@ -57,14 +62,14 @@ class CJoueur(item.CItem):
         self.image = VAR.image["joueur0"].copy()      
         if self.id == 0: return
         
-        self.couleur = VAR.LISTE_COLOR['(232, 232, 232, 255)'][self.id]
+        self.couleur = VAR.LISTE_COLOR['(232, 232, 232, 255)'][self.id-1]
         
         for y in range(self.image.get_height()):
             for x in range(self.image.get_width()):
                 couleur = self.image.get_at((x, y))
                 if not VAR.C_COLOR_TRANSPARENT == couleur:
                     if str(couleur) in VAR.LISTE_COLOR:
-                        self.image.set_at((x,y), VAR.LISTE_COLOR[str(couleur)][self.id])   
+                        self.image.set_at((x,y), VAR.LISTE_COLOR[str(couleur)][self.id-1])   
     
     def Position_Initiale(self):
         if self.id == 0:            x, y = (1.0, 1.0)             
@@ -84,17 +89,6 @@ class CJoueur(item.CItem):
     
 
         
-
-         
-        
-    def direction_y_image(self):
-        if self.direction == C_DIRECTION.BAS: return 1
-        if self.direction == C_DIRECTION.HAUT: return 3
-        if self.direction == C_DIRECTION.DROITE: return 4
-        if self.direction == C_DIRECTION.GAUCHE: return 2      
-        
-        
-          
     
     
     def Afficher(self):
@@ -112,7 +106,7 @@ class CJoueur(item.CItem):
             else:   
                 image = self.image
                 
-            VAR.fenetre.blit(FCT.image_decoupe(image,  animationId, self.direction_y_image(), VAR.tailleCellule, VAR.tailleCellule*2), (posX, posY))
+            VAR.fenetre.blit(FCT.image_decoupe(image,  animationId, self.direction.value, VAR.tailleCellule, VAR.tailleCellule*2), (posX, posY))
 
             self.Gestion_Deplacement()  
             self.Detection_Collision_Decors()    
@@ -198,6 +192,23 @@ class CJoueur(item.CItem):
         self.Detection_Collision_Objets()            
         self.enMouvement = False             
         
+    def Detection_Collision_Avec_Autres_Joueurs(self):
+        coord_joueur = (self.x, self.y, VAR.tailleCellule, VAR.tailleCellule)
+        for joueur in self.JOUEURS.LISTE.items():
+            if not joueur == self:
+                coord_autre_joueur = (joueur.x, joueur.y, VAR.tailleCellule, VAR.tailleCellule)
+                if FCT.Collision(coord_joueur, coord_autre_joueur):
+                    if self.coup_de_poing: return True
+                    if self.estMalade and (self.maladie_temps_touche > 0) and time.time() - self.maladie_temps_touche > 2:
+                        joueur.maladie = self.maladie
+                        self.maladie = 0
+                        self.maladie_temps_touche = -1
+                        joueur.maladie_temps_touche = time.time()
+                
+                
+                
+    def Action_Pousser_La_Bombe(self):
+        pass
         
     def Toujours_Sur_Le_Terrain(self, x, y):
         return x >= 0 and y >=0 and x <= VAR.nbColonnes and y <= VAR.nbLignes

@@ -56,13 +56,13 @@ class CBombe(item.CItem):
         if self.direction == C_DIRECTION.HAUT: self.y -= 0.05
         if self.direction == C_DIRECTION.BAS: self.y += 0.05
         
-        if self.Detection_Collision_Avec_Decors():
+        if self.Detection_Collisions():
             self.x, self.y = oldPosition
             self.x, self.y = self.iX(), self.iY()
             self.enMouvement = False
         
         
-    def Detection_Collision_Avec_Decors(self):
+    def Detection_Collisions(self):
         # --- Controle sortie de terrain
         if not FCT.Position_Sur_Terrain(self.iX(), self.iY()): return True
         

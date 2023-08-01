@@ -38,7 +38,7 @@ class CObjets:
     
     
     def Purger_Objets_Exploses(self):
-        self.LISTE = [objet for objet in self.LISTE if objet.etat != "A EXPLOSE"]
+        self.LISTE = [objet for objet in self.LISTE if objet.etat != C_ETAPE_BOMBE.A_EXPLOSE]
         
     def Ajouter_Un_Objet(self, _x, _y, _objet_hasard, _jeter = False, _oX = 0, _oY =0):
         objet = CO.CObjet(self.MOTEUR, _x, _y, _objet_hasard)

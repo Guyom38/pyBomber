@@ -5,7 +5,7 @@ import variables as VAR
 import fonctions as FCT
 
 import bombe as CB
-import random
+import random, time
 
 from enums import *
 
@@ -40,7 +40,8 @@ class CBombes:
         for bombe in self.LISTE:
             if not bombe == self:
                 if bombe.x == _x and bombe.y == _y:
-                    bombe.EXPLOSION.Raccrourci_Delais_Explosion()
+                    bombe.delais = 0.00
+                    bombe.temps = time.time()
     
     def Detection_Collision_Avec_Une_Bombe(self, _joueur, _bombe):
         coordBombe = ((_bombe.x * VAR.tailleCellule), (_bombe.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)

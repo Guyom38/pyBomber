@@ -16,7 +16,7 @@ import fonctions as FCT
 
 from enums import *
 
-import random
+import random, time
 
 class CMoteur():
     def __init__(self):
@@ -34,7 +34,7 @@ class CMoteur():
 
     
     def Initialisation(self):
-        self.Chargement_Ressources()
+        
         
         self.INTERFACE.Initialiser()
         self.TERRAIN.Initialiser()
@@ -74,7 +74,15 @@ class CMoteur():
         VAR.image["explosion"] = pygame.image.load("images/explosion2.png").convert_alpha() 
         if VAR.zoom > 1: VAR.image["explosion"] = pygame.transform.scale(VAR.image["explosion"], (VAR.image["explosion"].get_width() * VAR.zoom, VAR.image["explosion"].get_height() * VAR.zoom)) 
         
-        
+        VAR.image["avatar0"] = pygame.image.load("images/avatar_blanc.png").convert_alpha() 
+        VAR.image["avatar1"] = pygame.image.load("images/avatar_noir.png").convert_alpha() 
+        VAR.image["avatar2"] = pygame.image.load("images/avatar_rouge.png").convert_alpha() 
+        VAR.image["avatar3"] = pygame.image.load("images/avatar_jaune.png").convert_alpha() 
+        VAR.image["avatar4"] = pygame.image.load("images/avatar_bleu.png").convert_alpha() 
+        VAR.image["avatar5"] = pygame.image.load("images/avatar_vert.png").convert_alpha() 
+        VAR.image["avatar6"] = pygame.image.load("images/avatar_ciel.png").convert_alpha() 
+        VAR.image["avatar7"] = pygame.image.load("images/avatar_rose.png").convert_alpha() 
+
         VAR.image[C_OBJET.BOMBE] =        FCT.image_decoupe(VAR.image["objets"], 0, 0, VAR.tailleCellule, VAR.tailleCellule  )
         VAR.image[C_OBJET.COUP_PIED] =    FCT.image_decoupe(VAR.image["objets"], 1, 0, VAR.tailleCellule, VAR.tailleCellule )
         VAR.image[C_OBJET.ROLLER] =       FCT.image_decoupe(VAR.image["objets"], 2, 0, VAR.tailleCellule, VAR.tailleCellule )
@@ -96,8 +104,15 @@ class CMoteur():
         pygame.display.set_caption("PyBomber 0.1")        
         self.horloge = pygame.time.Clock()
         
+        self.Chargement_Ressources()
         self.Initialisation()
         self.Boucle()
+        
+    def Relancer_Une_Partie(self):
+        self.JOUEURS.Reinitaliser()
+        self.BOMBES.Initialiser()
+        self.OBJETS.Initialiser
+        self.TERRAIN.Initialiser()
         
     def Boucle(self):
         pygame.mixer.music.play()
@@ -120,8 +135,13 @@ class CMoteur():
                 
                 self.PARTICULES.Afficher_Les_Particules()
                 self.JOUEURS.Afficher_Tous_Les_Joueurs()
+
+    
+                if self.JOUEURS.nbJoueurs_enVie() == 1:                    
+                    self.INTERFACE.Afficher_Victoire()
+                    
             
-            
+
             # --- afficher le résultat
             pygame.display.update()
 

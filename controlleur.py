@@ -12,7 +12,7 @@ class CCControlleur:
         self.JOUEURS = _moteur.JOUEURS
         
     def Initialiser(self):
-        self.nbManettes = pygame.joystick.get_count()
+        self.nbManettes = pygame.joystick.get_count() 
         
         self.MANETTES = []
         for i in range(self.nbManettes):
@@ -23,7 +23,9 @@ class CCControlleur:
         self.Creer_Joueurs_Clavier_Manettes()
         
     def Creer_Joueurs_Clavier_Manettes(self):
-        self.JOUEURS.LISTE.append(CJ.CJoueur(self.MOTEUR, 0, ""))  
+        for i in range(2):
+            self.JOUEURS.LISTE.append(CJ.CJoueur(self.MOTEUR, i, ""))  
+        #self.JOUEURS.LISTE.append(CJ.CJoueur(self.MOTEUR, 8, ""))  
         for i in range(1, self.nbManettes):
             self.JOUEURS.LISTE.append(CJ.CJoueur(self.MOTEUR, i, ""))  
     
