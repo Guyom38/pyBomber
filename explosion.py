@@ -6,6 +6,8 @@ import pygame
 from pygame.locals import *
 
 import foyer as CF
+from enums import *
+
 
 class CExplosion:
     def __init__(self, _bombe):
@@ -16,8 +18,8 @@ class CExplosion:
         self.JOUEUR = _bombe.JOUEUR
         self.OBJETS = self.MOTEUR.OBJETS
         
-        self.feuSTOP = {"" : True, "DROITE" : True, "GAUCHE" : True, "HAUT" : True, "BAS" : True}
-        self.feuSTOP_nb = {"" : 0, "DROITE" : 0, "GAUCHE" : 0, "HAUT" : 0, "BAS" : 0}
+        self.feuSTOP = {"" : True, C_DIRECTION.DROITE : True, C_DIRECTION.GAUCHE : True, C_DIRECTION.HAUT : True, C_DIRECTION.BAS : True}
+        self.feuSTOP_nb = {"" : 0, C_DIRECTION.DROITE : 0, C_DIRECTION.GAUCHE : 0, C_DIRECTION.HAUT : 0, C_DIRECTION.BAS : 0}
         
         self.force = self.JOUEUR.puissance+1 
 
@@ -43,8 +45,8 @@ class CExplosion:
         
     def Gestion_Explosion(self):
         if not self.initialiser:
-            self.feuSTOP = {"" : True, "DROITE" : True, "GAUCHE" : True, "HAUT" : True, "BAS" : True}
-            self.feuSTOP_nb = {"" : 0, "DROITE" : 0, "GAUCHE" : 0, "HAUT" : 0, "BAS" : 0}
+            self.feuSTOP = {"" : True, C_DIRECTION.DROITE : True, C_DIRECTION.GAUCHE : True, C_DIRECTION.HAUT : True, C_DIRECTION.BAS : True}
+            self.feuSTOP_nb = {"" : 0, C_DIRECTION.DROITE : 0, C_DIRECTION.GAUCHE : 0, C_DIRECTION.HAUT : 0, C_DIRECTION.BAS : 0}
             self.initialiser = True
 
             # --- ajoute la position sous le joueur
@@ -52,7 +54,7 @@ class CExplosion:
             
             # --- progresse tout autour
             for force in range(1, self.force):
-                for sens, xD, yD in (("DROITE", force, 0), ("GAUCHE", -force, 0), ("HAUT", 0, -force), ("BAS", 0, force)):
+                for sens, xD, yD in ((C_DIRECTION.DROITE, force, 0), (C_DIRECTION.GAUCHE, -force, 0), (C_DIRECTION.HAUT, 0, -force), (C_DIRECTION.BAS, 0, force)):
                     if (self.feuSTOP[sens]):
                         posX, posY = int(round(self.BOMBE.x + xD, 0)), int(round(self.BOMBE.y + yD, 0))
                         self.Detection_KesKi_Pete(posX, posY, sens, force)             

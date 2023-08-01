@@ -7,32 +7,20 @@ import fonctions as FCT
 
 import time
 from explosion import *
-
+import item
         
-class CBombe:    
+class CBombe(item.CItem):    
                
                 
     def __init__(self, _bombes, _joueur):
-        self.BOMBES = _bombes
-        self.TERRAIN = _bombes.MOTEUR.TERRAIN
-        self.OBJETS = _bombes.MOTEUR.OBJETS
-        self.JOUEUR = _joueur
+        super().__init__(_bombes.MOTEUR, _joueur.iX(), _joueur.iY(), "VA EXPLOSER")    
         
+        self.JOUEUR = _joueur        
         self.EXPLOSION = CExplosion(self)
         
-        self.enMouvement = False
-        self.direction = "DROITE"
-        
         self.delais = VAR.delaisExplosion
-        self.temps = time.time()
-        self.animationId = 0
         self.jouer_son_en_retard = False        
              
-        self.x, self.y = _joueur.iX(), _joueur.iY()
-        self.etat = "VA EXPLOSER"
-        
-    def iX(self): return int(round(self.x, 0))   
-    def iY(self): return int(round(self.y, 0)) 
     
     def Afficher(self):  
         if self.etat == "VA EXPLOSER":
@@ -63,10 +51,10 @@ class CBombe:
         if not self.enMouvement: return
         
         oldPosition = self.x, self.y
-        if self.direction == "DROITE": self.x += 0.05
-        if self.direction == "GAUCHE": self.x -= 0.05
-        if self.direction == "HAUT": self.y -= 0.05
-        if self.direction == "BAS": self.y += 0.05
+        if self.direction == C_DIRECTION.DROITE: self.x += 0.05
+        if self.direction == C_DIRECTION.GAUCHE: self.x -= 0.05
+        if self.direction == C_DIRECTION.HAUT: self.y -= 0.05
+        if self.direction == C_DIRECTION.BAS: self.y += 0.05
         
         if self.Detection_Collision_Avec_Decors():
             self.x, self.y = oldPosition

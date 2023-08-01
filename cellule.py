@@ -1,15 +1,11 @@
 import variables as VAR
 import time
-
-class CCellule():
+import item
+class CCellule(item.CItem):
     def __init__(self, _moteur, _x, _y):
-        self.MOTEUR = _moteur  
-             
+        super().__init__(_moteur, _x,_y, "")      
+           
         self.objet = VAR.C_SOL   
-        self.x, self.y = _x, _y
-        
-        self.animationId = 0
-        self.temps = time.time()
         self.casser = False
         
         

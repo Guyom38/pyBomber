@@ -4,10 +4,14 @@ from pygame.locals import *
 import joueur as CJ
 import variables as VAR
 
+from enums import *
+
 class CCControlleur:
     def __init__(self, _moteur):
         self.MOTEUR = _moteur
         self.JOUEURS = _moteur.JOUEURS
+        
+    def Initialiser(self):
         self.nbManettes = pygame.joystick.get_count()
         
         self.MANETTES = []
@@ -38,9 +42,9 @@ class CCControlleur:
     
     def Gestion_Clavier(self):
         if not self.JOUEURS.LISTE[0].mort:     
-            BONNE_DIRECTION = ['GAUCHE', 'DROITE', 'HAUT', 'BAS']
-            if self.JOUEURS.LISTE[0].maladie == VAR.C_MALADIE.TOUCHES_INVERSEES:
-                BONNE_DIRECTION = ['DROITE', 'GAUCHE', 'BAS', 'HAUT']
+            BONNE_DIRECTION = [C_DIRECTION.GAUCHE, C_DIRECTION.DROITE, C_DIRECTION.HAUT, C_DIRECTION.BAS]
+            if self.JOUEURS.LISTE[0].maladie == C_MALADIE.TOUCHES_INVERSEES:
+                BONNE_DIRECTION = [C_DIRECTION.DROITE, C_DIRECTION.GAUCHE, C_DIRECTION.BAS, C_DIRECTION.HAUT]
                         
             keys = pygame.key.get_pressed()                    
             if keys[K_LEFT] == 1:
@@ -79,9 +83,9 @@ class CCControlleur:
             if not self.JOUEURS.LISTE[axis_id].mort:                
                 if round(axis_x,0) != 0 or round(axis_y,0) != 0: self.JOUEURS.LISTE[axis_id].enMouvement = True 
                 
-                BONNE_DIRECTION = ['GAUCHE', 'DROITE', 'HAUT', 'BAS']
-                if self.JOUEURS.LISTE[axis_id].maladie == VAR.C_MALADIE.TOUCHES_INVERSEES:
-                    BONNE_DIRECTION = ['DROITE', 'GAUCHE', 'BAS', 'HAUT']
+                BONNE_DIRECTION = [C_DIRECTION.GAUCHE, C_DIRECTION.DROITE, C_DIRECTION.HAUT, C_DIRECTION.BAS]
+                if self.JOUEURS.LISTE[axis_id].maladie == C_MALADIE.TOUCHES_INVERSEES:
+                    BONNE_DIRECTION = [C_DIRECTION.DROITE, C_DIRECTION.GAUCHE, C_DIRECTION.BAS, C_DIRECTION.HAUT]
                 
                 if axis_x < -0.5: self.JOUEURS.LISTE[axis_id].direction = BONNE_DIRECTION[0]
                 if axis_x > 0.5: self.JOUEURS.LISTE[axis_id].direction =  BONNE_DIRECTION[1]

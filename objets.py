@@ -5,24 +5,25 @@ import fonctions as FCT
 import random
 import objet as CO
 
+from enums import *
+
 class CObjets:    
     def __init__(self, _moteur):        
         self.MOTEUR = _moteur
         self.LISTE = []
         self.PIOCHES = []
-        
-        self.Generer_Liste_Objets()
     
-    def Generer_Liste_Objets(self):
-        for _ in range(10): self.PIOCHES.append(VAR.C_OBJ_BOMBE)
-        for _ in range(10): self.PIOCHES.append(VAR.C_OBJ_FLAMME)
-        for _ in range(5): self.PIOCHES.append(VAR.C_OBJ_ROLLER)
-        for _ in range(2): self.PIOCHES.append(VAR.C_OBJ_COUP_PIED)
-        for _ in range(2): self.PIOCHES.append(VAR.C_OBJ_COUP_POING)
-        for _ in range(10): self.PIOCHES.append(VAR.C_OBJ_MALADIE)
-        for _ in range(2): self.PIOCHES.append(VAR.C_OBJ_SUPER_FLAMME)
+    def Initialiser(self):
+        for _ in range(10): self.PIOCHES.append(C_OBJET.BOMBE)
+        for _ in range(10): self.PIOCHES.append(C_OBJET.FLAMME)
+        for _ in range(5): self.PIOCHES.append(C_OBJET.ROLLER)
+        for _ in range(2): self.PIOCHES.append(C_OBJET.COUP_PIED)
+        for _ in range(2): self.PIOCHES.append(C_OBJET.COUP_POING)
+        for _ in range(10): self.PIOCHES.append(C_OBJET.MALADIE)
+        for _ in range(2): self.PIOCHES.append(C_OBJET.SUPER_FLAMME)
         for _ in range(30): self.PIOCHES.append(None)            
-        random.shuffle(self.PIOCHES)        
+        random.shuffle(self.PIOCHES)  
+    
             
     def Afficher_Tous_Les_Objets(self):
         self.Purger_Objets_Exploses()
@@ -40,10 +41,10 @@ class CObjets:
         self.LISTE = [objet for objet in self.LISTE if objet.etat != "A EXPLOSE"]
         
     def Ajouter_Un_Objet(self, _x, _y, _objet_hasard, _jeter = False, _oX = 0, _oY =0):
-        objet = CO.CObjet(self, _x, _y, _objet_hasard)
+        objet = CO.CObjet(self.MOTEUR, _x, _y, _objet_hasard)
         
         if (_jeter):
-            sens, dX, dY = random.choice([('DROITE',_oX,0), ('GAUCHE',-_oX,0) , ('HAUT',0,-_oY), ('BAS',0,_oY)])
+            sens, dX, dY = random.choice([(C_DIRECTION.DROITE,_oX,0), (C_DIRECTION.GAUCHE,-_oX,0) , (C_DIRECTION.HAUT,0,-_oY), (C_DIRECTION.BAS,0,_oY)])
             objet.xDest, objet.yDest = _x+dX, _y+dY
             objet.direction = sens
             objet.etape = random.randint(0,4)     

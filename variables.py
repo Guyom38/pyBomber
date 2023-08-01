@@ -1,4 +1,4 @@
-from enum import Enum
+
 
 image = {}
 sons = {}
@@ -30,6 +30,8 @@ C_CASSABLE = 2
 C_HORS_TERRAIN = (-2, -2)
 C_AUCUNE_COLLISION = (-99, -99)
 
+
+    
 C_OBJ_BOMBE = "BOMB"
 C_OBJ_COUP_PIED = "COUP_PIED"
 C_OBJ_ROLLER = "ROLLER"
@@ -38,12 +40,6 @@ C_OBJ_COUP_POING = "COUP_POING"
 C_OBJ_MALADIE = "MALADIE"
 C_OBJ_SUPER_FLAMME = "SFLAMME"
 
-class C_MALADIE(Enum):
-    TOUCHES_INVERSEES = 1
-    CHIASSE = 2
-    BOMBES_A_RETARDEMENT = 3
-    RALENTISSEMENT = 4
-    FIGER = 5
 
 
 

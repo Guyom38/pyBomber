@@ -7,7 +7,8 @@ import fonctions as FCT
 class CInterface:
     def __init__(self, _moteur):
         self.MOTEUR = _moteur
-        
+    
+    def Initialiser(self):
         FCT.Init_Texte(50)
     
     def Afficher(self):

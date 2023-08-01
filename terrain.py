@@ -7,9 +7,7 @@ import cellule as CC
                 
 class CTerrain():       
     def __init__(self, _moteur):
-        self.MOTEUR = _moteur
-        self.Initialiser()
-        
+        self.MOTEUR = _moteur        
         
     def Initialiser(self):
         self.GRILLE =  [[CC.CCellule(self.MOTEUR, x, y) for y in range(VAR.nbLignes)] for x in range(VAR.nbColonnes)]

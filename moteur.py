@@ -14,30 +14,34 @@ import interface as CI
 import variables as VAR
 import fonctions as FCT
 
+from enums import *
+
 import random
 
 class CMoteur():
     def __init__(self):
+        self.INTERFACE = CI.CInterface(self)
+        self.TERRAIN = CT.CTerrain(self)   
+        self.BOMBES = CBS.CBombes(self)   
+        self.OBJETS = COS.CObjets(self)      
+        self.JOUEURS = CJS.CJoueurs(self)
+        self.CONTROLLEUR = CC.CCControlleur(self)   
+        self.PARTICULES = CP.CParticules(self)   
+          
         pygame.init()   
-        pygame.mixer.init()
+        pygame.mixer.init()     
+        
 
     
     def Initialisation(self):
         self.Chargement_Ressources()
         
-        self.INTERFACE = CI.CInterface(self)
-        self.TERRAIN = CT.CTerrain(self)   
-        self.BOMBES = CBS.CBombes(self)   
-        self.OBJETS = COS.CObjets(self)           
-        self.JOUEURS = CJS.CJoueurs(self)
-        self.CONTROLLEUR = CC.CCControlleur(self)
-        
-        self.PARTICULES = CP.CParticules(self)
-        
-        
-        
-       
-        
+        self.INTERFACE.Initialiser()
+        self.TERRAIN.Initialiser()
+        self.BOMBES.Initialiser()
+        self.OBJETS.Initialiser()
+        self.JOUEURS.Initialiser()
+        self.CONTROLLEUR.Initialiser()
         
         VAR.offSet = ( (VAR.resolution[0] - (VAR.nbColonnes* VAR.tailleCellule)) /2,
                         (VAR.resolution[1] - (VAR.nbLignes* VAR.tailleCellule)) /2 )
@@ -71,13 +75,13 @@ class CMoteur():
         if VAR.zoom > 1: VAR.image["explosion"] = pygame.transform.scale(VAR.image["explosion"], (VAR.image["explosion"].get_width() * VAR.zoom, VAR.image["explosion"].get_height() * VAR.zoom)) 
         
         
-        VAR.image[VAR.C_OBJ_BOMBE] =        FCT.image_decoupe(VAR.image["objets"], 0, 0, VAR.tailleCellule, VAR.tailleCellule  )
-        VAR.image[VAR.C_OBJ_COUP_PIED] =    FCT.image_decoupe(VAR.image["objets"], 1, 0, VAR.tailleCellule, VAR.tailleCellule )
-        VAR.image[VAR.C_OBJ_ROLLER] =       FCT.image_decoupe(VAR.image["objets"], 2, 0, VAR.tailleCellule, VAR.tailleCellule )
-        VAR.image[VAR.C_OBJ_FLAMME] =       FCT.image_decoupe(VAR.image["objets"], 3, 0, VAR.tailleCellule, VAR.tailleCellule )
-        VAR.image[VAR.C_OBJ_COUP_POING] =   FCT.image_decoupe(VAR.image["objets"], 4, 0, VAR.tailleCellule, VAR.tailleCellule )
-        VAR.image[VAR.C_OBJ_MALADIE] =      FCT.image_decoupe(VAR.image["objets"], 5, 0, VAR.tailleCellule, VAR.tailleCellule )
-        VAR.image[VAR.C_OBJ_SUPER_FLAMME] = FCT.image_decoupe(VAR.image["objets"], 6, 0, VAR.tailleCellule, VAR.tailleCellule )
+        VAR.image[C_OBJET.BOMBE] =        FCT.image_decoupe(VAR.image["objets"], 0, 0, VAR.tailleCellule, VAR.tailleCellule  )
+        VAR.image[C_OBJET.COUP_PIED] =    FCT.image_decoupe(VAR.image["objets"], 1, 0, VAR.tailleCellule, VAR.tailleCellule )
+        VAR.image[C_OBJET.ROLLER] =       FCT.image_decoupe(VAR.image["objets"], 2, 0, VAR.tailleCellule, VAR.tailleCellule )
+        VAR.image[C_OBJET.FLAMME] =       FCT.image_decoupe(VAR.image["objets"], 3, 0, VAR.tailleCellule, VAR.tailleCellule )
+        VAR.image[C_OBJET.COUP_POING] =   FCT.image_decoupe(VAR.image["objets"], 4, 0, VAR.tailleCellule, VAR.tailleCellule )
+        VAR.image[C_OBJET.MALADIE] =      FCT.image_decoupe(VAR.image["objets"], 5, 0, VAR.tailleCellule, VAR.tailleCellule )
+        VAR.image[C_OBJET.SUPER_FLAMME] = FCT.image_decoupe(VAR.image["objets"], 6, 0, VAR.tailleCellule, VAR.tailleCellule )
         
         VAR.sons["poser_bombe"] = pygame.mixer.Sound('audios/bomb.wav')
         VAR.sons["prendre_objet"] = pygame.mixer.Sound('audios/prendre.wav')

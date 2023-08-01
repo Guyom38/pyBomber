@@ -7,11 +7,16 @@ import fonctions as FCT
 import bombe as CB
 import random
 
+from enums import *
+
 class CBombes:
     def __init__(self, _moteur):
         self.MOTEUR = _moteur
-        self.LISTE = []
+        
     
+    def Initialiser(self):
+        self.LISTE = []
+        
     def Afficher_Toutes_Les_Bombes(self):
         self.Purger_Bombes_Explosees()
         
@@ -23,7 +28,7 @@ class CBombes:
             
     def Ajouter(self, _joueur):
         bombe = CB.CBombe(self, _joueur)
-        if _joueur.maladie == VAR.C_MALADIE.BOMBES_A_RETARDEMENT: bombe.delais = random.randint(4, 20)
+        if _joueur.maladie == C_MALADIE.BOMBES_A_RETARDEMENT: bombe.delais = random.randint(4, 20)
         
         _joueur.bombes_protection = bombe
         

@@ -6,6 +6,8 @@ import fonctions as FCT
 class CJoueurs():
     def __init__(self, _moteur):
         self.MOTEUR = _moteur
+        
+    def Initialiser(self):
         self.LISTE = []
         
         self.joueurs_EnVie  = 0
