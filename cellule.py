@@ -45,15 +45,18 @@ class CCellule(item.CItem):
             else:
                 VAR.fenetre.blit(VAR.image["cassable"+str(self.animationId)], (posX, posY)) 
                 self.Animation_Explosion_Mur() 
-                        
+                
+        elif not self.objet == VAR.C_MUR: 
+            if (self.MOTEUR.TERRAIN.GRILLE[self.x][self.y-1].objet == VAR.C_CASSABLE):
+                VAR.fenetre.blit(VAR.image["ombre"], (posX, posY))         
     
     def Dessiner_Sol(self, _fenetre = None):
         posX = (self.x * VAR.tailleCellule)
         posY = (self.y * VAR.tailleCellule)
         i = int((posY * VAR.nbLignes) + posX)    
        
-        if self.objet == VAR.C_SOL: 
-            if not (self.MOTEUR.TERRAIN.GRILLE[self.x][self.y-1].objet == VAR.C_SOL):
+        if not self.objet == VAR.C_MUR: 
+            if (self.MOTEUR.TERRAIN.GRILLE[self.x][self.y-1].objet == VAR.C_MUR):
                 _fenetre.blit(VAR.image["ombre"], (posX, posY))
             else:
                 _fenetre.blit(VAR.image["sol"+str(i % 2)], (posX, posY))
