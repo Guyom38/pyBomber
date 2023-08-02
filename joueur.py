@@ -39,8 +39,8 @@ class CJoueur(item.CItem):
         self.vitesse = self.vitesseBase
         self.pasVitesse = 0.005
         
-        self.puissance = 1
-        self.bombes = 1
+        self.puissance = 2
+        self.bombes = 3
         self.bombes_posees = 0
         self.bombes_protection = None
         
@@ -174,9 +174,9 @@ class CJoueur(item.CItem):
         if self.direction == C_DIRECTION.GAUCHE: self.x -= vitesseDeBase
         if self.direction == C_DIRECTION.DROITE: self.x += vitesseDeBase        
 
-        posX = VAR.offSet[0] + self.offSetX + (self.x * VAR.tailleCellule)  + (VAR.tailleCellule / 2)
-        posY = VAR.offSet[1] + self.offSetY + (self.y * VAR.tailleCellule)  + (VAR.tailleCellule / 2)             
-        self.MOTEUR.PARTICULES.Ajouter(posX, posY, self.couleur)
+        #posX = VAR.offSet[0] + self.offSetX + (self.x * VAR.tailleCellule)  + (VAR.tailleCellule / 2)
+        #posY = VAR.offSet[1] + self.offSetY + (self.y * VAR.tailleCellule)  + (VAR.tailleCellule / 2)             
+        #self.MOTEUR.PARTICULES.Ajouter(posX, posY, self.couleur)
         
         # --- controle si collision
         coord_collision = self.Detection_Collision_Decors()
@@ -197,9 +197,10 @@ class CJoueur(item.CItem):
         for joueur in self.JOUEURS.LISTE.items():
             if not joueur == self:
                 coord_autre_joueur = (joueur.x, joueur.y, VAR.tailleCellule, VAR.tailleCellule)
+                
                 if FCT.Collision(coord_joueur, coord_autre_joueur):
                     if self.coup_de_poing: return True
-                    if self.estMalade and (self.maladie_temps_touche > 0) and time.time() - self.maladie_temps_touche > 2:
+                    if self.estMalade and (self.maladie_temps_touche == -1 or time.time() - self.maladie_temps_touche > 2):
                         joueur.maladie = self.maladie
                         self.maladie = 0
                         self.maladie_temps_touche = -1

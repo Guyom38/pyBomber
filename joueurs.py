@@ -7,7 +7,9 @@ class CJoueurs():
     def __init__(self, _moteur):
         self.MOTEUR = _moteur
 
-        
+    def nbJoueurs(self):
+        return len(self.LISTE)
+    
     def nbJoueurs_enVie(self):
         return len([1 for joueur in self.LISTE if not joueur.vraimentMort()])
     

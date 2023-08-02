@@ -43,8 +43,8 @@ class CMoteur():
         self.JOUEURS.Initialiser()
         self.CONTROLLEUR.Initialiser()
         
-        VAR.offSet = ( (VAR.resolution[0] - (VAR.nbColonnes* VAR.tailleCellule)) /2,
-                        (VAR.resolution[1] - (VAR.nbLignes* VAR.tailleCellule)) /2 )
+        VAR.offSet = ( ((VAR.resolution[0] - (VAR.nbColonnes* VAR.tailleCellule)) /2) ,
+                       ((VAR.resolution[1] - (VAR.nbLignes* VAR.tailleCellule)) /2) + VAR.tailleCellule) 
         
         #self.CONTROLLEUR.Creer_Joueurs_Clavier_Manettes()
         self.phase_jeu = C_PHASE_DE_JEU.JEU
@@ -94,29 +94,39 @@ class CMoteur():
         VAR.sons["poser_bombe"] = pygame.mixer.Sound('audios/bomb.wav')
         VAR.sons["prendre_objet"] = pygame.mixer.Sound('audios/prendre.wav')
         VAR.sons["explosion"] = pygame.mixer.Sound('audios/boom2.wav')
-         
-        pygame.mixer.music.load("musics/" + random.choice(['78','41','25']) + ".mp3")
+    
+    def Charge_Musique(self, _fichier):  
+        pygame.mixer.music.load("musics/" + _fichier + ".mp3")
         
         
         
     def Demarrer(self):
-        VAR.fenetre = pygame.display.set_mode(VAR.resolution, pygame.DOUBLEBUF, 32)
+        VAR.fenetre = pygame.display.set_mode(VAR.resolution, pygame.FULLSCREEN, 32)
         pygame.display.set_caption("PyBomber 0.1")        
         self.horloge = pygame.time.Clock()
         
         self.Chargement_Ressources()
+        self.Charge_Musique(random.choice(['78','41','25']) )
         self.Initialisation()
         self.Boucle()
         
     def Relancer_Une_Partie(self):
         
         self.BOMBES.Initialiser()
-        self.OBJETS.Initialiser
+        self.OBJETS.Initialiser()
         self.TERRAIN.Initialiser()
         self.JOUEURS.Reinitaliser()
-        
+        self.Charge_Musique(random.choice(['78','41','25']) )
+        pygame.mixer.music.play()
+    
+    def tempsRestant(self):
+        return int(VAR.duree_partie - (time.time() - VAR.temps_jeu))
+      
     def Boucle(self):
         pygame.mixer.music.play()
+        
+        x, y = 1, 1
+        direction = C_DIRECTION.GAUCHE
         
         VAR.boucle_jeu = True
         while VAR.boucle_jeu:
@@ -128,7 +138,8 @@ class CMoteur():
             else:                
 
                 # --- remplissage de la fenetre avec une couleur proche du noir
-                VAR.fenetre.fill((16,16,16))
+                self.INTERFACE.Afficher_Fond()
+                
                 self.TERRAIN.Afficher()  
                 
                 self.BOMBES.Afficher_Toutes_Les_Bombes()
@@ -141,9 +152,13 @@ class CMoteur():
                 if self.JOUEURS.nbJoueurs_enVie() == 1:                    
                     self.INTERFACE.Afficher_Victoire()
                     
+                #if self.tempsRestant() < 0:
+                    #if x < 
+                    
             
 
             # --- afficher le résultat
+            self.INTERFACE.Afficher_Barre_Information_Partie()
             pygame.display.update()
 
             # --- limite la fréquence de raffraichissement a 25 images seconde

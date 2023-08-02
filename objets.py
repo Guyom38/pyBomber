@@ -10,10 +10,12 @@ from enums import *
 class CObjets:    
     def __init__(self, _moteur):        
         self.MOTEUR = _moteur
-        self.LISTE = []
-        self.PIOCHES = []
+        
     
     def Initialiser(self):
+        self.LISTE = []
+        self.PIOCHES = []
+        
         for _ in range(10): self.PIOCHES.append(C_OBJET.BOMBE)
         for _ in range(10): self.PIOCHES.append(C_OBJET.FLAMME)
         for _ in range(5): self.PIOCHES.append(C_OBJET.ROLLER)
@@ -31,7 +33,9 @@ class CObjets:
         for objet in self.LISTE:
             objet.Afficher()
             
-    def Ajouter_Ou_Pas_Un_Objet(self, _x, _y):          
+    def Ajouter_Ou_Pas_Un_Objet(self, _x, _y):
+        if len(self.PIOCHES) == 0: return
+                     
         objet_hasard = self.PIOCHES.pop(0)  
         if not (objet_hasard == None):
             self.Ajouter_Un_Objet(_x, _y, objet_hasard)

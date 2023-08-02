@@ -3,18 +3,20 @@
 image = {}
 sons = {}
 
-resolution = (1320, 768)
+resolution = (1920, 1080)
 zoom = 3
 offSet = (0, 0)
 tailleCellule = 16
 boucle_jeu = True
 pause = False
 
+temps_jeu = 0
+duree_partie = 180
 
-nbLignes, nbColonnes = 13, 15 #int((resolution[1] /tailleCellule)/zoom)-2, int((resolution[0]/tailleCellule)/zoom)-5 
+nbLignes, nbColonnes = int((resolution[1] /tailleCellule)/zoom)-2, int((resolution[0]/tailleCellule)/zoom)-5 
 
 
-tauxRemplissage = 10
+tauxRemplissage = 70
 delaisExplosion = 3    
     
 animation_MortFrameMax = 5    

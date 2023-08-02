@@ -5,7 +5,9 @@ import variables as VAR
 import fonctions as FCT
 
 from enums import *
-import time
+
+import particules as CP
+import time, random
 
 class CInterface:
     def __init__(self, _moteur):
@@ -18,7 +20,9 @@ class CInterface:
         
         self.temps_compte_a_rebours = -1
         self.delais_compte_a_rebours = 5
-    
+
+        self.PARTICULES = CP.CParticules(_moteur)
+        
     def Initialiser(self):
         VAR.image["titre"] = pygame.transform.scale(pygame.image.load("images/R.jpg"), VAR.resolution)
         
@@ -39,10 +43,27 @@ class CInterface:
             
     
     def Afficher_Fond(self):        
-        VAR.fenetre.blit(VAR.image["titre"] , (0, 0))
+        VAR.fenetre.fill((16,16,16))
+        #for _ in range(random.randint(0, 10)):
+        #     self.PARTICULES.Ajouter(random.randint(0, VAR.resolution[0]), random.randint(0, VAR.resolution[1]), (162, 104, 254))
+        #self.PARTICULES.Afficher_Les_Particules()
         
- 
-           
+    
+    def Afficher_Barre_Information_Partie(self):
+        pygame.draw.rect(VAR.fenetre, (255, 137, 58, 64), (0, 0, VAR.resolution[0], VAR.offSet[1] - (VAR.tailleCellule / 2)), 0)
+        
+        nbJoueurs = self.MOTEUR.JOUEURS.nbJoueurs()
+        largeur = VAR.tailleCellule * 4
+        
+        x= VAR.tailleCellule
+        for joueur in self.MOTEUR.JOUEURS.LISTE:
+            VAR.fenetre.blit(FCT.image_decoupe(joueur.image,  0, C_DIRECTION.BAS.value, VAR.tailleCellule, VAR.tailleCellule*2), (x, 0))  
+            image = FCT.Image_Texte(str(joueur.score), (0,0,0,255), 30)            
+            VAR.fenetre.blit(image, (x + VAR.tailleCellule, VAR.tailleCellule))
+            image = FCT.Image_Texte(str(joueur.score), (255,255,255,255), 30)            
+            VAR.fenetre.blit(image, (x + VAR.tailleCellule+2, VAR.tailleCellule+2))
+            x += (largeur + VAR.tailleCellule)
+            
     def Afficher_Cadre(self, _largeur = -1, _hauteur = -1):
         if _largeur == -1 and _hauteur == -1:
             _largeur, _hauteur = int(VAR.resolution[0] / VAR.tailleCellule), int(VAR.resolution[1] / VAR.tailleCellule) 
@@ -62,7 +83,6 @@ class CInterface:
                 else:
                     VAR.fenetre.blit(image_fond, (posX, posY))
                     
-    
     def Afficher_Compte_A_Rebours(self):
        
         temps = int(round(self.delais_compte_a_rebours - (time.time() - self.temps_compte_a_rebours), 0))
@@ -78,6 +98,8 @@ class CInterface:
     def Afficher_Victoire(self):
         if self.temps_compte_a_rebours == -1:
             self.temps_compte_a_rebours = time.time()
+            self.MOTEUR.Charge_Musique('23')
+            pygame.mixer.music.play()
             
         joueur = self.MOTEUR.JOUEURS.quiGagne()
         self.Dessiner_Bandeau_Victoire(joueur)
@@ -85,6 +107,7 @@ class CInterface:
         
             
         if time.time() - self.temps_compte_a_rebours > self.delais_compte_a_rebours:
+            joueur.score += 1
             self.MOTEUR.Relancer_Une_Partie()
             self.temps_compte_a_rebours = -1
         
@@ -95,17 +118,23 @@ class CInterface:
             largeur, hauteur_pas = VAR.resolution[0], VAR.resolution[1]/20
             hauteur = hauteur_pas * 4
             
-            image_avatar = pygame.transform.scale(VAR.image['avatar' + str(_joueur.id)], (hauteur_pas * 4, hauteur_pas * 4))
-            
             couleur_fond, couleur_bordure = (0, 0, 0, 64), (255, 255, 255, 64)
             self.x = 0
             self.y = VAR.resolution[1] - (VAR.tailleCellule * 2) - hauteur
             self.Dessiner_Cadre(self.x, self.y, largeur, hauteur, couleur_fond, couleur_bordure, 4)
-            VAR.fenetre.blit(image_avatar, (self.x + VAR.tailleCellule, self.y))
+            
+            if not _joueur == None:                
+                image_avatar = pygame.transform.scale(VAR.image['avatar' + str(_joueur.id)], (hauteur_pas * 4, hauteur_pas * 4))
+                VAR.fenetre.blit(image_avatar, (self.x + VAR.tailleCellule, self.y))
+                message = "Victoire du joueur " + _joueur.pseudo
+                decX = image_avatar.get_width()
+            else:
+                message = "Egalité !"
+                decX = 0
         
-            texte = FCT.Image_Texte("Victoire du joueur " + _joueur.pseudo, (255,255,255,255), int(hauteur_pas))
+            texte = FCT.Image_Texte(message, (255,255,255,255), int(hauteur_pas))
             centreY = (hauteur - texte.get_height()) /2
-            centreX = (largeur - image_avatar.get_width() - texte.get_width()) / 2
+            centreX = (largeur - decX - texte.get_width()) / 2
             VAR.fenetre.blit(texte, (self.x + image_avatar.get_width() + centreX, self.y+centreY))
             VAR.pause = True
             
