@@ -50,7 +50,7 @@ class CInterface:
         
     
     def Afficher_Barre_Information_Partie(self):
-        pygame.draw.rect(VAR.fenetre, (255, 137, 58, 64), (0, 0, VAR.resolution[0], VAR.offSet[1] - (VAR.tailleCellule / 2)), 0)
+        pygame.draw.rect(VAR.fenetre, (255, 137, 58, 64), (0, 0, VAR.resolution[0], VAR.offSet[1] - 4), 0)
         
         nbJoueurs = self.MOTEUR.JOUEURS.nbJoueurs()
         largeur = VAR.tailleCellule * 4
@@ -135,7 +135,7 @@ class CInterface:
             texte = FCT.Image_Texte(message, (255,255,255,255), int(hauteur_pas))
             centreY = (hauteur - texte.get_height()) /2
             centreX = (largeur - decX - texte.get_width()) / 2
-            VAR.fenetre.blit(texte, (self.x + image_avatar.get_width() + centreX, self.y+centreY))
+            VAR.fenetre.blit(texte, (self.x + decX + centreX, self.y+centreY))
             VAR.pause = True
             
     def Dessiner_Cadre(self, _x, _y, _largeur, _hauteur, _couleurFond, _couleurBordure, _epaisseurBordure=2):

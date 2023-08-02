@@ -1,5 +1,8 @@
+import pygame
+from pygame.locals import *
+
 import variables as VAR
-import time
+import time, random
 import item
 class CCellule(item.CItem):
     def __init__(self, _moteur, _x, _y):
@@ -46,6 +49,11 @@ class CCellule(item.CItem):
                 VAR.fenetre.blit(VAR.image["cassable"+str(self.animationId)], (posX, posY)) 
                 self.Animation_Explosion_Mur() 
                 
+        elif self.objet == VAR.C_BLOC:
+            #pygame.draw.rect(VAR.fenetre, (random.randint(0, 255),255,255), (posX, posY, VAR.tailleCellule, VAR.tailleCellule), 0)
+            VAR.fenetre.blit(VAR.image["mur"], (posX, posY))
+            
+               
         elif not self.objet == VAR.C_MUR: 
             if (self.MOTEUR.TERRAIN.GRILLE[self.x][self.y-1].objet == VAR.C_CASSABLE):
                 VAR.fenetre.blit(VAR.image["ombre"], (posX, posY))         

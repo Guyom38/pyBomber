@@ -7,7 +7,9 @@ import random
 
 import cellule as CC
 import time
-                
+
+from enums import *
+         
 class CTerrain():       
     def __init__(self, _moteur):
         self.MOTEUR = _moteur        
@@ -17,6 +19,13 @@ class CTerrain():
         self.GRILLE =  [[CC.CCellule(self.MOTEUR, x, y) for y in range(VAR.nbLignes)] for x in range(VAR.nbColonnes)]
         self.Construire_Terrain_De_Jeu()
         self.image = None
+        
+        self.x, self.y, self.xD, self.yD = 0, 1, 1, 1
+        self.direction = C_DIRECTION.DROITE
+        self.temps_ecrasement = time.time()
+        self.delais_ecrasement = 0.1
+        self.tour = 0
+        self.timeOut = False
         
         
     def Preparation_Couches_Fixes(self):
@@ -31,7 +40,7 @@ class CTerrain():
       
         
     def Afficher(self):
-        temps_ref = time.time()
+        #temps_ref = time.time()
         if self.image == None :
             self.Preparation_Couches_Fixes()       
         VAR.fenetre.blit(self.image, (VAR.offSet[0], VAR.offSet[1]))
@@ -41,7 +50,7 @@ class CTerrain():
             for x in range(VAR.nbColonnes):
                 self.GRILLE[x][y].Afficher_Mur_Cassable()
         
-        print(round(time.time() - temps_ref, 3))     
+        #print(round(time.time() - temps_ref, 3))     
                               
     def Construire_Terrain_De_Jeu(self):        
         for y in range(VAR.nbLignes):
@@ -66,7 +75,62 @@ class CTerrain():
                         self.GRILLE[xPos][yPos].objet = VAR.C_SOL
                         
     
-                    
+    def TimeOut_Resserage_Du_Terrain(self):
+        if self.timeOut or VAR.pause: return True
+        
+        if self.MOTEUR.tempsRestant() < 0:
+            if (time.time() - self.temps_ecrasement > self.delais_ecrasement):
+                self.temps_ecrasement = time.time()
+                        
+                if self.direction == C_DIRECTION.DROITE:
+                    if self.x < VAR.nbColonnes - self.xD - 1: 
+                        self.x+=1
+                    else:
+                        self.direction = C_DIRECTION.BAS
+                        self.y = self.yD + 1
+                        self.xD += 1
+                                
+                elif self.direction == C_DIRECTION.BAS:
+                    if self.y < VAR.nbLignes - self.yD - 1:
+                        self.y+=1
+                    else:
+                        self.direction = C_DIRECTION.GAUCHE
+                        self.x=VAR.nbColonnes - self.xD - 1
+                        self.yD +=1
+                                
+                elif self.direction == C_DIRECTION.GAUCHE:
+                    if self.x >= self.xD :
+                        self.x -= 1
+                    else:
+                        self.direction = C_DIRECTION.HAUT
+                        self.y = VAR.nbLignes - self.yD -1
+                                
+                        
+                elif self.direction == C_DIRECTION.HAUT:
+                    if self.y > self.yD -1:
+                        self.y -=1
+                    else:
+                        self.direction = C_DIRECTION.DROITE
+                        self.x = self.xD 
+                        self.y +=1
+                        self.tour += 1
+                                
+                                
+                
 
+                if self.tour == int(VAR.nbLignes / 3):
+                    self.timeOut = True
+                else:
+                    self.GRILLE[self.x][self.y].objet = VAR.C_BLOC
+                    
+                    for joueur in self.MOTEUR.JOUEURS.LISTE:
+                        coord_joueur = (joueur.x * VAR.tailleCellule, joueur.y * VAR.tailleCellule, VAR.tailleCellule, VAR.tailleCellule)
+                        coord_terrain = (self.x * VAR.tailleCellule, self.y * VAR.tailleCellule, VAR.tailleCellule, VAR.tailleCellule)
+   
+                        
+                        if FCT.Collision(coord_joueur, coord_terrain) and not joueur.mort:
+                            joueur.Mourir()
+
+                    
                           
     

@@ -118,15 +118,16 @@ class CMoteur():
         self.JOUEURS.Reinitaliser()
         self.Charge_Musique(random.choice(['78','41','25']) )
         pygame.mixer.music.play()
-    
+        VAR.pause = False
+        
     def tempsRestant(self):
         return int(VAR.duree_partie - (time.time() - VAR.temps_jeu))
       
     def Boucle(self):
         pygame.mixer.music.play()
         
-        x, y = 1, 1
-        direction = C_DIRECTION.GAUCHE
+        
+        VAR.temps_jeu = time.time()
         
         VAR.boucle_jeu = True
         while VAR.boucle_jeu:
@@ -152,8 +153,8 @@ class CMoteur():
                 if self.JOUEURS.nbJoueurs_enVie() == 1:                    
                     self.INTERFACE.Afficher_Victoire()
                     
-                #if self.tempsRestant() < 0:
-                    #if x < 
+                
+                self.TERRAIN.TimeOut_Resserage_Du_Terrain()      
                     
             
 

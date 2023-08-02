@@ -10,8 +10,8 @@ tailleCellule = 16
 boucle_jeu = True
 pause = False
 
-temps_jeu = 0
-duree_partie = 180
+temps_jeu = 180
+duree_partie = 5
 
 nbLignes, nbColonnes = int((resolution[1] /tailleCellule)/zoom)-2, int((resolution[0]/tailleCellule)/zoom)-5 
 
@@ -25,7 +25,9 @@ animation_MortFrameMax = 5
 # --- constantes
 C_SOL = 0
 C_MUR = 1
-C_CASSABLE = 2
+C_BLOC = 2
+C_CASSABLE = 3
+
 
 C_HORS_TERRAIN = (-2, -2)
 C_AUCUNE_COLLISION = (-99, -99)
