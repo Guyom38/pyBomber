@@ -109,10 +109,11 @@ class CMoteur():
         self.Boucle()
         
     def Relancer_Une_Partie(self):
-        self.JOUEURS.Reinitaliser()
+        
         self.BOMBES.Initialiser()
         self.OBJETS.Initialiser
         self.TERRAIN.Initialiser()
+        self.JOUEURS.Reinitaliser()
         
     def Boucle(self):
         pygame.mixer.music.play()

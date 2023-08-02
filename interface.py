@@ -67,11 +67,14 @@ class CInterface:
        
         temps = int(round(self.delais_compte_a_rebours - (time.time() - self.temps_compte_a_rebours), 0))
         
-        texte = FCT.Image_Texte(str(temps), (255,255,255,128), int(VAR.resolution[1] / 5))
-        centreY = (VAR.resolution[1] - texte.get_height()) /2
-        centreX = (VAR.resolution[0] - texte.get_width()) /2
+        texte_ombre = FCT.Image_Texte(str(temps), (0,0,0,32), int(VAR.resolution[1] / 4))
+        centreY = (VAR.resolution[1] - texte_ombre.get_height()) /2
+        centreX = (VAR.resolution[0] - texte_ombre.get_width()) /2
+        
+        texte = FCT.Image_Texte(str(temps), (255,255,255,128), int(VAR.resolution[1] / 4))
+        VAR.fenetre.blit(texte_ombre, (centreX+8, centreY+8))
         VAR.fenetre.blit(texte, (centreX, centreY))
-            
+        
     def Afficher_Victoire(self):
         if self.temps_compte_a_rebours == -1:
             self.temps_compte_a_rebours = time.time()
@@ -100,9 +103,10 @@ class CInterface:
             self.Dessiner_Cadre(self.x, self.y, largeur, hauteur, couleur_fond, couleur_bordure, 4)
             VAR.fenetre.blit(image_avatar, (self.x + VAR.tailleCellule, self.y))
         
-            texte = FCT.Image_Texte("Victoire du joueur " + _joueur.pseudo, (255,255,255,255), int(hauteur_pas * 2))
+            texte = FCT.Image_Texte("Victoire du joueur " + _joueur.pseudo, (255,255,255,255), int(hauteur_pas))
             centreY = (hauteur - texte.get_height()) /2
-            VAR.fenetre.blit(texte, (self.x + image_avatar.get_width() + VAR.tailleCellule, self.y+centreY))
+            centreX = (largeur - image_avatar.get_width() - texte.get_width()) / 2
+            VAR.fenetre.blit(texte, (self.x + image_avatar.get_width() + centreX, self.y+centreY))
             VAR.pause = True
             
     def Dessiner_Cadre(self, _x, _y, _largeur, _hauteur, _couleurFond, _couleurBordure, _epaisseurBordure=2):

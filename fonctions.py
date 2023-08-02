@@ -60,12 +60,12 @@ def Collision(objet1, objet2):
 LISTE_FONTS = {}
 def Init_Texte(_taille):
     if not _taille in LISTE_FONTS:        
-        LISTE_FONTS[_taille] = pygame.font.SysFont('arial', _taille) 
+        LISTE_FONTS[_taille] = pygame.font.SysFont('PressStart2P', _taille) 
     
 def Image_Texte(_texte, _couleur, _taille):
     Init_Texte(_taille) 
        
-    image_texte = LISTE_FONTS[_taille].render(_texte, True, _couleur) 
+    image_texte = LISTE_FONTS[_taille].render(_texte, True, _couleur).convert_alpha()  
     return image_texte
 
 
