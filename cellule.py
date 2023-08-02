@@ -32,34 +32,37 @@ class CCellule(item.CItem):
         if self.animationId > 1:
             self.objet = VAR.C_SOL    
             self.MOTEUR.OBJETS.Ajouter_Ou_Pas_Un_Objet(self.x, self.y)
-            
-    def Afficher(self, _couche):
+    
+
+             
+    def Afficher_Mur_Cassable(self):
         posX = VAR.offSet[0] + (self.x * VAR.tailleCellule)
         posY = VAR.offSet[1] + (self.y * VAR.tailleCellule)
         
-        if _couche == "SOL":
-            self.Afficher_Sol(posX, posY)            
-        else:
-            self.Afficher_Mur(posX, posY)
+        if self.objet == VAR.C_CASSABLE: 
+            if not self.casser:
+                VAR.fenetre.blit(VAR.image["cassable"], (posX, posY))    
+            else:
+                VAR.fenetre.blit(VAR.image["cassable"+str(self.animationId)], (posX, posY)) 
+                self.Animation_Explosion_Mur() 
                         
     
-    def Afficher_Sol(self, _posX, _posY):
-        i = int((_posY * VAR.nbLignes) + _posX)            
+    def Dessiner_Sol(self, _fenetre = None):
+        posX = (self.x * VAR.tailleCellule)
+        posY = (self.y * VAR.tailleCellule)
+        i = int((posY * VAR.nbLignes) + posX)    
+       
         if self.objet == VAR.C_SOL: 
             if not (self.MOTEUR.TERRAIN.GRILLE[self.x][self.y-1].objet == VAR.C_SOL):
-                VAR.fenetre.blit(VAR.image["ombre"], (_posX, _posY))
+                _fenetre.blit(VAR.image["ombre"], (posX, posY))
             else:
-                VAR.fenetre.blit(VAR.image["sol"+str(i % 2)], (_posX, _posY))
+                _fenetre.blit(VAR.image["sol"+str(i % 2)], (posX, posY))
                 
-    def Afficher_Mur(self, _posX, _posY):
+    def Dessiner_Mur_Fixe(self, _fenetre = None):        
         if self.objet == VAR.C_MUR: 
-            VAR.fenetre.blit(VAR.image["mur"], (_posX, _posY))
-                
-        elif self.objet == VAR.C_CASSABLE: 
-            if not self.casser:
-                VAR.fenetre.blit(VAR.image["cassable"], (_posX, _posY))    
-            else:
-                VAR.fenetre.blit(VAR.image["cassable"+str(self.animationId)], (_posX, _posY)) 
-                self.Animation_Explosion_Mur() 
-                
+            posX = (self.x * VAR.tailleCellule)
+            posY = (self.y * VAR.tailleCellule)
+            _fenetre.blit(VAR.image["mur"], (posX, posY))
+                      
+
                 

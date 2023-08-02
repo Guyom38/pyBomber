@@ -3,7 +3,7 @@
 image = {}
 sons = {}
 
-resolution = (1920, 1080)
+resolution = (1320, 768)
 zoom = 3
 offSet = (0, 0)
 tailleCellule = 16

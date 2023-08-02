@@ -101,7 +101,7 @@ class CMoteur():
         
         
     def Demarrer(self):
-        VAR.fenetre = pygame.display.set_mode(VAR.resolution, pygame.FULLSCREEN, 32)
+        VAR.fenetre = pygame.display.set_mode(VAR.resolution, pygame.DOUBLEBUF, 32)
         pygame.display.set_caption("PyBomber 0.1")        
         self.horloge = pygame.time.Clock()
         

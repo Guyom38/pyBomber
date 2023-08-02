@@ -1,30 +1,47 @@
+import pygame
+from pygame.locals import *
+
 import variables as VAR
 import fonctions as FCT
 import random
 
 import cellule as CC
-
+import time
                 
 class CTerrain():       
     def __init__(self, _moteur):
         self.MOTEUR = _moteur        
+       
         
     def Initialiser(self):
         self.GRILLE =  [[CC.CCellule(self.MOTEUR, x, y) for y in range(VAR.nbLignes)] for x in range(VAR.nbColonnes)]
         self.Construire_Terrain_De_Jeu()
+        self.image = None
         
-    
-    def Afficher(self):
+        
+    def Preparation_Couches_Fixes(self):
+        self.image = pygame.Surface((VAR.nbColonnes * VAR.tailleCellule, VAR.nbLignes * VAR.tailleCellule),pygame.SRCALPHA,32)
+        
         # --- affiche première couche, le sol !
         for y in range(VAR.nbLignes):
             for x in range(VAR.nbColonnes): 
-                self.GRILLE[x][y].Afficher("SOL")
+                self.GRILLE[x][y].Dessiner_Sol(self.image)
+                self.GRILLE[x][y].Dessiner_Mur_Fixe(self.image)
+        
+      
+        
+    def Afficher(self):
+        temps_ref = time.time()
+        if self.image == None :
+            self.Preparation_Couches_Fixes()       
+        VAR.fenetre.blit(self.image, (VAR.offSet[0], VAR.offSet[1]))
         
         # --- affiche couches suivantes, murs ...      
         for y in range(VAR.nbLignes):
-            for x in range(VAR.nbColonnes):               
-                self.GRILLE[x][y].Afficher("DECORS")  
-                
+            for x in range(VAR.nbColonnes):
+                self.GRILLE[x][y].Afficher_Mur_Cassable()
+        
+        print(round(time.time() - temps_ref, 3))     
                               
     def Construire_Terrain_De_Jeu(self):        
         for y in range(VAR.nbLignes):
