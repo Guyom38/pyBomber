@@ -23,7 +23,7 @@ class CCControlleur:
         self.Creer_Joueurs_Clavier_Manettes()
         
     def Creer_Joueurs_Clavier_Manettes(self):
-        for i in range(3):
+        for i in range(2):
             self.JOUEURS.LISTE.append(CJ.CJoueur(self.MOTEUR, i, ""))  
         #self.JOUEURS.LISTE.append(CJ.CJoueur(self.MOTEUR, 8, ""))  
         for i in range(1, self.nbManettes):
@@ -43,31 +43,33 @@ class CCControlleur:
         self.Gestion_Manettes_Directions()
     
     def Gestion_Clavier(self):
-        if not self.JOUEURS.LISTE[0].mort:     
-            BONNE_DIRECTION = [C_DIRECTION.GAUCHE, C_DIRECTION.DROITE, C_DIRECTION.HAUT, C_DIRECTION.BAS]
-            if self.JOUEURS.LISTE[0].maladie == C_MALADIE.TOUCHES_INVERSEES:
-                BONNE_DIRECTION = [C_DIRECTION.DROITE, C_DIRECTION.GAUCHE, C_DIRECTION.BAS, C_DIRECTION.HAUT]
-                        
-            keys = pygame.key.get_pressed()                    
-            if keys[K_LEFT] == 1:
-                self.JOUEURS.LISTE[0].direction = BONNE_DIRECTION[0]
-                self.JOUEURS.LISTE[0].enMouvement = True
-            if keys[K_RIGHT] == 1:
-                self.JOUEURS.LISTE[0].direction = BONNE_DIRECTION[1]
-                self.JOUEURS.LISTE[0].enMouvement = True
-            if keys[K_UP] == 1:
-                self.JOUEURS.LISTE[0].direction = BONNE_DIRECTION[2]
-                self.JOUEURS.LISTE[0].enMouvement = True
-            if keys[K_DOWN] == 1:
-                self.JOUEURS.LISTE[0].direction = BONNE_DIRECTION[3]
-                self.JOUEURS.LISTE[0].enMouvement = True
+        for key, values in VAR.CLAVIER.items():
+            if not self.JOUEURS.LISTE[key].mort:     
+                BONNE_DIRECTION = [C_DIRECTION.GAUCHE, C_DIRECTION.DROITE, C_DIRECTION.HAUT, C_DIRECTION.BAS]
+                if self.JOUEURS.LISTE[0].maladie == C_MALADIE.TOUCHES_INVERSEES:
+                    BONNE_DIRECTION = [C_DIRECTION.DROITE, C_DIRECTION.GAUCHE, C_DIRECTION.BAS, C_DIRECTION.HAUT]
+                            
+                keys = pygame.key.get_pressed()                    
+                if keys[values["GAUCHE"]] == 1:
+                    self.JOUEURS.LISTE[key].direction = BONNE_DIRECTION[0]
+                    self.JOUEURS.LISTE[key].enMouvement = True
+                if keys[values["DROITE"]] == 1:
+                    self.JOUEURS.LISTE[key].direction = BONNE_DIRECTION[1]
+                    self.JOUEURS.LISTE[key].enMouvement = True
+                if keys[values["HAUT"]] == 1:
+                    self.JOUEURS.LISTE[key].direction = BONNE_DIRECTION[2]
+                    self.JOUEURS.LISTE[key].enMouvement = True
+                if keys[values["BAS"]] == 1:
+                    self.JOUEURS.LISTE[key].direction = BONNE_DIRECTION[3]
+                    self.JOUEURS.LISTE[key].enMouvement = True
                 
     def Gestion_Manettes_Boutons(self, _event):
-        if _event.type == KEYDOWN:  
-            if _event.key == K_SPACE: 
-                self.JOUEURS.LISTE[0].Action_Poser_Une_Bombe()
-            if _event.key == K_LCTRL: 
-                self.JOUEURS.LISTE[0].Action_Pousser_La_Bombe()
+        for key, values in VAR.CLAVIER.items():
+            if _event.type == KEYDOWN:  
+                if _event.key == values["ACTION1"]: 
+                    self.JOUEURS.LISTE[key].Action_Poser_Une_Bombe()
+                if _event.key == values["ACTION2"]: 
+                    self.JOUEURS.LISTE[key].Action_Pousser_La_Bombe()
                 
                     
         if _event.type == pygame.JOYBUTTONDOWN:

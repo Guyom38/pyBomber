@@ -10,82 +10,63 @@ import particules as CP
 import time, random
 
 class CInterface:
-    def __init__(self, _moteur):
+    def __init__(self, _moteur):        
+        self.MOTEUR = _moteur
+        self.PARTICULES = CP.CParticules(_moteur)        
+     
+    def Initialiser(self):
         self.x, self.y = 0.0, 0.0
         self.temps = -1
         self.etat = ""
         self.image = None
-        
-        self.MOTEUR = _moteur
-        
+                
         self.temps_compte_a_rebours = -1
         self.delais_compte_a_rebours = 5
-
-        self.PARTICULES = CP.CParticules(_moteur)
         
-    def Initialiser(self):
-        VAR.image["titre"] = pygame.transform.scale(pygame.image.load("images/R.jpg"), VAR.resolution)
-        
-
-    
-    def Afficher(self):
-        if self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.TITRE:
-            #self.Afficher_Cadre()
-            self.Afficher_Fond()
-            
-            image = FCT.Image_Texte("PyBomber", (32,0,0,0), 150)
-            x = (VAR.resolution[0] - image.get_width()) / 2
-            VAR.fenetre.blit(image, (x, 100))
-            
-            image = FCT.Image_Texte("PyBomber", (255,255,255,255), 150)            
-            VAR.fenetre.blit(image, (x-10, 100-10))
-            
+        self.message_temps = -1
+        self.message_etape = C_MESSAGE.NON_INITIALISE        
             
     
     def Afficher_Fond(self):        
-        VAR.fenetre.fill((16,16,16))
-        #for _ in range(random.randint(0, 10)):
-        #     self.PARTICULES.Ajouter(random.randint(0, VAR.resolution[0]), random.randint(0, VAR.resolution[1]), (162, 104, 254))
-        #self.PARTICULES.Afficher_Les_Particules()
+        VAR.fenetre.fill((64,64,64))
+        for _ in range(random.randint(0, 10)):
+             self.PARTICULES.Ajouter(random.randint(0, VAR.resolution[0]), random.randint(0, VAR.resolution[1]), (162, 104, 254))
+        self.PARTICULES.Afficher_Les_Particules()
         
     
     def Afficher_Barre_Information_Partie(self):
-        pygame.draw.rect(VAR.fenetre, (255, 137, 58, 64), (0, 0, VAR.resolution[0], VAR.offSet[1] - 4), 0)
         
-        nbJoueurs = self.MOTEUR.JOUEURS.nbJoueurs()
-        largeur = VAR.tailleCellule * 4
+        # --- cadre information en haut
+        pygame.draw.rect(VAR.fenetre, (255, 137, 58, 64), (0, 0, VAR.resolution[0], VAR.tailleCellule * 2), 0)
+        pygame.draw.rect(VAR.fenetre, (255, 180, 112, 64), (0, 0, VAR.resolution[0], VAR.tailleCellule * 2), 4)
         
+        # --- chrono
+        image = FCT.Image_Texte(FCT.convert_seconds_to_time(self.MOTEUR.tempsRestant()), (255,255,255,255), 50)   
+        x, y = VAR.resolution[0] - VAR.tailleCellule - image.get_width(), 8    
+        pygame.draw.rect(VAR.fenetre, (0, 0, 0, 32), (x-2, y-2, image.get_width(), image.get_height()), 0)     
+        VAR.fenetre.blit(image, (x, y))
+        
+        # --- joueurs et scores
         x= VAR.tailleCellule
-        for joueur in self.MOTEUR.JOUEURS.LISTE:
-            VAR.fenetre.blit(FCT.image_decoupe(joueur.image,  0, C_DIRECTION.BAS.value, VAR.tailleCellule, VAR.tailleCellule*2), (x, 0))  
-            image = FCT.Image_Texte(str(joueur.score), (0,0,0,255), 30)            
-            VAR.fenetre.blit(image, (x + VAR.tailleCellule, VAR.tailleCellule))
-            image = FCT.Image_Texte(str(joueur.score), (255,255,255,255), 30)            
-            VAR.fenetre.blit(image, (x + VAR.tailleCellule+2, VAR.tailleCellule+2))
-            x += (largeur + VAR.tailleCellule)
-            
-    def Afficher_Cadre(self, _largeur = -1, _hauteur = -1):
-        if _largeur == -1 and _hauteur == -1:
-            _largeur, _hauteur = int(VAR.resolution[0] / VAR.tailleCellule), int(VAR.resolution[1] / VAR.tailleCellule) 
-            
-        image_contour = VAR.image["mur"]
-        image_fond = VAR.image["sol0"]
+        nbJoueurs = self.MOTEUR.JOUEURS.nbJoueurs()+1
+        largeur = (VAR.resolution[0] - image.get_width() - (VAR.tailleCellule * (nbJoueurs))) / nbJoueurs       
         
-        offSet = ( (VAR.resolution[0] - (_largeur* VAR.tailleCellule)) /2, (VAR.resolution[1] - (_hauteur* VAR.tailleCellule)) /2 )  
-         
-        for y in range(_hauteur):
-            for x in range(_largeur):
-                posX = offSet[0] + (x * VAR.tailleCellule)
-                posY = offSet[1] + (y * VAR.tailleCellule)
-                
-                if x == 0 or y == 0 or x == _largeur-1 or y == _hauteur-1:
-                    VAR.fenetre.blit(image_contour, (posX, posY))
-                else:
-                    VAR.fenetre.blit(image_fond, (posX, posY))
+        for joueur in self.MOTEUR.JOUEURS.LISTE:
+            VAR.fenetre.blit(FCT.image_decoupe(joueur.image,  0, C_DIRECTION.BAS.value, VAR.tailleCellule, VAR.tailleCellule*2), (x, 4)) 
+             
+            image = FCT.Image_Texte(str(joueur.score), (0,0,0,255), 30)            
+            VAR.fenetre.blit(image, (x + VAR.tailleCellule, VAR.tailleCellule-8))
+            image = FCT.Image_Texte(str(joueur.score), (255,255,255,255), 30)            
+            VAR.fenetre.blit(image, (x + VAR.tailleCellule+2, VAR.tailleCellule+2-8))
+            x += (largeur + VAR.tailleCellule)
+        
+        
+        
+
                     
-    def Afficher_Compte_A_Rebours(self):
-       
+    def Afficher_Compte_A_Rebours(self):       
         temps = int(round(self.delais_compte_a_rebours - (time.time() - self.temps_compte_a_rebours), 0))
+        if temps < 0: temps = 0
         
         texte_ombre = FCT.Image_Texte(str(temps), (0,0,0,32), int(VAR.resolution[1] / 4))
         centreY = (VAR.resolution[1] - texte_ombre.get_height()) /2
@@ -94,50 +75,100 @@ class CInterface:
         texte = FCT.Image_Texte(str(temps), (255,255,255,128), int(VAR.resolution[1] / 4))
         VAR.fenetre.blit(texte_ombre, (centreX+8, centreY+8))
         VAR.fenetre.blit(texte, (centreX, centreY))
-        
-    def Afficher_Victoire(self):
-        if self.temps_compte_a_rebours == -1:
-            self.temps_compte_a_rebours = time.time()
-            self.MOTEUR.Charge_Musique('23')
-            pygame.mixer.music.play()
-            
+    
+    
+    def Victoire_Afficher(self):   
         joueur = self.MOTEUR.JOUEURS.quiGagne()
-        self.Dessiner_Bandeau_Victoire(joueur)
-        self.Afficher_Compte_A_Rebours()
+        self.Victoire_Dessiner_Bandeau(joueur)
         
+        if self.message_etape == C_MESSAGE.COMPTE_A_REBOURS:
+            if self.temps_compte_a_rebours == -1:
+                self.temps_compte_a_rebours = time.time()
+                self.MOTEUR.Charge_Musique('23')
+                pygame.mixer.music.play()
             
-        if time.time() - self.temps_compte_a_rebours > self.delais_compte_a_rebours:
-            joueur.score += 1
-            self.MOTEUR.Relancer_Une_Partie()
-            self.temps_compte_a_rebours = -1
+            self.Afficher_Compte_A_Rebours()            
+                
+            if time.time() - self.temps_compte_a_rebours > self.delais_compte_a_rebours:
+                joueur.score += 1
+                self.MOTEUR.Relancer_Une_Partie()                
+                self.message_etape = C_MESSAGE.NON_INITIALISE
+                
         
         
-    def Dessiner_Bandeau_Victoire(self, _joueur):
-        if self.etat != "bandeau_victoire":
+    def Victoire_Dessiner_Bandeau(self, _joueur):
+        if not _joueur == None:
+            icone = VAR.image['avatar' + str(_joueur.id)]
+            message = "Victoire du joueur " + _joueur.pseudo
+        else:
+            icone = None
+            message = "Egalité"
+                
+        self.Afficher_Message(icone, message, 0)
             
-            largeur, hauteur_pas = VAR.resolution[0], VAR.resolution[1]/20
-            hauteur = hauteur_pas * 4
-            
-            couleur_fond, couleur_bordure = (0, 0, 0, 64), (255, 255, 255, 64)
-            self.x = 0
-            self.y = VAR.resolution[1] - (VAR.tailleCellule * 2) - hauteur
-            self.Dessiner_Cadre(self.x, self.y, largeur, hauteur, couleur_fond, couleur_bordure, 4)
-            
-            if not _joueur == None:                
-                image_avatar = pygame.transform.scale(VAR.image['avatar' + str(_joueur.id)], (hauteur_pas * 4, hauteur_pas * 4))
-                VAR.fenetre.blit(image_avatar, (self.x + VAR.tailleCellule, self.y))
-                message = "Victoire du joueur " + _joueur.pseudo
-                decX = image_avatar.get_width()
-            else:
-                message = "Egalité !"
-                decX = 0
-        
-            texte = FCT.Image_Texte(message, (255,255,255,255), int(hauteur_pas))
-            centreY = (hauteur - texte.get_height()) /2
-            centreX = (largeur - decX - texte.get_width()) / 2
-            VAR.fenetre.blit(texte, (self.x + decX + centreX, self.y+centreY))
-            VAR.pause = True
             
     def Dessiner_Cadre(self, _x, _y, _largeur, _hauteur, _couleurFond, _couleurBordure, _epaisseurBordure=2):
         pygame.draw.rect(VAR.fenetre, _couleurFond, (_x, _y, _largeur, _hauteur), 0)  
-        pygame.draw.rect(VAR.fenetre, _couleurBordure, (_x, _y, _largeur, _hauteur), _epaisseurBordure)  
+        pygame.draw.rect(VAR.fenetre, _couleurBordure, (_x, _y, _largeur, _hauteur), _epaisseurBordure) 
+        
+    
+    def Attendre_Pression_Bouton(self):
+        boucle_pause = True
+        while boucle_pause:
+            # --- récupére l'ensemble des évènements
+            for event in pygame.event.get():        
+                if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE: VAR.boucle_jeu = False     
+                if event.type == KEYDOWN:  
+                    if event.key == K_SPACE: 
+                        boucle_pause = False
+                if event.type == pygame.JOYBUTTONDOWN:
+                    if (event.button == 1):
+                        boucle_pause = False
+                        
+            pygame.display.update()
+                    
+    def Afficher_Message(self, _icone, _texte, _delais):
+        couleur_fond, couleur_bordure = (0, 0, 0, 64), (255, 255, 255, 64)
+        hauteur = 140
+        largeur = VAR.resolution[0]
+        
+        if self.message_etape == C_MESSAGE.NON_INITIALISE:
+            self.MOTEUR.Arreter_Partie()
+            self.x = -largeur
+            self.y = VAR.resolution[1] - hauteur - VAR.tailleCellule 
+            self.message_temps = time.time()
+            self.message_etape = C_MESSAGE.SCROLLX
+            self.temps_compte_a_rebours = -1
+        
+        if self.message_etape == C_MESSAGE.SCROLLX:  
+            if (time.time() - self.message_temps > 0.01):
+                self.message_temps = time.time()
+                self.x += VAR.tailleCellule
+                
+            
+            if self.x >= 0:
+                self.x, self.message_temps = 0, -1
+                self.message_etape = C_MESSAGE.EN_ATTENTE_START
+            
+        # --- Dessine cadre
+        self.Dessiner_Cadre(self.x, self.y, largeur, hauteur, couleur_fond, couleur_bordure, 4)
+        
+        # --- Dessine image
+        if _icone == None:
+            imageW = 0
+        else:
+            image = pygame.transform.scale(_icone, (hauteur, hauteur))
+            imageW = image.get_width()
+            VAR.fenetre.blit(image, (self.x + VAR.tailleCellule, self.y))
+            
+        
+        # --- Dessine texte
+        texte = FCT.Image_Texte(_texte, (255,255,255,255), int(40))
+        centreY = (hauteur - texte.get_height()) /2
+        centreX = (largeur - imageW - texte.get_width()) / 2
+        VAR.fenetre.blit(texte, (self.x + imageW + centreX, self.y + centreY))
+        
+        if self.message_etape == C_MESSAGE.EN_ATTENTE_START:
+            self.Attendre_Pression_Bouton()
+            self.message_etape = C_MESSAGE.COMPTE_A_REBOURS
+       

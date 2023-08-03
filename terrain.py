@@ -76,9 +76,9 @@ class CTerrain():
                         
     
     def TimeOut_Resserage_Du_Terrain(self):
-        if self.timeOut or VAR.pause: return True
+        if self.timeOut or VAR.pause: return
         
-        if self.MOTEUR.tempsRestant() < 0:
+        if self.MOTEUR.tempsRestant() == 0:
             if (time.time() - self.temps_ecrasement > self.delais_ecrasement):
                 self.temps_ecrasement = time.time()
                         

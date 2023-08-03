@@ -48,7 +48,8 @@ class CMoteur():
         
         #self.CONTROLLEUR.Creer_Joueurs_Clavier_Manettes()
         self.phase_jeu = C_PHASE_DE_JEU.JEU
-    
+        self.nbSecondes_Restantes_AvPause = -1
+        
     def Chargement_Ressources(self):
         VAR.tailleCellule = 16 * VAR.zoom
         
@@ -116,13 +117,34 @@ class CMoteur():
         self.OBJETS.Initialiser()
         self.TERRAIN.Initialiser()
         self.JOUEURS.Reinitaliser()
+        
         self.Charge_Musique(random.choice(['78','41','25']) )
         pygame.mixer.music.play()
+        
+        VAR.temps_jeu = time.time()
+        VAR.pause = False
+        self.nbSecondes_Restantes_AvPause = -1
+    
+    def Arreter_Partie(self):
+        self.nbSecondes_Restantes_AvPause = self.tempsRestant() 
+        VAR.pause = True
+    
+    def Reprendre_Partie(self):         
+        VAR.temps_jeu = time.time() - self.nbSecondes_Restantes_AvPause
+        self.nbSecondes_Restantes_AvPause = -1
         VAR.pause = False
         
+        
     def tempsRestant(self):
-        return int(VAR.duree_partie - (time.time() - VAR.temps_jeu))
-      
+        if VAR.pause:
+            nbSecondes = self.nbSecondes_Restantes_AvPause
+        else:
+            nbSecondes = int(VAR.duree_partie - (time.time() - VAR.temps_jeu))
+        if nbSecondes < 0: nbSecondes = 0            
+        return nbSecondes
+    
+ 
+         
     def Boucle(self):
         pygame.mixer.music.play()
         
@@ -140,6 +162,8 @@ class CMoteur():
 
                 # --- remplissage de la fenetre avec une couleur proche du noir
                 self.INTERFACE.Afficher_Fond()
+                # --- afficher le résultat
+                self.INTERFACE.Afficher_Barre_Information_Partie()
                 
                 self.TERRAIN.Afficher()  
                 
@@ -148,22 +172,21 @@ class CMoteur():
                 
                 self.PARTICULES.Afficher_Les_Particules()
                 self.JOUEURS.Afficher_Tous_Les_Joueurs()
-
+                
+                self.TERRAIN.TimeOut_Resserage_Du_Terrain()   
     
                 if self.JOUEURS.nbJoueurs_enVie() == 1:                    
-                    self.INTERFACE.Afficher_Victoire()
+                    self.INTERFACE.Victoire_Afficher()
                     
                 
-                self.TERRAIN.TimeOut_Resserage_Du_Terrain()      
+                   
                     
             
 
-            # --- afficher le résultat
-            self.INTERFACE.Afficher_Barre_Information_Partie()
+            
+            
             pygame.display.update()
-
-            # --- limite la fréquence de raffraichissement a 25 images seconde
-            self.horloge.tick(60)           
+            self.horloge.tick(60)     
                
 
         # --- en sortie de boucle, quitte le programme

@@ -40,7 +40,11 @@ def image_vide(dimx, dimy):
 def GenereMat2D(xDim, yDim, valeurDefaut):
     return [[valeurDefaut for x in range(xDim)] for i in range(yDim)]
 
+def convert_seconds_to_time(seconds):
+    if seconds < 0: seconds = 0
+    minutes, seconds = divmod(seconds, 60)
 
+    return f"{minutes:02d}:{seconds:02d}"
 
 
 def Collision(objet1, objet2):

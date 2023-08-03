@@ -32,3 +32,11 @@ class C_ETAPE_BOMBE(Enum):
     VA_PETER = 0
     EXPLOSE = 1
     A_EXPLOSE = 2
+    
+class C_MESSAGE(Enum):
+    NON_INITIALISE = 0
+    INITIALISE = 1
+    SCROLLX = 2
+    EN_ATTENTE_START = 3
+    COMPTE_A_REBOURS = 4
+    TERMINE = 5

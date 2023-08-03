@@ -1,22 +1,23 @@
-
+import pygame
+from pygame.locals import *
 
 image = {}
 sons = {}
 
 resolution = (1320, 768)
-zoom = 3
+zoom = 2
 offSet = (0, 0)
 tailleCellule = 16
 boucle_jeu = True
 pause = False
 
-temps_jeu = 180
-duree_partie = 5
+temps_jeu = -1
+duree_partie = 60
 
-nbLignes, nbColonnes = int((resolution[1] /tailleCellule)/zoom)-2, int((resolution[0]/tailleCellule)/zoom)-5 
+nbLignes, nbColonnes = 13, 15 #int((resolution[1] /tailleCellule)/zoom)-2, int((resolution[0]/tailleCellule)/zoom)-5 
 
 
-tauxRemplissage = 70
+tauxRemplissage = 10
 delaisExplosion = 3    
     
 animation_MortFrameMax = 5    
@@ -31,6 +32,11 @@ C_CASSABLE = 3
 
 C_HORS_TERRAIN = (-2, -2)
 C_AUCUNE_COLLISION = (-99, -99)
+
+CLAVIER = {
+    0: {"DROITE": K_d, "GAUCHE": K_q, "HAUT" : K_z, "BAS" : K_s, "ACTION1" : K_LCTRL, "ACTION2" : K_LALT},
+    1: {"DROITE": K_RIGHT, "GAUCHE": K_LEFT, "HAUT" : K_UP, "BAS" : K_DOWN, "ACTION1" : K_RALT, "ACTION2" : K_RCTRL} }
+
 
 
 
