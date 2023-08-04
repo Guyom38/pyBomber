@@ -1,4 +1,6 @@
 import time
+
+import variables as VAR
 from enums import *
 
 class CItem:
@@ -20,3 +22,6 @@ class CItem:
         
     def iX(self): return int(round(self.x, 0))   
     def iY(self): return int(round(self.y, 0))
+    
+    def oX(self): return VAR.offSet[0] + self.offSetX + (self.x * VAR.tailleCellule) 
+    def oY(self): return VAR.offSet[1] + self.offSetY + (self.y * VAR.tailleCellule) 

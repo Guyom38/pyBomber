@@ -60,7 +60,13 @@ def Collision(objet1, objet2):
     else:
         return True
   
-  
+def ContientDans(objet, objet_conteneur):
+    xC, yC, dxC, dyC = objet_conteneur
+    x, y, dx, dy = objet
+    
+    return (xC < x < xC + dxC and xC < x + dx < xC + dxC and
+            yC < y < yC + dyC and yC < y + dy < yC + dyC)
+    
 LISTE_FONTS = {}
 def Init_Texte(_taille):
     if not _taille in LISTE_FONTS:        
