@@ -14,10 +14,10 @@ class CParticules:
         surf.set_colorkey((0, 0, 0))
         return surf
 
-    def Ajouter(self, _x, _y, _couleur):
+    def Ajouter_Particule(self, _x, _y, _couleur):
         self.LISTE.append([[_x, _y], [random.randint(0, 20) / 10 - 1, -5], random.randint(0, VAR.tailleCellule/4), _couleur])
         
-    def Afficher_Les_Particules(self):        
+    def Afficher_Les_Particules(self):       
         for particle in self.LISTE:
             particle[0][0] += particle[1][0]
             particle[0][1] += particle[1][1]

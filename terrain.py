@@ -13,7 +13,9 @@ from enums import *
 class CTerrain():       
     def __init__(self, _moteur):
         self.MOTEUR = _moteur        
-       
+        self.contour = 16
+        self.contour_fond = (0, 0, 0)
+        self.contour_bordure = (255,255,255)
         
     def Initialiser(self):
         self.GRILLE =  [[CC.CCellule(self.MOTEUR, x, y) for y in range(VAR.nbLignes)] for x in range(VAR.nbColonnes)]
@@ -29,21 +31,23 @@ class CTerrain():
         
         
     def Preparation_Couches_Fixes(self):
-        self.image = pygame.Surface((VAR.nbColonnes * VAR.tailleCellule, VAR.nbLignes * VAR.tailleCellule),pygame.SRCALPHA,32)
-        
+        largeur, hauteur = (VAR.nbColonnes * VAR.tailleCellule) + (self.contour*2), (VAR.nbLignes * VAR.tailleCellule) + (self.contour * 2)
+        self.image = pygame.Surface((largeur, hauteur),pygame.SRCALPHA,32)
+        pygame.draw.rect(self.image, self.contour_fond , (0, 0, largeur, hauteur), 0)        
+        pygame.draw.rect(self.image, self.contour_bordure , (0, 0, largeur, hauteur), 4)        
+       
         # --- affiche première couche, le sol !
         for y in range(VAR.nbLignes):
             for x in range(VAR.nbColonnes): 
                 self.GRILLE[x][y].Dessiner_Sol(self.image)
                 self.GRILLE[x][y].Dessiner_Mur_Fixe(self.image)
         
-      
-        
+
     def Afficher(self):
         #temps_ref = time.time()
         if self.image == None :
             self.Preparation_Couches_Fixes()       
-        VAR.fenetre.blit(self.image, (VAR.offSet[0], VAR.offSet[1]))
+        VAR.fenetre.blit(self.image, (VAR.offSet[0] - self.contour, VAR.offSet[1] - self.contour))
         
         # --- affiche couches suivantes, murs ...      
         for y in range(VAR.nbLignes):
@@ -52,15 +56,18 @@ class CTerrain():
         
         #print(round(time.time() - temps_ref, 3))     
                               
-    def Construire_Terrain_De_Jeu(self):        
+    def Construire_Terrain_De_Jeu(self, _menu = False):        
         for y in range(VAR.nbLignes):
             for x in range(VAR.nbColonnes):
                 mur = VAR.C_SOL
-                if (random.randint(0, 100) < VAR.tauxRemplissage) : mur = VAR.C_CASSABLE
                 
+                if not _menu:
+                    if (random.randint(0, 100) < VAR.tauxRemplissage) : mur = VAR.C_CASSABLE
+                    if x % 2 == 0 and y % 2 == 0: mur = VAR.C_MUR   
+                    
                 if x in (0, VAR.nbColonnes-1): mur = VAR.C_MUR  
                 if y in (0, VAR.nbLignes-1): mur = VAR.C_MUR
-                if x % 2 == 0 and y % 2 == 0: mur = VAR.C_MUR             
+                          
                 
                 self.GRILLE[x][y].objet = mur
                        

@@ -13,11 +13,12 @@ import item
 
 class CJoueur(item.CItem):
     
-    def __init__(self, _moteur, _id, _pseudo):  
+    def __init__(self, _moteur, _id, _pseudo, _menu = False):  
         super().__init__(_moteur, 0.0, 0.0, "")      
           
         self.id = _id
         self.pseudo = _pseudo
+        self.menu = _menu
         self.score = 0
         
         self.couleur = (255,255,255,255)        
@@ -39,8 +40,8 @@ class CJoueur(item.CItem):
         self.vitesse = self.vitesseBase
         self.pasVitesse = 0.005
         
-        self.puissance = 2
-        self.bombes = 3
+        self.puissance = 1
+        self.bombes = 1
         self.bombes_posees = 0
         self.bombes_protection = None
         
@@ -52,7 +53,9 @@ class CJoueur(item.CItem):
         self.maladie_temps_touche = -1
         
         self.mort = False
-        self.TERRAIN.Libere_Zone(self.iX(), self.iY(), 2)    
+        
+        if not self.menu:
+            self.TERRAIN.Libere_Zone(self.iX(), self.iY(), 2)    
         
         self.offSetX = 0
         self.offSetY = - 12 * VAR.zoom
@@ -91,7 +94,7 @@ class CJoueur(item.CItem):
         
     
     
-    def Afficher(self):
+    def Afficher(self, _menu = False):
         posX = VAR.offSet[0] + self.offSetX + (self.x * VAR.tailleCellule) 
         posY = VAR.offSet[1] + self.offSetY + (self.y * VAR.tailleCellule)      
             
@@ -108,8 +111,9 @@ class CJoueur(item.CItem):
                 
             VAR.fenetre.blit(FCT.image_decoupe(image,  animationId, self.direction.value, VAR.tailleCellule, VAR.tailleCellule*2), (posX, posY))
 
-            self.Gestion_Deplacement()  
-            self.Detection_Collision_Decors()    
+            if not _menu:
+                self.Gestion_Deplacement()  
+                self.Detection_Collision_Decors()    
         
         elif self.animationId >= 0:
             if self.animationId < VAR.animation_MortFrameMax+1:

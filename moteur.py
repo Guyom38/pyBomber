@@ -10,6 +10,7 @@ import particules as CP
 import controlleur as CC
 import objets as COS
 import interface as CI
+import menu as CM
 
 import variables as VAR
 import fonctions as FCT
@@ -20,38 +21,49 @@ import random, time
 
 class CMoteur():
     def __init__(self):
+        self.PARTICULES = CP.CParticules(self) 
         self.INTERFACE = CI.CInterface(self)
+        
         self.TERRAIN = CT.CTerrain(self)   
         self.BOMBES = CBS.CBombes(self)   
         self.OBJETS = COS.CObjets(self)      
         self.JOUEURS = CJS.CJoueurs(self)
         self.CONTROLLEUR = CC.CCControlleur(self)   
-        self.PARTICULES = CP.CParticules(self)   
           
+        self.MENU = CM.CMenu(self) 
+        
+        
         pygame.init()   
         pygame.mixer.init()     
         
 
     
     def Initialisation(self):
+        self.phase_jeu = C_PHASE_DE_JEU.MENU
         
+        VAR.offSet = ( ((VAR.resolution[0] - (VAR.nbColonnes* VAR.tailleCellule)) /2) ,
+                       ((VAR.resolution[1] - (VAR.nbLignes* VAR.tailleCellule)) /2) + VAR.tailleCellule) 
         
         self.INTERFACE.Initialiser()
+        
         self.TERRAIN.Initialiser()
         self.BOMBES.Initialiser()
         self.OBJETS.Initialiser()
         self.JOUEURS.Initialiser()
         self.CONTROLLEUR.Initialiser()
+        self.MENU.Initialiser()
         
-        VAR.offSet = ( ((VAR.resolution[0] - (VAR.nbColonnes* VAR.tailleCellule)) /2) ,
-                       ((VAR.resolution[1] - (VAR.nbLignes* VAR.tailleCellule)) /2) + VAR.tailleCellule) 
         
         #self.CONTROLLEUR.Creer_Joueurs_Clavier_Manettes()
-        self.phase_jeu = C_PHASE_DE_JEU.JEU
+
         self.nbSecondes_Restantes_AvPause = -1
         
     def Chargement_Ressources(self):
         VAR.tailleCellule = 16 * VAR.zoom
+        
+        tmp = pygame.image.load("images/titre.jpg").convert_alpha() 
+        tmp = pygame.transform.scale(tmp, (VAR.resolution[0], VAR.resolution[1]))
+        VAR.image['titre'] = tmp
         
         # --- Decors
         tmp = pygame.image.load("images/decors.png").convert_alpha() 
@@ -102,8 +114,8 @@ class CMoteur():
         
         
     def Demarrer(self):
-        VAR.fenetre = pygame.display.set_mode(VAR.resolution, pygame.DOUBLEBUF, 32)
-        pygame.display.set_caption("PyBomber 0.1")        
+        VAR.fenetre = pygame.display.set_mode(VAR.resolution, VAR.mode_ecran, 32)
+        pygame.display.set_caption("PyBomber 0.5")        
         self.horloge = pygame.time.Clock()
         
         self.Chargement_Ressources()
@@ -156,8 +168,10 @@ class CMoteur():
             self.CONTROLLEUR.Gestion_Utilisateurs()
             
             if self.phase_jeu != C_PHASE_DE_JEU.JEU:
-                self.INTERFACE.Afficher()
-   
+                
+                
+                self.MENU.Afficher_Menu() 
+
             else:                
 
                 # --- remplissage de la fenetre avec une couleur proche du noir

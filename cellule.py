@@ -26,7 +26,7 @@ class CCellule(item.CItem):
     def Animation_Explosion_Mur(self):
         posX = VAR.offSet[0] + (self.x * VAR.tailleCellule)  + (VAR.tailleCellule / 2)
         posY = VAR.offSet[1] + (self.y * VAR.tailleCellule)  + (VAR.tailleCellule / 2)             
-        self.MOTEUR.PARTICULES.Ajouter(posX, posY, (64,64,64,255))
+        self.MOTEUR.PARTICULES.Ajouter_Particule(posX, posY, (64,64,64,255))
         
         if time.time() - self.temps > 0.1:
             self.animationId += 1
@@ -59,8 +59,8 @@ class CCellule(item.CItem):
                 VAR.fenetre.blit(VAR.image["ombre"], (posX, posY))         
     
     def Dessiner_Sol(self, _fenetre = None):
-        posX = (self.x * VAR.tailleCellule)
-        posY = (self.y * VAR.tailleCellule)
+        posX = (self.x * VAR.tailleCellule) + self.TERRAIN.contour
+        posY = (self.y * VAR.tailleCellule) + self.TERRAIN.contour
         i = int((posY * VAR.nbLignes) + posX)    
        
         if not self.objet == VAR.C_MUR: 
@@ -71,8 +71,8 @@ class CCellule(item.CItem):
                 
     def Dessiner_Mur_Fixe(self, _fenetre = None):        
         if self.objet == VAR.C_MUR: 
-            posX = (self.x * VAR.tailleCellule)
-            posY = (self.y * VAR.tailleCellule)
+            posX = (self.x * VAR.tailleCellule) + self.TERRAIN.contour 
+            posY = (self.y * VAR.tailleCellule) + self.TERRAIN.contour
             _fenetre.blit(VAR.image["mur"], (posX, posY))
                       
 

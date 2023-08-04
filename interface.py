@@ -21,28 +21,42 @@ class CInterface:
         self.image = None
                 
         self.temps_compte_a_rebours = -1
-        self.delais_compte_a_rebours = 5
+        self.delais_compte_a_rebours = 3
         
         self.message_temps = -1
-        self.message_etape = C_MESSAGE.NON_INITIALISE        
-            
-    
+        self.message_etape = C_MESSAGE.NON_INITIALISE    
+        
+        self.zone_particules = []
+        self.zone_particules.append((0, 0, VAR.offSet[0], VAR.resolution[1]))    # Zone Gauche
+        #self.zone_particules.append((0, 0, VAR.resolution[0], VAR.offSet[1]))    # Zone Haut
+        self.zone_particules.append((VAR.resolution[0] - VAR.offSet[0], 0, VAR.resolution[0], VAR.resolution[1]))    # Zone Droite   
+        #self.zone_particules.append((0, VAR.resolution[1] - VAR.offSet[1], VAR.resolution[0],  VAR.resolution[1]))    # Zone Bas
+             
+        self.temps_particules = time.time()
+        self.temps_delais = 0.2
+        
     def Afficher_Fond(self):        
-        VAR.fenetre.fill((64,64,64))
-        for _ in range(random.randint(0, 10)):
-             self.PARTICULES.Ajouter(random.randint(0, VAR.resolution[0]), random.randint(0, VAR.resolution[1]), (162, 104, 254))
+        VAR.fenetre.fill((16,16,16))
+        
+        if time.time() - self.temps_particules > self.temps_delais:
+            self.temps_particules = time.time()
+            
+            for (x, y, w, h) in self.zone_particules:
+                for _ in range(4):
+                    self.PARTICULES.Ajouter_Particule(random.randint(x, w), random.randint(y, h), (162, 104, 254))
         self.PARTICULES.Afficher_Les_Particules()
         
     
     def Afficher_Barre_Information_Partie(self):
+        x, y = 0, 4
         
         # --- cadre information en haut
-        pygame.draw.rect(VAR.fenetre, (255, 137, 58, 64), (0, 0, VAR.resolution[0], VAR.tailleCellule * 2), 0)
-        pygame.draw.rect(VAR.fenetre, (255, 180, 112, 64), (0, 0, VAR.resolution[0], VAR.tailleCellule * 2), 4)
+        pygame.draw.rect(VAR.fenetre, (255, 137, 58, 64), (x, y, VAR.resolution[0], VAR.tailleCellule * 2), 0)
+        pygame.draw.rect(VAR.fenetre, (255, 180, 112, 64), (x, y, VAR.resolution[0], VAR.tailleCellule * 2), 4)
         
         # --- chrono
         image = FCT.Image_Texte(FCT.convert_seconds_to_time(self.MOTEUR.tempsRestant()), (255,255,255,255), 50)   
-        x, y = VAR.resolution[0] - VAR.tailleCellule - image.get_width(), 8    
+        x, y = VAR.resolution[0] - VAR.tailleCellule - image.get_width(), y + 8    
         pygame.draw.rect(VAR.fenetre, (0, 0, 0, 32), (x-2, y-2, image.get_width(), image.get_height()), 0)     
         VAR.fenetre.blit(image, (x, y))
         
@@ -52,7 +66,9 @@ class CInterface:
         largeur = (VAR.resolution[0] - image.get_width() - (VAR.tailleCellule * (nbJoueurs))) / nbJoueurs       
         
         for joueur in self.MOTEUR.JOUEURS.LISTE:
-            VAR.fenetre.blit(FCT.image_decoupe(joueur.image,  0, C_DIRECTION.BAS.value, VAR.tailleCellule, VAR.tailleCellule*2), (x, 4)) 
+            imgId, indexId = C_DIRECTION.BAS.value, 0
+            if joueur.mort: imgId, indexId = 5, 5
+            VAR.fenetre.blit(FCT.image_decoupe(joueur.image,  indexId, imgId, VAR.tailleCellule, VAR.tailleCellule*2), (x, 4)) 
              
             image = FCT.Image_Texte(str(joueur.score), (0,0,0,255), 30)            
             VAR.fenetre.blit(image, (x + VAR.tailleCellule, VAR.tailleCellule-8))
@@ -128,14 +144,14 @@ class CInterface:
             pygame.display.update()
                     
     def Afficher_Message(self, _icone, _texte, _delais):
-        couleur_fond, couleur_bordure = (0, 0, 0, 64), (255, 255, 255, 64)
+        couleur_fond, couleur_bordure = (0, 0, 0, 64), (255, 255, 255, 255)
         hauteur = 140
         largeur = VAR.resolution[0]
         
         if self.message_etape == C_MESSAGE.NON_INITIALISE:
             self.MOTEUR.Arreter_Partie()
             self.x = -largeur
-            self.y = VAR.resolution[1] - hauteur - VAR.tailleCellule 
+            self.y = VAR.resolution[1] - hauteur - (VAR.tailleCellule  * 3)
             self.message_temps = time.time()
             self.message_etape = C_MESSAGE.SCROLLX
             self.temps_compte_a_rebours = -1

@@ -3,6 +3,7 @@ from pygame.locals import *
 
 import joueur as CJ
 import variables as VAR
+import time
 
 from enums import *
 
@@ -10,6 +11,11 @@ class CCControlleur:
     def __init__(self, _moteur):
         self.MOTEUR = _moteur
         self.JOUEURS = _moteur.JOUEURS
+        
+        self.direction = None
+        self.pression_temps = time.time()
+        self.pression_delais = 1
+        self.pression = False
         
     def Initialiser(self):
         self.nbManettes = pygame.joystick.get_count() 
@@ -21,7 +27,16 @@ class CCControlleur:
             print("Manette "+str(i)+" :", pygame.joystick.Joystick(i).get_name())
         
         self.Creer_Joueurs_Clavier_Manettes()
+    
+    def Menu_Pression_Touche(self, _direction):
+        if time.time() - self.pression_temps > self.pression_delais:
+            self.pression_temps = time.time()
+            self.direction = _direction
+            self.pression = True
         
+        else:
+            self.pression = False
+              
     def Creer_Joueurs_Clavier_Manettes(self):
         for i in range(2):
             self.JOUEURS.LISTE.append(CJ.CJoueur(self.MOTEUR, i, ""))  
@@ -53,15 +68,20 @@ class CCControlleur:
                 if keys[values["GAUCHE"]] == 1:
                     self.JOUEURS.LISTE[key].direction = BONNE_DIRECTION[0]
                     self.JOUEURS.LISTE[key].enMouvement = True
+                    self.Menu_Pression_Touche(BONNE_DIRECTION[0])
                 if keys[values["DROITE"]] == 1:
                     self.JOUEURS.LISTE[key].direction = BONNE_DIRECTION[1]
                     self.JOUEURS.LISTE[key].enMouvement = True
+                    self.Menu_Pression_Touche(BONNE_DIRECTION[1])
                 if keys[values["HAUT"]] == 1:
                     self.JOUEURS.LISTE[key].direction = BONNE_DIRECTION[2]
                     self.JOUEURS.LISTE[key].enMouvement = True
+                    self.Menu_Pression_Touche(BONNE_DIRECTION[2])
+                    
                 if keys[values["BAS"]] == 1:
                     self.JOUEURS.LISTE[key].direction = BONNE_DIRECTION[3]
                     self.JOUEURS.LISTE[key].enMouvement = True
+                    self.Menu_Pression_Touche(BONNE_DIRECTION[3])
                 
     def Gestion_Manettes_Boutons(self, _event):
         for key, values in VAR.CLAVIER.items():
@@ -91,7 +111,15 @@ class CCControlleur:
                 if self.JOUEURS.LISTE[axis_id].maladie == C_MALADIE.TOUCHES_INVERSEES:
                     BONNE_DIRECTION = [C_DIRECTION.DROITE, C_DIRECTION.GAUCHE, C_DIRECTION.BAS, C_DIRECTION.HAUT]
                 
-                if axis_x < -0.5: self.JOUEURS.LISTE[axis_id].direction = BONNE_DIRECTION[0]
-                if axis_x > 0.5: self.JOUEURS.LISTE[axis_id].direction =  BONNE_DIRECTION[1]
-                if axis_y < -0.5: self.JOUEURS.LISTE[axis_id].direction = BONNE_DIRECTION[2]
-                if axis_y > 0.5: self.JOUEURS.LISTE[axis_id].direction =  BONNE_DIRECTION[3]                
+                if axis_x < -0.5: 
+                    self.JOUEURS.LISTE[axis_id].direction = BONNE_DIRECTION[0]
+                    self.Menu_Pression_Touche(BONNE_DIRECTION[0])
+                if axis_x > 0.5: 
+                    self.JOUEURS.LISTE[axis_id].direction =  BONNE_DIRECTION[1]
+                    self.Menu_Pression_Touche(BONNE_DIRECTION[1])
+                if axis_y < -0.5: 
+                    self.JOUEURS.LISTE[axis_id].direction = BONNE_DIRECTION[2]
+                    self.Menu_Pression_Touche(BONNE_DIRECTION[2])
+                if axis_y > 0.5: 
+                    self.JOUEURS.LISTE[axis_id].direction =  BONNE_DIRECTION[3]     
+                    self.Menu_Pression_Touche(BONNE_DIRECTION[3])           
