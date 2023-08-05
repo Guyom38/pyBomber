@@ -178,10 +178,6 @@ class CJoueur(item.CItem):
         if self.direction == C_DIRECTION.GAUCHE: self.x -= vitesseDeBase
         if self.direction == C_DIRECTION.DROITE: self.x += vitesseDeBase        
 
-        #posX = VAR.offSet[0] + self.offSetX + (self.x * VAR.tailleCellule)  + (VAR.tailleCellule / 2)
-        #posY = VAR.offSet[1] + self.offSetY + (self.y * VAR.tailleCellule)  + (VAR.tailleCellule / 2)             
-        #self.MOTEUR.PARTICULES.Ajouter(posX, posY, self.couleur)
-        
         # --- controle si collision
         coord_collision = self.Detection_Collision_Decors()
         if not coord_collision == VAR.C_AUCUNE_COLLISION:

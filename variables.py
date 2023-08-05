@@ -1,8 +1,14 @@
-import pygame
 from pygame.locals import *
 
 image = {}
 sons = {}
+temps_jeu = -1
+boucle_jeu = True
+pause = False
+offSet = (0, 0)
+
+animation_MortFrameMax = 5    
+
 
 fullHd = False
 plein_ecran = False
@@ -14,21 +20,26 @@ if fullHd: resolution = (1920, 1080)
 if plein_ecran: mode_ecran = FULLSCREEN
 
 zoom = 3
-offSet = (0, 0)
+
 tailleCellule = 16
-boucle_jeu = True
-pause = False
-
-temps_jeu = -1
-duree_partie = 60
-
-nbLignes, nbColonnes = int((resolution[1] /tailleCellule)/zoom)-4, int((resolution[0]/tailleCellule)/zoom)-5 
-
-
+nbLignes, nbColonnes = 13, 15
 tauxRemplissage = 70
 delaisExplosion = 3    
+
+duree_partie = 180
+nb_parties = 3
+active_maladies = True
+active_heritage = True
+
+CLAVIER = {
+    0: {"DROITE": K_d, "GAUCHE": K_q, "HAUT" : K_z, "BAS" : K_s, "ACTION1" : K_LCTRL, "ACTION2" : K_b},
+    1: {"DROITE": K_RIGHT, "GAUCHE": K_LEFT, "HAUT" : K_UP, "BAS" : K_DOWN, "ACTION1" : K_SPACE, "ACTION2" : K_RCTRL} }
+
+
+
+
     
-animation_MortFrameMax = 5    
+
 
 
 # --- constantes
@@ -41,9 +52,7 @@ C_CASSABLE = 3
 C_HORS_TERRAIN = (-2, -2)
 C_AUCUNE_COLLISION = (-99, -99)
 
-CLAVIER = {
-    0: {"DROITE": K_d, "GAUCHE": K_q, "HAUT" : K_z, "BAS" : K_s, "ACTION1" : K_LCTRL, "ACTION2" : K_b},
-    1: {"DROITE": K_RIGHT, "GAUCHE": K_LEFT, "HAUT" : K_UP, "BAS" : K_DOWN, "ACTION1" : K_SPACE, "ACTION2" : K_RCTRL} }
+
 
 
 

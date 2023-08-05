@@ -16,6 +16,16 @@ class CTerrain():
         self.contour = 16
         self.contour_fond = (0, 0, 0)
         self.contour_bordure = (255,255,255)
+    
+    def Reconfigurer_Terrain():
+        VAR.nbColonnes = int((VAR.resolution[0] / VAR.tailleCellule) )-5 
+        if VAR.nbColonnes % 2 == 0: VAR.nbColonnes +=1        
+        VAR.nbLignes = int((VAR.resolution[1] / VAR.tailleCellule) )-4        
+        if VAR.nbLignes % 2 == 0: VAR.nbLignes +=1       
+        
+        print("Dimension Terrain : ", VAR.nbColonnes, VAR.nbLignes)
+        VAR.offSet = ( ((VAR.resolution[0] - (VAR.nbColonnes* VAR.tailleCellule)) /2) ,
+                       ((VAR.resolution[1] - (VAR.nbLignes* VAR.tailleCellule)) /2) + VAR.tailleCellule) 
         
     def Initialiser(self):
         self.GRILLE =  [[CC.CCellule(self.MOTEUR, x, y) for y in range(VAR.nbLignes)] for x in range(VAR.nbColonnes)]

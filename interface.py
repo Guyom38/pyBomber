@@ -28,9 +28,7 @@ class CInterface:
         
         self.zone_particules = []
         self.zone_particules.append((0, 0, VAR.offSet[0], VAR.resolution[1]))    # Zone Gauche
-        #self.zone_particules.append((0, 0, VAR.resolution[0], VAR.offSet[1]))    # Zone Haut
         self.zone_particules.append((VAR.resolution[0] - VAR.offSet[0], 0, VAR.resolution[0], VAR.resolution[1]))    # Zone Droite   
-        #self.zone_particules.append((0, VAR.resolution[1] - VAR.offSet[1], VAR.resolution[0],  VAR.resolution[1]))    # Zone Bas
              
         self.temps_particules = time.time()
         self.temps_delais = 0.2
@@ -51,8 +49,8 @@ class CInterface:
         x, y = 0, 4
         
         # --- cadre information en haut
-        pygame.draw.rect(VAR.fenetre, (255, 137, 58, 64), (x, y, VAR.resolution[0], VAR.tailleCellule * 2), 0)
-        pygame.draw.rect(VAR.fenetre, (255, 180, 112, 64), (x, y, VAR.resolution[0], VAR.tailleCellule * 2), 4)
+        pygame.draw.rect(VAR.fenetre, (255, 137, 58, 64), (x, y, VAR.resolution[0], VAR.tailleCellule * 1.8), 0)
+        pygame.draw.rect(VAR.fenetre, (255, 180, 112, 64), (x, y, VAR.resolution[0], VAR.tailleCellule * 1.8), 4)
         
         # --- chrono
         image = FCT.Image_Texte(FCT.convert_seconds_to_time(self.MOTEUR.tempsRestant()), (255,255,255,255), 50)   
@@ -100,7 +98,7 @@ class CInterface:
         if self.message_etape == C_MESSAGE.COMPTE_A_REBOURS:
             if self.temps_compte_a_rebours == -1:
                 self.temps_compte_a_rebours = time.time()
-                self.MOTEUR.Charge_Musique('23')
+                FCT.Charge_Musique('23')
                 pygame.mixer.music.play()
             
             self.Afficher_Compte_A_Rebours()            

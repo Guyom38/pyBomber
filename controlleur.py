@@ -17,6 +17,7 @@ class CCControlleur:
         self.pression_delais = 1
         self.pression = False
         
+        self.action_bouton = None
     def Initialiser(self):
         self.nbManettes = pygame.joystick.get_count() 
         
@@ -47,7 +48,12 @@ class CCControlleur:
     def Gestion_Utilisateurs(self):
         # --- récupére l'ensemble des évènements
         for event in pygame.event.get():        
-            if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE: VAR.boucle_jeu = False        
+            if event.type == QUIT: VAR.boucle_jeu = False
+            if event.type == KEYDOWN and event.key == K_ESCAPE: 
+                if self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.JEU:
+                    self.MOTEUR.phase_jeu = C_PHASE_DE_JEU.MENU
+                elif self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.MENU:
+                    VAR.boucle_jeu = False
                 
             self.Gestion_Manettes_Boutons(event)
                         
@@ -85,11 +91,15 @@ class CCControlleur:
                 
     def Gestion_Manettes_Boutons(self, _event):
         for key, values in VAR.CLAVIER.items():
-            if _event.type == KEYDOWN:  
-                if _event.key == values["ACTION1"]: 
-                    self.JOUEURS.LISTE[key].Action_Poser_Une_Bombe()
-                if _event.key == values["ACTION2"]: 
-                    self.JOUEURS.LISTE[key].Action_Pousser_La_Bombe()
+            if _event.type == KEYDOWN: 
+                if self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.JEU: 
+                    if _event.key == values["ACTION1"]: 
+                        self.JOUEURS.LISTE[key].Action_Poser_Une_Bombe()
+                    if _event.key == values["ACTION2"]: 
+                        self.JOUEURS.LISTE[key].Action_Pousser_La_Bombe()
+                elif self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.MENU:
+                    if _event.key == values["ACTION1"]: 
+                        self.action_bouton = True
                 
                     
         if _event.type == pygame.JOYBUTTONDOWN:
