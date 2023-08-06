@@ -18,20 +18,23 @@ class CJoueur(item.CItem):
           
         self.id = _id
         self.pseudo = _pseudo
+        self.actif = True
+        self.clown = False
+        
         self.menu = _menu
         self.score = 0
         
         self.couleur = (255,255,255,255)        
     
-        self.Initialiser()
+        self.Initialiser(self.id)
         self.Colorisation()
 
     
     def estMalade(self): return not (self.maladie == 0)
     def vraimentMort(self): return (self.mort and self.animationId == -1)
     
-    def Initialiser(self):        
-        self.x, self.y = self.Position_Initiale()        
+    def Initialiser(self, _position):        
+        self.x, self.y = self.Position_Initiale(_position)        
         
         self.direction = C_DIRECTION.BAS
         self.enMouvement = False
@@ -53,7 +56,8 @@ class CJoueur(item.CItem):
         self.maladie_temps_touche = -1
         
         self.mort = False
-        self.actif = True
+        self.clown = False
+
         
         if not self.menu:
             self.TERRAIN.Libere_Zone(self.iX(), self.iY(), 2)    
@@ -75,16 +79,18 @@ class CJoueur(item.CItem):
                     if str(couleur) in VAR.LISTE_COLOR:
                         self.image.set_at((x,y), VAR.LISTE_COLOR[str(couleur)][self.id-1])   
     
-    def Position_Initiale(self):
-        if self.id == 0:            x, y = (1.0, 1.0)             
-        if self.id == 1:            x, y = (VAR.nbColonnes-2, VAR.nbLignes-2)
-        if self.id == 2:            x, y = (1.0, VAR.nbLignes-2)
-        if self.id == 3:            x, y = (VAR.nbColonnes-2, 1.0)
-        if self.id == 4:            x, y = (round(VAR.nbColonnes/2,0), round(VAR.nbLignes/2,0))        
-        if self.id == 5:            x, y = (round(VAR.nbColonnes/2,0), 1.0)
-        if self.id == 6:            x, y = (1.0, round(VAR.nbLignes/2,0))
-        if self.id == 7:            x, y = (VAR.nbColonnes-2, round(VAR.nbLignes/2,0))
-        if self.id == 8:            x, y = (round(VAR.nbColonnes/2,0), VAR.nbLignes-2)
+    def Position_Initiale(self, _position):
+        x, y = 0, 0
+        
+        if _position == 0 and self.actif: x, y = (1.0, 1.0)             
+        if _position == 1 and self.actif: x, y = (VAR.nbColonnes-2, VAR.nbLignes-2)
+        if _position == 2 and self.actif: x, y = (1.0, VAR.nbLignes-2)
+        if _position == 3 and self.actif: x, y = (VAR.nbColonnes-2, 1.0)
+        if _position == 4 and self.actif: x, y = (round(VAR.nbColonnes/2,0), round(VAR.nbLignes/2,0))        
+        if _position == 5 and self.actif: x, y = (round(VAR.nbColonnes/2,0), 1.0)
+        if _position == 6 and self.actif: x, y = (1.0, round(VAR.nbLignes/2,0))
+        if _position == 7 and self.actif: x, y = (VAR.nbColonnes-2, round(VAR.nbLignes/2,0))
+        if _position == 8 and self.actif: x, y = (round(VAR.nbColonnes/2,0), VAR.nbLignes-2)
         
         if x % 2 == 0: x -=1
         if y % 2 == 0: y -=1
@@ -96,9 +102,12 @@ class CJoueur(item.CItem):
     
     
     def Afficher(self, _menu = False):
+        if not self.actif: return
+        
         posX = VAR.offSet[0] + self.offSetX + (self.x * VAR.tailleCellule) 
         posY = VAR.offSet[1] + self.offSetY + (self.y * VAR.tailleCellule)      
-            
+        directionImage = self.direction.value
+        
         if not self.mort: 
             if (self.enMouvement):
                 animationId = FCT.Animation(10, 3)
@@ -110,7 +119,10 @@ class CJoueur(item.CItem):
             else:   
                 image = self.image
                 
-            VAR.fenetre.blit(FCT.image_decoupe(image,  animationId, self.direction.value, VAR.tailleCellule, VAR.tailleCellule*2), (posX, posY))
+                # --- animation lors du menu pour activer le joueur
+                if self.clown: directionImage, animationId = 5, FCT.Animation(10, 3)
+                
+            VAR.fenetre.blit(FCT.image_decoupe(image,  animationId, directionImage, VAR.tailleCellule, VAR.tailleCellule*2), (posX, posY))
 
             if not _menu:
                 self.Gestion_Deplacement()  

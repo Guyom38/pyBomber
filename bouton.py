@@ -47,21 +47,28 @@ class CBouton():
         centreY = (self.hauteur - texte.get_height()) /2
         
         
+        couleur = (128,128,128)
+        couleur2 = (0,0,0)
         
-        joueur = self.MOTEUR.JOUEURS.LISTE[0]
-        coord_joueur = (joueur.oX() + (VAR.tailleCellule/2), joueur.oY()+(VAR.tailleCellule/2), VAR.tailleCellule/2 , VAR.tailleCellule/2)
-        coord_bouton = (x, y, self.largeur, self.hauteur)
-        if FCT.ContientDans(coord_joueur, coord_bouton):
-            couleur = (237,0,140)
-            couleur2 = (75,107,220) 
-            
-            if self.MOTEUR.CONTROLLEUR.action_bouton == True:
-                bouton_presse = True
-                if not self.fonction == None :
-                    self.fonction(False)
-        else:
-            couleur = (128,128,128)
-            couleur2 = (0,0,0)
+        for joueur in self.MOTEUR.JOUEURS.LISTE:            
+            coord_joueur = (joueur.oX() + (VAR.tailleCellule/2), joueur.oY()+(VAR.tailleCellule/2), VAR.tailleCellule/2 , VAR.tailleCellule/2)
+            coord_bouton = (x, y, self.largeur, self.hauteur)
+            if FCT.ContientDans(coord_joueur, coord_bouton):
+                
+                
+                if joueur.id == 0:
+                    couleur = (237,0,140)
+                    couleur2 = (75,107,220) 
+                
+                    if self.MOTEUR.CONTROLLEUR.action_bouton == True:
+                        bouton_presse = True
+                        if not self.fonction == None :
+                            self.fonction(False)
+                            
+                joueur.clown = (self.id == 0)
+
+                
+
         
         self.INTERFACE.Dessiner_Cadre(x, y, self.largeur, self.hauteur, couleur2, self.couleur_bordure, 4) 
         

@@ -7,16 +7,20 @@ class CJoueurs():
     def __init__(self, _moteur):
         self.MOTEUR = _moteur
         self.LISTE = []
-        
+    
+    def Activer_Tous_Les_Joueurs(self):
+        for joueur in self.LISTE:
+            joueur.actif = True
+            
     def nbJoueurs(self):
         return len(self.LISTE)
     
     def nbJoueurs_enVie(self):
-        return len([1 for joueur in self.LISTE if not joueur.vraimentMort()])
+        return len([1 for joueur in self.LISTE if not joueur.vraimentMort() and joueur.actif])
     
     def quiGagne(self):
         for joueur in self.LISTE:
-            if not joueur.mort: return joueur
+            if not joueur.mort and joueur.actif: return joueur
         return None
      
     def Initialiser(self):
@@ -26,8 +30,11 @@ class CJoueurs():
         self.image_masque = FCT.Colorisation_Masque(VAR.image["joueur0"])   
     
     def Reinitaliser(self):
+        position = 0
         for joueur in self.LISTE:
-            joueur.Initialiser()
+            if joueur.actif:                
+                joueur.Initialiser(position)
+                position += 1
                 
     def Afficher_Tous_Les_Joueurs(self, _joueur_a_afficher = None):
         # --- retri les joueurs pour que si un joueur s'affiche devant l'autre, il soit afficher apres
@@ -36,8 +43,9 @@ class CJoueurs():
         
         if _joueur_a_afficher == None:   
             for joueur in liste_joueurs_tries:
-                if not joueur.mort: self.joueurs_EnVie += 1
-                joueur.Afficher()                 
+                if joueur.actif:
+                    if not joueur.mort : self.joueurs_EnVie += 1
+                    joueur.Afficher()                 
                 
         else:
             liste_joueurs_tries[_joueur_a_afficher].Afficher()

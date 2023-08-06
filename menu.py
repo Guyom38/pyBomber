@@ -116,15 +116,17 @@ class CMenu():
         MENU3.append(CB.CBouton(self.MOTEUR, 99,  ""))
         MENU3.append(CB.CBouton(self.MOTEUR, 98,  "REVENIR"))
         self.LISTE["OPTIONS"] = MENU3
-
+        
         self.Positionne_Joueurs_Menu()
         
    
          
   
     def Positionne_Joueurs_Menu(self):
+        
         posX_id = 2
         for joueur in self.JOUEURS.LISTE:
+            joueur.actif = True
             if joueur.id == 0:
                 joueur.x, joueur.y = 1, 1
             else:
@@ -160,8 +162,17 @@ class CMenu():
                 self.y += self.hauteurBouton + self.hauteur_saut
                 if bouton_presse:
                     if bouton.id == 0:
-                        self.MOTEUR.phase_jeu = C_PHASE_DE_JEU.JEU
-                        self.MOTEUR.Relancer_Une_Partie()
+                        
+                        
+                        i = 0
+                        for joueur in self.MOTEUR.JOUEURS.LISTE:
+                            joueur.actif = (joueur.clown or joueur.id == 0)
+                            if joueur.actif:
+                                i = i +1
+
+                        if i>1:  
+                            self.MOTEUR.phase_jeu = C_PHASE_DE_JEU.JEU
+                            self.MOTEUR.Relancer_Une_Partie()
                             
                     elif bouton.id == 1:
                         self.menu = "NIVEAU"                            

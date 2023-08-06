@@ -64,15 +64,16 @@ class CInterface:
         largeur = (VAR.resolution[0] - image.get_width() - (VAR.tailleCellule * (nbJoueurs))) / nbJoueurs       
         
         for joueur in self.MOTEUR.JOUEURS.LISTE:
-            imgId, indexId = C_DIRECTION.BAS.value, 0
-            if joueur.mort: imgId, indexId = 5, 5
-            VAR.fenetre.blit(FCT.image_decoupe(joueur.image,  indexId, imgId, VAR.tailleCellule, VAR.tailleCellule*2), (x, 4)) 
-             
-            image = FCT.Image_Texte(str(joueur.score), (0,0,0,255), 30)            
-            VAR.fenetre.blit(image, (x + VAR.tailleCellule, VAR.tailleCellule-8))
-            image = FCT.Image_Texte(str(joueur.score), (255,255,255,255), 30)            
-            VAR.fenetre.blit(image, (x + VAR.tailleCellule+2, VAR.tailleCellule+2-8))
-            x += (largeur + VAR.tailleCellule)
+            if joueur.actif:
+                imgId, indexId = C_DIRECTION.BAS.value, 0
+                if joueur.mort: imgId, indexId = 5, 5
+                VAR.fenetre.blit(FCT.image_decoupe(joueur.image,  indexId, imgId, VAR.tailleCellule, VAR.tailleCellule*2), (x, 4)) 
+                
+                image = FCT.Image_Texte(str(joueur.score), (0,0,0,255), 30)            
+                VAR.fenetre.blit(image, (x + VAR.tailleCellule, VAR.tailleCellule-8))
+                image = FCT.Image_Texte(str(joueur.score), (255,255,255,255), 30)            
+                VAR.fenetre.blit(image, (x + VAR.tailleCellule+2, VAR.tailleCellule+2-8))
+                x += (largeur + VAR.tailleCellule)
         
         
         
