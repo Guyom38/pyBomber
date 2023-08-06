@@ -22,13 +22,17 @@ class CJoueur(item.CItem):
         self.clown = False
         
         self.menu = _menu
-        self.score = random.randint(0, VAR.nb_parties)
+        
+        self.nb_morts = 0
+        self.nb_manches = 0
         
         self.couleur = (255,255,255,255)        
     
         self.Initialiser(self.id)
         self.Colorisation()
 
+    def score(self):
+        return (self.nb_manches * 1000) + (self.nb_morts * 50)
     
     def estMalade(self): return not (self.maladie == 0)
     def vraimentMort(self): return (self.mort and self.animationId == -1)

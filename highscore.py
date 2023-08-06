@@ -16,7 +16,7 @@ class CHighscore:
         self.init = False
         
     def Initialiser(self):
-        self.liste_joueurs_tries = sorted(self.MOTEUR.JOUEURS.LISTE, key=lambda joueur: joueur.score)
+        self.liste_joueurs_tries = sorted(self.MOTEUR.JOUEURS.LISTE, key=lambda joueur: joueur.score())
         
         self.nbJoueurs = 0
         for joueur in self.liste_joueurs_tries:
@@ -82,7 +82,7 @@ class CHighscore:
                 
                 # --- affiche joueur
                 if joueur.x == 0.0: joueur.x = x + (posCourseDepart) + int(hauteur_course * 0.8)
-                xj = x + (posCourseDepart) + (joueur.score * pasCourse) + int(hauteur_course * 0.8)
+                xj = x + (posCourseDepart) + (joueur.nb_manches * pasCourse) + int(hauteur_course * 0.8)
                 vitesse = (VAR.nb_parties * pasCourse) / 150
                 if joueur.x < xj:
                     joueur.x += vitesse
@@ -106,6 +106,8 @@ class CHighscore:
                 rang +=1
                 
         if time.time() - self.temps > self.delais:
-            self.MOTEUR.Relancer_Une_Partie()
+            self.MOTEUR.phase_jeu = C_PHASE_DE_JEU.MENU
+            self.MOTEUR.MENU.Initialiser()
+            #self.MOTEUR.Relancer_Une_Partie()
 
   

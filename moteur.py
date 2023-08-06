@@ -43,7 +43,7 @@ class CMoteur():
         self.chargement = CCH.CChargement()
         self.chargement.start()
            
-        self.phase_jeu = C_PHASE_DE_JEU.HIGH_SCORE
+        self.phase_jeu = C_PHASE_DE_JEU.JEU
         
         
         CR.Chargement_Ressources()    

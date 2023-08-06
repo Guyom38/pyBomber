@@ -69,10 +69,14 @@ class CInterface:
                 if joueur.mort: imgId, indexId = 5, 5
                 VAR.fenetre.blit(FCT.image_decoupe(joueur.image,  indexId, imgId, VAR.tailleCellule, VAR.tailleCellule*2), (x, 4)) 
                 
-                image = FCT.Image_Texte(str(joueur.score), (0,0,0,255), 30)            
-                VAR.fenetre.blit(image, (x + VAR.tailleCellule, VAR.tailleCellule-8))
-                image = FCT.Image_Texte(str(joueur.score), (255,255,255,255), 30)            
-                VAR.fenetre.blit(image, (x + VAR.tailleCellule+2, VAR.tailleCellule+2-8))
+                image1 = FCT.Image_Texte(str(joueur.nb_manches), (0,0,0,255), 30)            
+                VAR.fenetre.blit(image1, (x + VAR.tailleCellule, VAR.tailleCellule-12))
+                image2 = FCT.Image_Texte(str(joueur.nb_manches), (255,255,255,255), 30)            
+                VAR.fenetre.blit(image2, (x + VAR.tailleCellule+2, VAR.tailleCellule+2-12))
+                
+                image = FCT.Image_Texte(str(joueur.score()), (0,0,0,255), 12)            
+                VAR.fenetre.blit(image, (x + VAR.tailleCellule, VAR.tailleCellule+image1.get_height()-12))
+
                 x += (largeur + VAR.tailleCellule)
         
         
@@ -105,9 +109,13 @@ class CInterface:
             self.Afficher_Compte_A_Rebours()            
                 
             if time.time() - self.temps_compte_a_rebours > self.delais_compte_a_rebours:
-                joueur.score += 1
-                self.MOTEUR.Relancer_Une_Partie()                
-                self.message_etape = C_MESSAGE.NON_INITIALISE
+                joueur.nb_manches += 1
+                if joueur.nb_manches == VAR.nb_parties:
+                    self.MOTEUR.phase_jeu = C_PHASE_DE_JEU.HIGH_SCORE
+                    self.MOTEUR.HIGHSCORE.Initialiser()
+                else:
+                    self.MOTEUR.Relancer_Une_Partie()                
+                    self.message_etape = C_MESSAGE.NON_INITIALISE
                 
         
         

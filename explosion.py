@@ -76,7 +76,9 @@ class CExplosion:
                 # --- tue les joueurs sur la zone            
                 for joueur in self.BOMBES.MOTEUR.JOUEURS.LISTE:
                     if _posX == joueur.iX() and _posY == joueur.iY():
-                        joueur.Mourir()                
+                        joueur.Mourir()   
+                        self.JOUEUR.nb_morts += 1
+                                     
                 # --- Detruit les objets sur la zone
                 for objet in self.BOMBES.MOTEUR.OBJETS.LISTE:
                     if _posX == objet.iX() and _posY == objet.iY():
