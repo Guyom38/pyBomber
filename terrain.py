@@ -139,6 +139,7 @@ class CTerrain():
                     self.timeOut = True
                 else:
                     self.GRILLE[self.x][self.y].objet = VAR.C_BLOC
+                    FCT.jouer_sons("bloc_timeout")
                     
                     for joueur in self.MOTEUR.JOUEURS.LISTE:
                         coord_joueur = (joueur.x * VAR.tailleCellule, joueur.y * VAR.tailleCellule, VAR.tailleCellule, VAR.tailleCellule)

@@ -24,7 +24,7 @@ class CMenu():
         self.temps_delais = 0.1
         
         self.select = None
-        
+        self.bouton_en_cours = -1
         
     def Action_NombreParties(self, _juste_valeur):
         if _juste_valeur:
@@ -164,13 +164,12 @@ class CMenu():
                     if bouton.id == 0:
                         
                         
-                        i = 0
-                        for joueur in self.MOTEUR.JOUEURS.LISTE:
-                            joueur.actif = (joueur.clown or joueur.id == 0)
-                            if joueur.actif:
-                                i = i +1
+                        nbJoueursPourLaPartie = len([1 for joueur in self.MOTEUR.JOUEURS.LISTE if joueur.clown])                        
 
-                        if i>1:  
+                        if nbJoueursPourLaPartie > 1:  
+                            for joueur in self.MOTEUR.JOUEURS.LISTE:
+                                joueur.actif = (joueur.clown or joueur.id == 0)
+                            
                             self.MOTEUR.phase_jeu = C_PHASE_DE_JEU.JEU
                             self.MOTEUR.Relancer_Une_Partie()
                             
@@ -211,6 +210,8 @@ class CMenu():
 
         self.Dessiner_Particules()
 
+        if self.MOTEUR.CONTROLLEUR.Recherche_Manettes():
+            self.Initialiser()
                 
     
     

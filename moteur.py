@@ -67,6 +67,7 @@ class CMoteur():
         
         FCT.Charge_Musique(random.choice(['78','41','25']) )      
         self.Reprendre_Partie(True)
+        #FCT.jouer_sons("intro")
          
     def Boucle(self):
         FCT.Charge_Musique(random.choice(['78','41','25']) )

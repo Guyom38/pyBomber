@@ -21,7 +21,7 @@ class CObjets:
         for _ in range(5): self.PIOCHES.append(C_OBJET.ROLLER)
         for _ in range(2): self.PIOCHES.append(C_OBJET.COUP_PIED)
         for _ in range(2): self.PIOCHES.append(C_OBJET.COUP_POING)
-        for _ in range(10): self.PIOCHES.append(C_OBJET.MALADIE)
+        for _ in range(5): self.PIOCHES.append(C_OBJET.MALADIE)
         for _ in range(2): self.PIOCHES.append(C_OBJET.SUPER_FLAMME)
         for _ in range(30): self.PIOCHES.append(None)            
         random.shuffle(self.PIOCHES)  

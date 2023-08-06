@@ -19,14 +19,14 @@ mode_ecran = DOUBLEBUF
 if fullHd: resolution = (1920, 1080)
 if plein_ecran: mode_ecran = FULLSCREEN
 
-zoom = 3
+zoom = 4
 
 tailleCellule = 16
 nbLignes, nbColonnes = 13, 15
 tauxRemplissage = 70
 delaisExplosion = 3    
 
-duree_partie = 180
+duree_partie = 15
 nb_parties = 3
 active_maladies = True
 active_heritage = True

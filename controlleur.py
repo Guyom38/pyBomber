@@ -18,6 +18,7 @@ class CCControlleur:
         self.pression = False
         
         self.action_bouton = None
+        
     def Initialiser(self):
         self.nbManettes = pygame.joystick.get_count() 
         
@@ -29,6 +30,13 @@ class CCControlleur:
         
         self.Creer_Joueurs_Clavier_Manettes()
     
+    def Recherche_Manettes(self):
+        if self.nbManettes != pygame.joystick.get_count():
+            self.nbManettes = pygame.joystick.get_count() 
+            self.Initialiser()
+            return True
+        return False
+        
     def Menu_Pression_Touche(self, _direction):
         if time.time() - self.pression_temps > self.pression_delais:
             self.pression_temps = time.time()
@@ -39,10 +47,11 @@ class CCControlleur:
             self.pression = False
               
     def Creer_Joueurs_Clavier_Manettes(self):
-        for i in range(8):
+        self.JOUEURS.LISTE = []
+        for i in range(2):
             self.JOUEURS.LISTE.append(CJ.CJoueur(self.MOTEUR, i, ""))  
         #self.JOUEURS.LISTE.append(CJ.CJoueur(self.MOTEUR, 8, ""))  
-        for i in range(1, self.nbManettes):
+        for i in range(2, self.nbManettes):
             self.JOUEURS.LISTE.append(CJ.CJoueur(self.MOTEUR, i, ""))  
     
     def Gestion_Utilisateurs(self):

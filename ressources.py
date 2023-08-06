@@ -1,3 +1,4 @@
+
 import pygame
 from pygame.locals import *
 
@@ -6,7 +7,18 @@ import fonctions as FCT
 
 from enums import *
 
+
+def Afficher_Icone(_etat):
+    VAR.fenetre.fill((16,16,16))
+    
+    if _etat:
+        VAR.image["logo"] =  pygame.transform.scale(pygame.image.load("images/logo.png").convert_alpha(), (128, 128))
+        VAR.fenetre.blit(VAR.image['logo'], (VAR.resolution[0] - VAR.image["logo"].get_width() - VAR.tailleCellule, VAR.resolution[1] - VAR.image["logo"].get_height() - VAR.tailleCellule))
+    pygame.display.update()
+
+
 def Chargement_Ressources():
+    Afficher_Icone(True)
     VAR.tailleCellule = 16 * VAR.zoom
         
     tmp = pygame.image.load("images/titre.jpg").convert_alpha() 
@@ -16,7 +28,8 @@ def Chargement_Ressources():
     # --- Decors
     tmp = pygame.image.load("images/decors.png").convert_alpha() 
     if VAR.zoom > 1: tmp = pygame.transform.scale(tmp, (tmp.get_width() * VAR.zoom, tmp.get_height() * VAR.zoom))  
-        
+    
+       
     VAR.image["cassable"] = FCT.image_decoupe(tmp, 0, 0, VAR.tailleCellule, VAR.tailleCellule )
     VAR.image["cassable0"] = FCT.image_decoupe(tmp, 1, 0, VAR.tailleCellule, VAR.tailleCellule )
     VAR.image["cassable1"] = FCT.image_decoupe(tmp, 2, 0, VAR.tailleCellule, VAR.tailleCellule )
@@ -27,6 +40,7 @@ def Chargement_Ressources():
     VAR.image["mur"] = FCT.image_decoupe(tmp, 0, 1, VAR.tailleCellule, VAR.tailleCellule )
     VAR.image["start"] = pygame.image.load("images/start.png").convert_alpha() 
 
+    Afficher_Icone(False)
     # --- Joueurs
     VAR.image["joueur0"] = pygame.image.load("images/sprite1.png").convert_alpha() 
     if VAR.zoom > 1: VAR.image["joueur0"] = pygame.transform.scale(VAR.image["joueur0"], (VAR.image["joueur0"].get_width() * VAR.zoom, VAR.image["joueur0"].get_height() * VAR.zoom)) 
@@ -44,7 +58,7 @@ def Chargement_Ressources():
     VAR.image["avatar5"] = pygame.image.load("images/avatar_vert.png").convert_alpha() 
     VAR.image["avatar6"] = pygame.image.load("images/avatar_ciel.png").convert_alpha() 
     VAR.image["avatar7"] = pygame.image.load("images/avatar_rose.png").convert_alpha() 
-
+    Afficher_Icone(True)
     VAR.image[C_OBJET.BOMBE] =        FCT.image_decoupe(VAR.image["objets"], 0, 0, VAR.tailleCellule, VAR.tailleCellule  )
     VAR.image[C_OBJET.COUP_PIED] =    FCT.image_decoupe(VAR.image["objets"], 1, 0, VAR.tailleCellule, VAR.tailleCellule )
     VAR.image[C_OBJET.ROLLER] =       FCT.image_decoupe(VAR.image["objets"], 2, 0, VAR.tailleCellule, VAR.tailleCellule )
@@ -56,3 +70,10 @@ def Chargement_Ressources():
     VAR.sons["poser_bombe"] = pygame.mixer.Sound('audios/bomb.wav')
     VAR.sons["prendre_objet"] = pygame.mixer.Sound('audios/prendre.wav')
     VAR.sons["explosion"] = pygame.mixer.Sound('audios/boom2.wav')
+    
+    VAR.sons["menu_clic"] = pygame.mixer.Sound('audios/menu_clic.wav')
+    VAR.sons["menu_select"] = pygame.mixer.Sound('audios/menu_select.wav')  
+    Afficher_Icone(False) 
+    VAR.sons["bloc_timeout"] = pygame.mixer.Sound('audios/bloc_timeout.wav')    
+    VAR.sons["intro"] = pygame.mixer.Sound('audios/intro.wav')    
+    VAR.sons["tete_mort"] = pygame.mixer.Sound('audios/tete_mort.wav')

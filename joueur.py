@@ -265,6 +265,7 @@ class CJoueur(item.CItem):
         self.maladie_Temps_fige == -1
            
     def Tombe_Malade(self):
+        FCT.jouer_sons("tete_mort")
         self.maladie = random.choices(list(C_MALADIE))[0]
         print(self.maladie)
         

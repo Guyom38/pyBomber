@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *
+import pygame.mixer
 
 import variables as VAR
 import fonctions as FCT
@@ -18,7 +19,7 @@ class CBouton():
         
         self.fonction = _fonction
         
-            
+
         
        
         self.couleur_fond, self.couleur_bordure = (64, 64, 64, 64), (255, 255, 255, 255)
@@ -55,13 +56,18 @@ class CBouton():
             coord_bouton = (x, y, self.largeur, self.hauteur)
             if FCT.ContientDans(coord_joueur, coord_bouton):
                 
-                
+
                 if joueur.id == 0:
+                    if self.MOTEUR.MENU.bouton_en_cours != self.id:
+                        self.MOTEUR.MENU.bouton_en_cours = self.id
+                        FCT.jouer_sons("menu_clic")
+                    
                     couleur = (237,0,140)
                     couleur2 = (75,107,220) 
                 
                     if self.MOTEUR.CONTROLLEUR.action_bouton == True:
                         bouton_presse = True
+                        FCT.jouer_sons("menu_select")
                         if not self.fonction == None :
                             self.fonction(False)
                             
