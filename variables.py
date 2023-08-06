@@ -19,7 +19,7 @@ mode_ecran = DOUBLEBUF
 if fullHd: resolution = (1920, 1080)
 if plein_ecran: mode_ecran = FULLSCREEN
 
-zoom = 4
+zoom = 3
 
 tailleCellule = 16
 nbLignes, nbColonnes = 13, 15

@@ -12,6 +12,8 @@ import objets as COS
 import interface as CI
 import menu as CM
 import ressources as CR
+import chargement as CCH
+
 import variables as VAR
 import fonctions as FCT
 
@@ -24,6 +26,8 @@ class CMoteur():
         pygame.init()   
         pygame.mixer.init()
         
+        
+    
         self.PARTICULES = CP.CParticules(self) 
         self.INTERFACE = CI.CInterface(self)        
         self.TERRAIN = CT.CTerrain(self)   
@@ -33,7 +37,10 @@ class CMoteur():
         self.CONTROLLEUR = CC.CCControlleur(self)           
         self.MENU = CM.CMenu(self) 
         
-    def Initialisation(self):    
+    def Initialisation(self): 
+        self.chargement = CCH.CChargement()
+        self.chargement.start()
+           
         self.phase_jeu = C_PHASE_DE_JEU.MENU
         
         
@@ -49,6 +56,9 @@ class CMoteur():
         self.CONTROLLEUR.Initialiser()
         self.MENU.Initialiser()
        
+        self.chargement.Arreter()
+
+  
     def Demarrer(self):
         VAR.fenetre = pygame.display.set_mode(VAR.resolution, VAR.mode_ecran, 32)
         pygame.display.set_caption("PyBomber 0.5")        
