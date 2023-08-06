@@ -39,7 +39,7 @@ class CCControlleur:
             self.pression = False
               
     def Creer_Joueurs_Clavier_Manettes(self):
-        for i in range(2):
+        for i in range(8):
             self.JOUEURS.LISTE.append(CJ.CJoueur(self.MOTEUR, i, ""))  
         #self.JOUEURS.LISTE.append(CJ.CJoueur(self.MOTEUR, 8, ""))  
         for i in range(1, self.nbManettes):

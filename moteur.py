@@ -44,10 +44,10 @@ class CMoteur():
         self.TERRAIN.Initialiser()       
         self.BOMBES.Initialiser()
         self.OBJETS.Initialiser() 
-        self.MENU.Initialiser()
+        
         self.JOUEURS.Initialiser()
         self.CONTROLLEUR.Initialiser()
-        
+        self.MENU.Initialiser()
        
     def Demarrer(self):
         VAR.fenetre = pygame.display.set_mode(VAR.resolution, VAR.mode_ecran, 32)

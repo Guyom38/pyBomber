@@ -24,7 +24,8 @@ class CMenu():
         self.temps_delais = 0.1
         
         self.select = None
-    
+        
+        
     def Action_NombreParties(self, _juste_valeur):
         if _juste_valeur:
             if VAR.nb_parties == 0: return "illimité"
@@ -59,6 +60,9 @@ class CMenu():
     
     def Initialiser(self):
         self.largeurZone = 640
+        self.hauteur_saut = 10
+        self.hauteur_vide = VAR.tailleCellule
+        
         VAR.nbColonnes = int((self.largeurZone / VAR.tailleCellule)) +1
         VAR.nbLignes = int((VAR.resolution[1] / VAR.tailleCellule)) - 2        
         self.largeurBouton, self.hauteurBouton = (VAR.nbColonnes - 2) * VAR.tailleCellule, 64
@@ -66,8 +70,8 @@ class CMenu():
         self.TERRAIN.GRILLE =  [[CC.CCellule(self.MOTEUR, x, y) for y in range(VAR.nbLignes)] for x in range(VAR.nbColonnes)]
         self.TERRAIN.Construire_Terrain_De_Jeu(True)
         self.TERRAIN.image = None           
-               
-        self.JOUEURS.RePositionne_Joueurs()
+        
+        
         
         self.LISTE = {}
         self.menu = "PRINCIPAL"
@@ -113,27 +117,39 @@ class CMenu():
         MENU3.append(CB.CBouton(self.MOTEUR, 98,  "REVENIR"))
         self.LISTE["OPTIONS"] = MENU3
 
-        
+        self.Positionne_Joueurs_Menu()
         
    
          
   
-        
+    def Positionne_Joueurs_Menu(self):
+        posX_id = 2
+        for joueur in self.JOUEURS.LISTE:
+            if joueur.id == 0:
+                joueur.x, joueur.y = 1, 1
+            else:
+                joueur.x, joueur.y = posX_id, VAR.nbLignes - 2
+                posX_id += 1.5
+                  
     def Dessiner_Titre(self):
         VAR.fenetre.blit(VAR.image['titre'], (0, 0))    
          
     
-    def Dessiner_Bouton(self):
-        hauteur_saut = 10
-        hauteur_vide = VAR.tailleCellule
+    def Calcul_Hauteur_Cadre(self):
         
         hauteur_boutons = 0
         for bouton in self.LISTE[self.menu]:
             if not bouton.texte == "":
-                hauteur_boutons += self.hauteurBouton + hauteur_saut
+                hauteur_boutons += self.hauteurBouton + self.hauteur_saut
             else:
-                hauteur_boutons += hauteur_vide
-        hauteur_boutons -= hauteur_saut
+                hauteur_boutons += self.hauteur_vide
+        hauteur_boutons -= self.hauteur_saut
+        return hauteur_boutons
+    
+    def Dessiner_Bouton(self):
+        
+        hauteur_boutons = self.Calcul_Hauteur_Cadre()
+       
         
         self.x, self.y = (VAR.resolution[0] - self.largeurZone) - 96,  int((VAR.resolution[1] - hauteur_boutons)  / 2)
         VAR.offSet = (self.x, VAR.tailleCellule) 
@@ -141,7 +157,7 @@ class CMenu():
         for bouton in self.LISTE[self.menu]:
             if not bouton.texte == "":
                 bouton_presse = bouton.Afficher_Bouton(self.x, self.y)
-                self.y += self.hauteurBouton + hauteur_saut
+                self.y += self.hauteurBouton + self.hauteur_saut
                 if bouton_presse:
                     if bouton.id == 0:
                         self.MOTEUR.phase_jeu = C_PHASE_DE_JEU.JEU
@@ -159,7 +175,7 @@ class CMenu():
                     elif bouton.id == 98:
                         self.menu = "PRINCIPAL"
             else:
-                self.y += hauteur_vide
+                self.y += self.hauteur_vide
                             
                             
                             

@@ -30,3 +30,6 @@ class CParticules:
 
             if particle[2] <= 0:
                 self.LISTE.remove(particle)
+                
+    
+
