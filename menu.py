@@ -49,7 +49,13 @@ class CMenu():
             return "ON" if VAR.active_heritage else "OFF"
         else:
             VAR.active_heritage = not VAR.active_heritage
-            
+    
+    def Action_Revenir_Principal(self, _juste_heritage):
+        if _juste_heritage:
+            return None
+        else:
+            self.menu = "PRINCIPAL"  
+
     
     def Initialiser(self):
         self.largeurZone = 640
@@ -61,7 +67,7 @@ class CMenu():
         self.TERRAIN.Construire_Terrain_De_Jeu(True)
         self.TERRAIN.image = None           
                
-        
+        self.JOUEURS.RePositionne_Joueurs()
         
         self.LISTE = {}
         self.menu = "PRINCIPAL"
@@ -69,34 +75,42 @@ class CMenu():
         self.id = 0
         
         MENU1 = []
-        MENU1.append(CB.CBouton(self.MOTEUR, 0, "PARTIE RAPIDE"))
-        MENU1.append(CB.CBouton(self.MOTEUR, 1, "PERSONNALISER"))
-        MENU1.append(CB.CBouton(self.MOTEUR, 2, "OPTIONS"))
-        MENU1.append(CB.CBouton(self.MOTEUR, 3, ""))
-        MENU1.append(CB.CBouton(self.MOTEUR, 4, "QUITTER"))
+        MENU1.append(CB.CBouton(self.MOTEUR, 0, "DEMARRER LA PARTIE"))
+        MENU1.append(CB.CBouton(self.MOTEUR, 99, ""))
+        MENU1.append(CB.CBouton(self.MOTEUR, 1, "CHOIX NIVEAUX"))
+        MENU1.append(CB.CBouton(self.MOTEUR, 2, "REGLES DE JEU"))
+        MENU1.append(CB.CBouton(self.MOTEUR, 99, ""))
+        MENU1.append(CB.CBouton(self.MOTEUR, 4, "OPTIONS"))
+        MENU1.append(CB.CBouton(self.MOTEUR, 5, "QUITTER"))
         self.LISTE["PRINCIPAL"] = MENU1
         
         MENU2 = []
-        MENU2.append(CB.CBouton(self.MOTEUR, 0,  "NB. MANCHES", self.Action_NombreParties))
-        MENU2.append(CB.CBouton(self.MOTEUR, 1,  "DUREE", self.Action_DureeParties))
-        MENU2.append(CB.CBouton(self.MOTEUR, 2,  "MALADIES", self.Action_Active_Maladies))
-        MENU2.append(CB.CBouton(self.MOTEUR, 3,  "HERITAGE", self.Action_Active_Heritage))           
+        MENU2.append(CB.CBouton(self.MOTEUR, 10,  "NB. MANCHES", self.Action_NombreParties))
+        MENU2.append(CB.CBouton(self.MOTEUR, 11,  "DUREE", self.Action_DureeParties))
+        MENU2.append(CB.CBouton(self.MOTEUR, 12,  "MALADIES", self.Action_Active_Maladies))
+        MENU2.append(CB.CBouton(self.MOTEUR, 13,  "HERITAGE", self.Action_Active_Heritage))           
+        MENU2.append(CB.CBouton(self.MOTEUR, 99,  ""))           
+        MENU2.append(CB.CBouton(self.MOTEUR, 98,  "REVENIR"))           
         self.LISTE["PARTIE"] = MENU2
         
         MENU4 = []
-        MENU4.append(CB.CBouton(self.MOTEUR, 0, "ORGINAL (15x13)"))
-        MENU4.append(CB.CBouton(self.MOTEUR, 1, "NORMAL"))
-        MENU4.append(CB.CBouton(self.MOTEUR, 2, "LARGE"))
-        MENU4.append(CB.CBouton(self.MOTEUR, 3, "AU TAQUET"))
+        MENU4.append(CB.CBouton(self.MOTEUR, 20, "ORGINAL (15x13)"))
+        MENU4.append(CB.CBouton(self.MOTEUR, 21, "NORMAL"))
+        MENU4.append(CB.CBouton(self.MOTEUR, 22, "LARGE"))
+        MENU4.append(CB.CBouton(self.MOTEUR, 23, "AU TAQUET"))
+        MENU4.append(CB.CBouton(self.MOTEUR, 99, ""))
+        MENU4.append(CB.CBouton(self.MOTEUR, 98, "REVENIR"))
         self.LISTE["NIVEAU"] = MENU4
         
        
 
         MENU3 = []
-        MENU3.append(CB.CBouton(self.MOTEUR, 0,  "RESOLUTION (1024x768)"))
-        MENU3.append(CB.CBouton(self.MOTEUR, 1,  "ZOOM (x2)"))
-        MENU3.append(CB.CBouton(self.MOTEUR, 2,  "MUSIC (ON)"))
-        MENU3.append(CB.CBouton(self.MOTEUR, 3,  "PARTICULE (ON)"))
+        MENU3.append(CB.CBouton(self.MOTEUR, 30,  "RESOLUTION (1024x768)"))
+        MENU3.append(CB.CBouton(self.MOTEUR, 31,  "ZOOM (x2)"))
+        MENU3.append(CB.CBouton(self.MOTEUR, 32,  "MUSIC (ON)"))
+        MENU3.append(CB.CBouton(self.MOTEUR, 33,  "PARTICULE (ON)"))
+        MENU3.append(CB.CBouton(self.MOTEUR, 99,  ""))
+        MENU3.append(CB.CBouton(self.MOTEUR, 98,  "REVENIR"))
         self.LISTE["OPTIONS"] = MENU3
 
         
@@ -110,26 +124,42 @@ class CMenu():
          
     
     def Dessiner_Bouton(self):
-        self.x, self.y = (VAR.resolution[0] - self.largeurZone) - 96,  int((VAR.resolution[1] - len(self.LISTE[self.menu]) * (self.hauteurBouton+10))  / 2)
+        hauteur_saut = 10
+        hauteur_vide = VAR.tailleCellule
+        
+        hauteur_boutons = 0
+        for bouton in self.LISTE[self.menu]:
+            if not bouton.texte == "":
+                hauteur_boutons += self.hauteurBouton + hauteur_saut
+            else:
+                hauteur_boutons += hauteur_vide
+        hauteur_boutons -= hauteur_saut
+        
+        self.x, self.y = (VAR.resolution[0] - self.largeurZone) - 96,  int((VAR.resolution[1] - hauteur_boutons)  / 2)
         VAR.offSet = (self.x, VAR.tailleCellule) 
         
         for bouton in self.LISTE[self.menu]:
             if not bouton.texte == "":
                 bouton_presse = bouton.Afficher_Bouton(self.x, self.y)
-                
+                self.y += self.hauteurBouton + hauteur_saut
                 if bouton_presse:
-                    if self.menu == "PRINCIPAL":
-                        if bouton.id == 0:
-                            self.MOTEUR.phase_jeu = C_PHASE_DE_JEU.JEU
-                            self.MOTEUR.Relancer_Une_Partie()
+                    if bouton.id == 0:
+                        self.MOTEUR.phase_jeu = C_PHASE_DE_JEU.JEU
+                        self.MOTEUR.Relancer_Une_Partie()
                             
-                        elif bouton.id == 1:
-                            self.menu = "PARTIE"
+                    elif bouton.id == 1:
+                        self.menu = "NIVEAU"                            
+                    elif bouton.id == 2:
+                        self.menu = "PARTIE"
                             
-                        elif bouton.id == 2:
-                            self.menu = "OPTIONS"
-                        elif bouton.id == 4:
-                            VAR.boucle_jeu = False
+                    elif bouton.id == 4:
+                        self.menu = "OPTIONS"    
+                    elif bouton.id == 5:
+                        VAR.boucle_jeu = False
+                    elif bouton.id == 98:
+                        self.menu = "PRINCIPAL"
+            else:
+                self.y += hauteur_vide
                             
                             
                             
@@ -143,10 +173,15 @@ class CMenu():
         self.PARTICULES.Afficher_Les_Particules()  
            
     def Afficher_Menu(self):
+        joueurSelect = None
+        
         self.Dessiner_Titre()
         self.TERRAIN.Afficher() 
         self.Dessiner_Bouton()
-        self.JOUEURS.Afficher_Tous_Les_Joueurs()
+        
+        if self.menu != "PRINCIPAL": joueurSelect = 0            
+        self.JOUEURS.Afficher_Tous_Les_Joueurs(joueurSelect)
+
         self.Dessiner_Particules()
 
                 

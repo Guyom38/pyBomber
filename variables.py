@@ -32,8 +32,8 @@ active_maladies = True
 active_heritage = True
 
 CLAVIER = {
-    0: {"DROITE": K_d, "GAUCHE": K_q, "HAUT" : K_z, "BAS" : K_s, "ACTION1" : K_LCTRL, "ACTION2" : K_b},
-    1: {"DROITE": K_RIGHT, "GAUCHE": K_LEFT, "HAUT" : K_UP, "BAS" : K_DOWN, "ACTION1" : K_SPACE, "ACTION2" : K_RCTRL} }
+    0: {"DROITE": K_d, "GAUCHE": K_q, "HAUT" : K_z, "BAS" : K_s, "ACTION1" : K_w, "ACTION2" : K_x},
+    1: {"DROITE": K_RIGHT, "GAUCHE": K_LEFT, "HAUT" : K_UP, "BAS" : K_DOWN, "ACTION1" : K_l, "ACTION2" : K_m} }
 
 
 

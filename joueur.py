@@ -53,6 +53,7 @@ class CJoueur(item.CItem):
         self.maladie_temps_touche = -1
         
         self.mort = False
+        self.actif = True
         
         if not self.menu:
             self.TERRAIN.Libere_Zone(self.iX(), self.iY(), 2)    

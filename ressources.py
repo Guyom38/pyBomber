@@ -25,6 +25,7 @@ def Chargement_Ressources():
     VAR.image["sol1"] = FCT.image_decoupe(tmp, 0, 2, VAR.tailleCellule, VAR.tailleCellule )
     VAR.image["ombre"] = FCT.image_decoupe(tmp, 1, 2, VAR.tailleCellule, VAR.tailleCellule )
     VAR.image["mur"] = FCT.image_decoupe(tmp, 0, 1, VAR.tailleCellule, VAR.tailleCellule )
+    VAR.image["start"] = pygame.image.load("images/start.png").convert_alpha() 
 
     # --- Joueurs
     VAR.image["joueur0"] = pygame.image.load("images/sprite1.png").convert_alpha() 

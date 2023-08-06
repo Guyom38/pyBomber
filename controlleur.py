@@ -52,6 +52,7 @@ class CCControlleur:
             if event.type == KEYDOWN and event.key == K_ESCAPE: 
                 if self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.JEU:
                     self.MOTEUR.phase_jeu = C_PHASE_DE_JEU.MENU
+                    self.MOTEUR.MENU.Initialiser()
                 elif self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.MENU:
                     VAR.boucle_jeu = False
                 
