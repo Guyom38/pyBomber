@@ -103,21 +103,28 @@ class CCControlleur:
         for key, values in VAR.CLAVIER.items():
             if _event.type == KEYDOWN: 
                 if self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.JEU: 
-                    if _event.key == values["ACTION1"]: 
-                        self.JOUEURS.LISTE[key].Action_Poser_Une_Bombe()
-                    if _event.key == values["ACTION2"]: 
-                        self.JOUEURS.LISTE[key].Action_Pousser_La_Bombe()
+                    if not self.JOUEURS.LISTE[_event.joy].mort:
+                        if _event.key == values["ACTION1"]: 
+                            self.JOUEURS.LISTE[key].Action_Poser_Une_Bombe()
+                        if _event.key == values["ACTION2"]: 
+                            self.JOUEURS.LISTE[key].Action_Pousser_La_Bombe()
+                        
                 elif self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.MENU:
                     if _event.key == values["ACTION1"]: 
                         self.action_bouton = True
                 
                     
         if _event.type == pygame.JOYBUTTONDOWN:
-            if not self.JOUEURS.LISTE[_event.joy].mort:
-                if (_event.button == 2):
-                    self.JOUEURS.LISTE[_event.joy].Action_Poser_Une_Bombe()
+            if self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.JEU: 
+                if not self.JOUEURS.LISTE[_event.joy].mort:
+                    if (_event.button == 2):
+                        self.JOUEURS.LISTE[_event.joy].Action_Poser_Une_Bombe()
+                    if (_event.button == 1):
+                        self.JOUEURS.LISTE[_event.joy].Action_Pousser_La_Bombe()
+            
+            elif self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.MENU:
                 if (_event.button == 1):
-                    self.JOUEURS.LISTE[_event.joy].Action_Pousser_La_Bombe()
+                    self.action_bouton = True       
     
     def Gestion_Manettes_Directions(self):
        
