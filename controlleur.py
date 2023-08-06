@@ -48,7 +48,7 @@ class CCControlleur:
               
     def Creer_Joueurs_Clavier_Manettes(self):
         self.JOUEURS.LISTE = []
-        for i in range(2):
+        for i in range(8):
             self.JOUEURS.LISTE.append(CJ.CJoueur(self.MOTEUR, i, ""))  
         #self.JOUEURS.LISTE.append(CJ.CJoueur(self.MOTEUR, 8, ""))  
         for i in range(2, self.nbManettes):
@@ -103,7 +103,7 @@ class CCControlleur:
         for key, values in VAR.CLAVIER.items():
             if _event.type == KEYDOWN: 
                 if self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.JEU: 
-                    if not self.JOUEURS.LISTE[_event.joy].mort:
+                    if not self.JOUEURS.LISTE[key].mort:
                         if _event.key == values["ACTION1"]: 
                             self.JOUEURS.LISTE[key].Action_Poser_Une_Bombe()
                         if _event.key == values["ACTION2"]: 

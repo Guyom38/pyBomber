@@ -170,7 +170,7 @@ class CMenu():
                             for joueur in self.MOTEUR.JOUEURS.LISTE:
                                 joueur.actif = (joueur.clown or joueur.id == 0)
                             
-                            self.MOTEUR.phase_jeu = C_PHASE_DE_JEU.JEU
+
                             self.MOTEUR.Relancer_Une_Partie()
                             
                     elif bouton.id == 1:

@@ -22,7 +22,7 @@ class CJoueur(item.CItem):
         self.clown = False
         
         self.menu = _menu
-        self.score = 0
+        self.score = random.randint(0, VAR.nb_parties)
         
         self.couleur = (255,255,255,255)        
     

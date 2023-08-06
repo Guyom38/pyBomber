@@ -26,6 +26,10 @@ def Chargement_Ressources():
     tmp = pygame.image.load("images/titre.jpg").convert_alpha() 
     tmp = pygame.transform.scale(tmp, (VAR.resolution[0], VAR.resolution[1]))
     VAR.image['titre'] = tmp
+    
+    tmp = pygame.image.load("images/R.jpg").convert_alpha() 
+    tmp = pygame.transform.scale(tmp, (VAR.resolution[0], VAR.resolution[1]))
+    VAR.image['r'] = tmp
         
     # --- Decors
     tmp = pygame.image.load("images/decors.png").convert_alpha() 
@@ -41,6 +45,7 @@ def Chargement_Ressources():
     VAR.image["ombre"] = FCT.image_decoupe(tmp, 1, 2, VAR.tailleCellule, VAR.tailleCellule )
     VAR.image["mur"] = FCT.image_decoupe(tmp, 0, 1, VAR.tailleCellule, VAR.tailleCellule )
     VAR.image["start"] = pygame.image.load("images/start.png").convert_alpha() 
+    
 
     
     # --- Joueurs

@@ -123,7 +123,11 @@ class CInterface:
             
             
     def Dessiner_Cadre(self, _x, _y, _largeur, _hauteur, _couleurFond, _couleurBordure, _epaisseurBordure=2):
-        pygame.draw.rect(VAR.fenetre, _couleurFond, (_x, _y, _largeur, _hauteur), 0)  
+        rect_surface = pygame.Surface((_largeur, _hauteur), pygame.SRCALPHA)
+        pygame.draw.rect(rect_surface, _couleurFond, rect_surface.get_rect(), border_radius=10)
+
+        VAR.fenetre.blit(rect_surface, (_x, _y))
+        #pygame.draw.rect(VAR.fenetre, _couleurFond, (_x, _y, _largeur, _hauteur), 0)  
         pygame.draw.rect(VAR.fenetre, _couleurBordure, (_x, _y, _largeur, _hauteur), _epaisseurBordure) 
         
     
@@ -143,7 +147,7 @@ class CInterface:
             pygame.display.update()
                     
     def Afficher_Message(self, _icone, _texte, _delais):
-        couleur_fond, couleur_bordure = (0, 0, 0, 64), (255, 255, 255, 255)
+        couleur_fond, couleur_bordure = (0, 0, 0, 200), (255, 255, 255, 255)
         hauteur = 140
         largeur = VAR.resolution[0]
         

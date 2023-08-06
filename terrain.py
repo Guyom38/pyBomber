@@ -134,8 +134,8 @@ class CTerrain():
                                 
                                 
                 
-
-                if self.tour == int(VAR.nbLignes / 3):
+                max_lignes = int((VAR.nbLignes - 6) / 2)
+                if self.tour == max_lignes:
                     self.timeOut = True
                 else:
                     self.GRILLE[self.x][self.y].objet = VAR.C_BLOC

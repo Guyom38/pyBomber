@@ -27,7 +27,7 @@ tauxRemplissage = 70
 delaisExplosion = 3    
 
 duree_partie = 15
-nb_parties = 3
+nb_parties = 5
 active_maladies = True
 active_heritage = True
 
