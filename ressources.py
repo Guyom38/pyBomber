@@ -18,7 +18,8 @@ from enums import *
 
 
 def Chargement_Ressources():
-
+    VAR.sons["sloggan"] = pygame.mixer.Sound('audios/sloggan.wav')
+    FCT.jouer_sons("sloggan")
     
 
     VAR.tailleCellule = 16 * VAR.zoom
@@ -87,6 +88,10 @@ def Chargement_Ressources():
     
     VAR.sons["pet"] = pygame.mixer.Sound('audios/pet.wav')
     
+    
+   
+
+       
    
 
     

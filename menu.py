@@ -59,6 +59,8 @@ class CMenu():
 
     
     def Initialiser(self):
+        FCT.Charge_Musique("menu" )      
+        
         self.largeurZone = 640
         self.hauteur_saut = 10
         self.hauteur_vide = VAR.tailleCellule

@@ -71,7 +71,7 @@ class CObjet(item.CItem):
                 
                 if 0 <= posX < VAR.nbColonnes and 0 <= posY < VAR.nbLignes:
                     deja_Occupe = self.Objet_Present_Sur_Place(posX, posY)    
-                    zone_Libre = (self.TERRAIN.GRILLE[posX][posY].objet == VAR.C_SOL)   
+                    zone_Libre = (self.TERRAIN.GRILLE[posX][posY].objet == C_TERRAIN.SOL)   
                         
                     if not deja_Occupe and zone_Libre:
                         self.x, self.y = posX, posY

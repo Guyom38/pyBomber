@@ -4,19 +4,22 @@ from pygame.locals import *
 import variables as VAR
 import time, random
 import item
+
+from enums import *
+
 class CCellule(item.CItem):
     def __init__(self, _moteur, _x, _y):
         super().__init__(_moteur, _x,_y, "")      
            
-        self.objet = VAR.C_SOL   
+        self.objet = C_TERRAIN.SOL 
         self.casser = False
         
         
     def Traversable(self):
-        return (self.objet == VAR.C_SOL)
+        return (self.objet == C_TERRAIN.SOL)
     
     def Cassable(self):
-        return (self.objet == VAR.C_CASSABLE)
+        return (self.objet == C_TERRAIN.CASSABLE)
     
     def Casser_Mur(self):
         self.temps = time.time()
@@ -33,7 +36,7 @@ class CCellule(item.CItem):
             self.temps = time.time() 
             
         if self.animationId > 1:
-            self.objet = VAR.C_SOL    
+            self.objet = C_TERRAIN.SOL   
             self.MOTEUR.OBJETS.Ajouter_Ou_Pas_Un_Objet(self.x, self.y)
     
 
@@ -42,20 +45,20 @@ class CCellule(item.CItem):
         posX = VAR.offSet[0] + (self.x * VAR.tailleCellule)
         posY = VAR.offSet[1] + (self.y * VAR.tailleCellule)
         
-        if self.objet == VAR.C_CASSABLE: 
+        if self.objet == C_TERRAIN.CASSABLE: 
             if not self.casser:
                 VAR.fenetre.blit(VAR.image["cassable"], (posX, posY))    
             else:
                 VAR.fenetre.blit(VAR.image["cassable"+str(self.animationId)], (posX, posY)) 
                 self.Animation_Explosion_Mur() 
                 
-        elif self.objet == VAR.C_BLOC:
+        elif self.objet == C_TERRAIN.BLOC:
             #pygame.draw.rect(VAR.fenetre, (random.randint(0, 255),255,255), (posX, posY, VAR.tailleCellule, VAR.tailleCellule), 0)
             VAR.fenetre.blit(VAR.image["mur"], (posX, posY))
             
                
-        elif not self.objet == VAR.C_MUR: 
-            if (self.MOTEUR.TERRAIN.GRILLE[self.x][self.y-1].objet == VAR.C_CASSABLE):
+        elif not self.objet == C_TERRAIN.MUR: 
+            if (self.MOTEUR.TERRAIN.GRILLE[self.x][self.y-1].objet == C_TERRAIN.CASSABLE):
                 VAR.fenetre.blit(VAR.image["ombre"], (posX, posY))         
     
     def Dessiner_Sol(self, _fenetre = None):
@@ -63,14 +66,14 @@ class CCellule(item.CItem):
         posY = (self.y * VAR.tailleCellule) + self.TERRAIN.contour
         i = int((posY * VAR.nbLignes) + posX)    
        
-        if not self.objet == VAR.C_MUR: 
-            if (self.MOTEUR.TERRAIN.GRILLE[self.x][self.y-1].objet == VAR.C_MUR):
+        if not self.objet == C_TERRAIN.MUR: 
+            if (self.MOTEUR.TERRAIN.GRILLE[self.x][self.y-1].objet == C_TERRAIN.MUR):
                 _fenetre.blit(VAR.image["ombre"], (posX, posY))
             else:
                 _fenetre.blit(VAR.image["sol"+str(i % 2)], (posX, posY))
                 
     def Dessiner_Mur_Fixe(self, _fenetre = None):        
-        if self.objet == VAR.C_MUR: 
+        if self.objet == C_TERRAIN.MUR: 
             posX = (self.x * VAR.tailleCellule) + self.TERRAIN.contour 
             posY = (self.y * VAR.tailleCellule) + self.TERRAIN.contour
             _fenetre.blit(VAR.image["mur"], (posX, posY))

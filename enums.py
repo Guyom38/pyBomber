@@ -40,3 +40,9 @@ class C_MESSAGE(Enum):
     EN_ATTENTE_START = 3
     COMPTE_A_REBOURS = 4
     TERMINE = 5
+    
+class C_TERRAIN(Enum):
+    SOL = 0
+    CASSABLE = 1
+    MUR = 2
+    BLOC = 3

@@ -48,7 +48,7 @@ class CCControlleur:
               
     def Creer_Joueurs_Clavier_Manettes(self):
         self.JOUEURS.LISTE = []
-        for i in range(8):
+        for i in range(2):
             self.JOUEURS.LISTE.append(CJ.CJoueur(self.MOTEUR, i, ""))  
         #self.JOUEURS.LISTE.append(CJ.CJoueur(self.MOTEUR, 8, ""))  
         for i in range(2, self.nbManettes):

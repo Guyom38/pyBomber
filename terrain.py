@@ -69,14 +69,14 @@ class CTerrain():
     def Construire_Terrain_De_Jeu(self, _menu = False):        
         for y in range(VAR.nbLignes):
             for x in range(VAR.nbColonnes):
-                mur = VAR.C_SOL
+                mur = C_TERRAIN.SOL
                 
                 if not _menu:
-                    if (random.randint(0, 100) < VAR.tauxRemplissage) : mur = VAR.C_CASSABLE
-                    if x % 2 == 0 and y % 2 == 0: mur = VAR.C_MUR   
+                    if (random.randint(0, 100) < VAR.tauxRemplissage) : mur = C_TERRAIN.CASSABLE
+                    if x % 2 == 0 and y % 2 == 0: mur = C_TERRAIN.MUR  
                     
-                if x in (0, VAR.nbColonnes-1): mur = VAR.C_MUR  
-                if y in (0, VAR.nbLignes-1): mur = VAR.C_MUR
+                if x in (0, VAR.nbColonnes-1): mur = C_TERRAIN.MUR
+                if y in (0, VAR.nbLignes-1): mur = C_TERRAIN.MUR
                           
                 
                 self.GRILLE[x][y].objet = mur
@@ -88,8 +88,8 @@ class CTerrain():
                 xPos = _x + x
                 yPos = _y + y 
                 if (0 <= xPos < VAR.nbColonnes) and (0 <= yPos < VAR.nbLignes):
-                    if self.GRILLE[xPos][yPos].objet == VAR.C_CASSABLE:
-                        self.GRILLE[xPos][yPos].objet = VAR.C_SOL
+                    if self.GRILLE[xPos][yPos].objet == C_TERRAIN.CASSABLE:
+                        self.GRILLE[xPos][yPos].objet = C_TERRAIN.SOL
                         
     
     def TimeOut_Resserage_Du_Terrain(self):
@@ -138,7 +138,7 @@ class CTerrain():
                 if self.tour == max_lignes:
                     self.timeOut = True
                 else:
-                    self.GRILLE[self.x][self.y].objet = VAR.C_BLOC
+                    self.GRILLE[self.x][self.y].objet = C_TERRAIN.BLOC
                     FCT.jouer_sons("bloc_timeout")
                     
                     for joueur in self.MOTEUR.JOUEURS.LISTE:

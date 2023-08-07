@@ -83,7 +83,7 @@ class CMoteur():
         #FCT.jouer_sons("intro")
          
     def Boucle(self):
-        FCT.Charge_Musique(random.choice(['78','41','25']) )
+        
         VAR.temps_jeu = time.time()
         
         VAR.boucle_jeu = True

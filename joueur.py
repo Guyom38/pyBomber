@@ -215,8 +215,7 @@ class CJoueur(item.CItem):
         
         self.Retire_Protection_Bombe_Si_A_Cote()
         self.Detection_Collision_Objets()
-        self.Detection_Collision_Avec_Autres_Joueurs()
-                    
+        self.Detection_Collision_Avec_Autres_Joueurs()                    
         self.enMouvement = False             
         
     def Detection_Collision_Avec_Autres_Joueurs(self):
@@ -244,8 +243,7 @@ class CJoueur(item.CItem):
             _joueurMalade.maladie = 0
             _joueurMalade.maladie_temps_touche = -1
        
-            return True
-        
+            return True        
         else:
             return False
                
@@ -254,12 +252,11 @@ class CJoueur(item.CItem):
         
     def Toujours_Sur_Le_Terrain(self, x, y):
         return x >= 0 and y >=0 and x <= VAR.nbColonnes and y <= VAR.nbLignes
+    
     def Zone_Traversable(self, gX, gY):
-        return (self.TERRAIN.GRILLE[gX][gY].Traversable())
+        return (self.TERRAIN.GRILLE[gX][gY].Traversable())    
     
-    
-    def Attrape_Objet(self, _objet_attrape):
-        
+    def Attrape_Objet(self, _objet_attrape):        
         # --- Si malade se debarrasse de sa maladie
         if self.estMalade():
             self.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), C_OBJET.MALADIE, True, 4, 4)
