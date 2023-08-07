@@ -143,6 +143,7 @@ class CJoueur(item.CItem):
             else:
                 self.Transmission_Heritage_Apres_Mort()
                 self.animationId = -1
+    
                 
     def Mourir(self):
         # --- active l'animation de la mort
@@ -206,25 +207,44 @@ class CJoueur(item.CItem):
                 self.Algorithme_Drift(coord_collision)  
         
         self.Retire_Protection_Bombe_Si_A_Cote()
-        self.Detection_Collision_Objets()            
+        self.Detection_Collision_Objets()
+        self.Detection_Collision_Avec_Autres_Joueurs()
+                    
         self.enMouvement = False             
         
     def Detection_Collision_Avec_Autres_Joueurs(self):
-        coord_joueur = (self.x, self.y, VAR.tailleCellule, VAR.tailleCellule)
-        for joueur in self.JOUEURS.LISTE.items():
+        coord_joueur = (self.x * VAR.tailleCellule, self.y * VAR.tailleCellule, VAR.tailleCellule, VAR.tailleCellule)
+        for joueur in self.JOUEURS.LISTE:
             if not joueur == self:
-                coord_autre_joueur = (joueur.x, joueur.y, VAR.tailleCellule, VAR.tailleCellule)
+                coord_autre_joueur = (joueur.x * VAR.tailleCellule, joueur.y * VAR.tailleCellule, VAR.tailleCellule, VAR.tailleCellule)
                 
                 if FCT.Collision(coord_joueur, coord_autre_joueur):
+
                     if self.coup_de_poing: return True
-                    if self.estMalade and (self.maladie_temps_touche == -1 or time.time() - self.maladie_temps_touche > 2):
-                        joueur.maladie = self.maladie
-                        self.maladie = 0
-                        self.maladie_temps_touche = -1
-                        joueur.maladie_temps_touche = time.time()
+                    
+                    # --- si je suis malade
+                    if self.estMalade():
+                        return self.Contamine_Autre_Joueur(self, joueur)
+                    elif joueur.estMalade():
+                        return self.Contamine_Autre_Joueur(joueur, self)
+        return False
                 
-                
-                
+    
+    def Contamine_Autre_Joueur(self, _joueurMalade, _joueurSain):
+        if (_joueurMalade.maladie_temps_touche == -1 or time.time() - _joueurMalade.maladie_temps_touche > 2):
+            print("av transmission ", _joueurMalade.maladie, _joueurSain.maladie)
+            _joueurSain.maladie = _joueurMalade.maladie
+            _joueurSain.maladie_temps_touche = time.time()
+            
+            _joueurMalade.maladie = 0
+            _joueurMalade.maladie_temps_touche = -1
+        
+            print("ap transmission ", _joueurSain.maladie, self.maladie)    
+            return True
+        
+        else:
+            return False
+               
     def Action_Pousser_La_Bombe(self):
         pass
         

@@ -43,7 +43,7 @@ class CMoteur():
         self.chargement = CCH.CChargement()
         self.chargement.start()
            
-        self.phase_jeu = C_PHASE_DE_JEU.JEU
+        self.phase_jeu = C_PHASE_DE_JEU.MENU
         
         
         CR.Chargement_Ressources()    

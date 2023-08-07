@@ -23,11 +23,11 @@ zoom = 3
 
 tailleCellule = 16
 nbLignes, nbColonnes = 13, 15
-tauxRemplissage = 70
+tauxRemplissage = 10
 delaisExplosion = 3    
 
-duree_partie = 15
-nb_parties = 5
+duree_partie = 180
+nb_parties = 2
 active_maladies = True
 active_heritage = True
 

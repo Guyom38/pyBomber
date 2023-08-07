@@ -77,7 +77,7 @@ class CCControlleur:
         for key, values in VAR.CLAVIER.items():
             if not self.JOUEURS.LISTE[key].mort:     
                 BONNE_DIRECTION = [C_DIRECTION.GAUCHE, C_DIRECTION.DROITE, C_DIRECTION.HAUT, C_DIRECTION.BAS]
-                if self.JOUEURS.LISTE[0].maladie == C_MALADIE.TOUCHES_INVERSEES:
+                if self.JOUEURS.LISTE[key].maladie == C_MALADIE.TOUCHES_INVERSEES:
                     BONNE_DIRECTION = [C_DIRECTION.DROITE, C_DIRECTION.GAUCHE, C_DIRECTION.BAS, C_DIRECTION.HAUT]
                             
                 keys = pygame.key.get_pressed()                    
