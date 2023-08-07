@@ -85,5 +85,8 @@ def Chargement_Ressources():
     VAR.sons["intro"] = pygame.mixer.Sound('audios/intro.wav')    
     VAR.sons["tete_mort"] = pygame.mixer.Sound('audios/tete_mort.wav')
     
+    VAR.sons["pet"] = pygame.mixer.Sound('audios/pet.wav')
+    
+   
 
     

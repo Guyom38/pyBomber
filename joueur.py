@@ -55,8 +55,7 @@ class CJoueur(item.CItem):
         self.coup_de_pied = False
         self.coup_de_poing = False
         self.maladie = 0
-        self.maladie_Temps_fige = -1
-        
+        self.maladie_temps = -1        
         self.maladie_temps_touche = -1
         
         self.mort = False
@@ -167,7 +166,10 @@ class CJoueur(item.CItem):
     def Action_Poser_Une_Bombe(self):
         if self.bombes_posees < self.bombes:
             if self.BOMBES.Ajouter_Une_Bombe(self):   
-                FCT.jouer_sons("poser_bombe")
+                if self.maladie == C_MALADIE.CHIASSE:
+                    FCT.jouer_sons("pet")
+                else:
+                    FCT.jouer_sons("poser_bombe")
     
 
     def Retire_Protection_Bombe_Si_A_Cote(self):
@@ -183,12 +185,17 @@ class CJoueur(item.CItem):
         vitesseDeBase = self.vitesse
         if self.maladie == C_MALADIE.RALENTISSEMENT: vitesseDeBase = 0.02
         if self.maladie == C_MALADIE.FIGER:
-            if self.maladie_Temps_fige == -1: self.maladie_Temps_fige = time.time()
-            if time.time() - self.maladie_Temps_fige < VAR.delaisExplosion + 1:
+            if self.maladie_temps == -1: self.maladie_temps = time.time()
+            if time.time() - self.maladie_temps < VAR.maladie_delais_figer:
                 return 
             else:
                 self.Se_Soigne()
-                
+        if self.maladie == C_MALADIE.CHIASSE:
+            if self.maladie_temps == -1: self.maladie_temps = time.time()
+            if time.time() - self.maladie_temps < VAR.maladie_delais_chiasse:
+                self.Action_Poser_Une_Bombe() 
+            else:
+                self.Se_Soigne()
 
         # --- mouvement en fonction de la direction
         if self.direction == C_DIRECTION.HAUT:   self.y -= vitesseDeBase
@@ -233,6 +240,7 @@ class CJoueur(item.CItem):
         if (_joueurMalade.maladie_temps_touche == -1 or time.time() - _joueurMalade.maladie_temps_touche > 2):
             _joueurSain.maladie = _joueurMalade.maladie
             _joueurSain.maladie_temps_touche = time.time()
+            _joueurSain.maladie_temps = time.time()
             _joueurMalade.maladie = 0
             _joueurMalade.maladie_temps_touche = -1
        
@@ -282,7 +290,7 @@ class CJoueur(item.CItem):
             
     def Se_Soigne(self):
         self.maladie = 0
-        self.maladie_Temps_fige = -1
+        self.maladie_Temps = -1
            
     def Tombe_Malade(self):
         FCT.jouer_sons("tete_mort")
