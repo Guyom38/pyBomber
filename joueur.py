@@ -48,7 +48,7 @@ class CJoueur(item.CItem):
         self.pasVitesse = 0.005
         
         self.puissance = 1
-        self.bombes = 1
+        self.bombes = 3
         self.bombes_posees = 0
         self.bombes_protection = None
         
@@ -166,8 +166,8 @@ class CJoueur(item.CItem):
         
     def Action_Poser_Une_Bombe(self):
         if self.bombes_posees < self.bombes:
-            self.BOMBES.Ajouter(self)    
-            FCT.jouer_sons("poser_bombe")
+            if self.BOMBES.Ajouter_Une_Bombe(self):   
+                FCT.jouer_sons("poser_bombe")
     
 
     def Retire_Protection_Bombe_Si_A_Cote(self):
@@ -219,7 +219,6 @@ class CJoueur(item.CItem):
                 coord_autre_joueur = (joueur.x * VAR.tailleCellule, joueur.y * VAR.tailleCellule, VAR.tailleCellule, VAR.tailleCellule)
                 
                 if FCT.Collision(coord_joueur, coord_autre_joueur):
-
                     if self.coup_de_poing: return True
                     
                     # --- si je suis malade
@@ -232,14 +231,11 @@ class CJoueur(item.CItem):
     
     def Contamine_Autre_Joueur(self, _joueurMalade, _joueurSain):
         if (_joueurMalade.maladie_temps_touche == -1 or time.time() - _joueurMalade.maladie_temps_touche > 2):
-            print("av transmission ", _joueurMalade.maladie, _joueurSain.maladie)
             _joueurSain.maladie = _joueurMalade.maladie
             _joueurSain.maladie_temps_touche = time.time()
-            
             _joueurMalade.maladie = 0
             _joueurMalade.maladie_temps_touche = -1
-        
-            print("ap transmission ", _joueurSain.maladie, self.maladie)    
+       
             return True
         
         else:
@@ -286,7 +282,7 @@ class CJoueur(item.CItem):
             
     def Se_Soigne(self):
         self.maladie = 0
-        self.maladie_Temps_fige == -1
+        self.maladie_Temps_fige = -1
            
     def Tombe_Malade(self):
         FCT.jouer_sons("tete_mort")
