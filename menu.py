@@ -10,6 +10,7 @@ import cellule as CC
 import bouton as CB
 
 import time, random
+import ressources as CR
 
 class CMenu():
     def __init__(self, _moteur):
@@ -25,6 +26,7 @@ class CMenu():
         
         self.select = None
         self.bouton_en_cours = -1
+        self.oldZoom = 3
         
     def Action_NombreParties(self, _juste_valeur):
         if _juste_valeur:
@@ -59,7 +61,10 @@ class CMenu():
 
     
     def Initialiser(self):
-        FCT.Charge_Musique("menu" )      
+        self.oldZoom = VAR.zoom        
+        
+        FCT.Charge_Musique("menu" )  
+        CR.Changement_Zoom(3)    
         
         self.largeurZone = 640
         self.hauteur_saut = 10
@@ -101,8 +106,8 @@ class CMenu():
         
         MENU4 = []
         MENU4.append(CB.CBouton(self.MOTEUR, 20, "ORGINAL (15x13)"))
-        MENU4.append(CB.CBouton(self.MOTEUR, 21, "NORMAL"))
-        MENU4.append(CB.CBouton(self.MOTEUR, 22, "LARGE"))
+        MENU4.append(CB.CBouton(self.MOTEUR, 21, "LARGEUR "))
+        MENU4.append(CB.CBouton(self.MOTEUR, 22, "LONGUEUR "))
         MENU4.append(CB.CBouton(self.MOTEUR, 23, "AU TAQUET"))
         MENU4.append(CB.CBouton(self.MOTEUR, 99, ""))
         MENU4.append(CB.CBouton(self.MOTEUR, 98, "REVENIR"))
@@ -172,7 +177,7 @@ class CMenu():
                             for joueur in self.MOTEUR.JOUEURS.LISTE:
                                 joueur.actif = (joueur.clown or joueur.id == 0)
                             
-
+                            VAR.zoom = self.oldZoom     
                             self.MOTEUR.Relancer_Une_Partie()
                             
                     elif bouton.id == 1:

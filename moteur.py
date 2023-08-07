@@ -60,16 +60,19 @@ class CMoteur():
        
         self.chargement.Arreter()
 
-  
+    
+    
     def Demarrer(self):
         VAR.fenetre = pygame.display.set_mode(VAR.resolution, VAR.mode_ecran, 32)
-        pygame.display.set_caption("PyBomber 0.5")        
+        pygame.display.set_caption("PyBomber 0.8")        
         self.horloge = pygame.time.Clock()        
         
         self.Initialisation()        
         self.Boucle()
-        
+
+       
     def Relancer_Une_Partie(self):
+        CR.Changement_Zoom(VAR.zoom)    
         self.phase_jeu = C_PHASE_DE_JEU.JEU
         CT.CTerrain.Reconfigurer_Terrain()        
         
@@ -81,6 +84,7 @@ class CMoteur():
         FCT.Charge_Musique(random.choice(['78','41','25']) )      
         self.Reprendre_Partie(True)
         #FCT.jouer_sons("intro")
+
          
     def Boucle(self):
         
@@ -106,8 +110,7 @@ class CMoteur():
                 self.TERRAIN.Afficher()  
                 
                 self.BOMBES.Afficher_Toutes_Les_Bombes()
-                self.OBJETS.Afficher_Tous_Les_Objets()
-                
+                self.OBJETS.Afficher_Tous_Les_Objets()                
                 self.PARTICULES.Afficher_Les_Particules()
                 self.JOUEURS.Afficher_Tous_Les_Joueurs()
                 
@@ -118,20 +121,15 @@ class CMoteur():
                     
             pygame.display.update()
             self.horloge.tick(60)     
-               
 
         # --- en sortie de boucle, quitte le programme
         pygame.quit() 
         
         
-
-
-
-
-        
     def Arreter_Partie(self):
         self.nbSecondes_Restantes_AvPause = self.tempsRestant() 
         VAR.pause = True
+
     
     def Reprendre_Partie(self, _nouvelle): 
         VAR.temps_jeu = time.time() 

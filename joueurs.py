@@ -28,6 +28,7 @@ class CJoueurs():
         
         self.Recolorisation_Joueurs()
         self.image_masque = FCT.Colorisation_Masque(VAR.image["joueur0"])   
+
     
     def Reinitaliser(self):
         position = 0
@@ -35,6 +36,7 @@ class CJoueurs():
             if joueur.actif:                
                 joueur.Initialiser(position)
                 position += 1
+
                 
     def Afficher_Tous_Les_Joueurs(self, _joueur_a_afficher = None):
         # --- retri les joueurs pour que si un joueur s'affiche devant l'autre, il soit afficher apres
@@ -49,7 +51,6 @@ class CJoueurs():
                 
         else:
             liste_joueurs_tries[_joueur_a_afficher].Afficher()
-            
             
             
     def Recolorisation_Joueurs(self):
@@ -70,11 +71,12 @@ class CJoueurs():
                 
                 VAR.LISTE_COLOR[key].append((new_valeur_r, new_valeur_g, new_valeur_b, 255))
                 
+                
     def RePositionne_Joueurs(self):
         for joueur in self.LISTE:
             joueur.Position_Initiale()
             
-    
+            
     def Resurection_Joueurs(self):
         for joueur in self.LISTE:
             joueur.mort = True

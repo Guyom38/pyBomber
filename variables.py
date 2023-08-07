@@ -1,6 +1,8 @@
 from pygame.locals import *
 
 image = {}
+pixelBloc = 16
+
 sons = {}
 temps_jeu = -1
 boucle_jeu = True
@@ -23,10 +25,10 @@ zoom = 3
 
 tailleCellule = 16
 nbLignes, nbColonnes = 13, 15
-tauxRemplissage = 20
+tauxRemplissage = 70
 delaisExplosion = 3    
 
-duree_partie = 180
+duree_partie = 15
 nb_parties = 2
 active_maladies = True
 active_heritage = True

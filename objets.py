@@ -21,7 +21,7 @@ class CObjets:
         for _ in range(5): self.PIOCHES.append(C_OBJET.ROLLER)
         for _ in range(2): self.PIOCHES.append(C_OBJET.COUP_PIED)
         for _ in range(2): self.PIOCHES.append(C_OBJET.COUP_POING)
-        for _ in range(50): self.PIOCHES.append(C_OBJET.MALADIE)
+        for _ in range(5): self.PIOCHES.append(C_OBJET.MALADIE)
         for _ in range(2): self.PIOCHES.append(C_OBJET.SUPER_FLAMME)
         for _ in range(30): self.PIOCHES.append(None)            
         random.shuffle(self.PIOCHES)  
@@ -56,10 +56,20 @@ class CObjets:
         self.LISTE.append(objet)
         
         
-        
+    def Ajustement(self, _objet, _marge):
+        x, y, w, h = _objet
+        x = x + _marge
+        y = y + _marge
+        w = w - (_marge *2)
+        h = h - (_marge *2)
+        return x, y, w, h
+            
     def Detection_Collision_Avec_Objets(self, joueur):
         for objet in self.LISTE:            
             objet_objet = ((objet.x * VAR.tailleCellule), (objet.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
+            
+            objet_objet = self.Ajustement(objet_objet, 8)
+            joueur = self.Ajustement(joueur, 8)
             
             if FCT.Collision(joueur, objet_objet):    
                 return objet
