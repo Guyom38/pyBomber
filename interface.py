@@ -33,6 +33,8 @@ class CInterface:
         self.temps_particules = time.time()
         self.temps_delais = 0.2
         
+        
+        
     def Afficher_Fond(self):        
         VAR.fenetre.fill((16,16,16))
         
@@ -49,8 +51,8 @@ class CInterface:
         x, y = 0, 4
         
         # --- cadre information en haut
-        pygame.draw.rect(VAR.fenetre, (255, 137, 58, 64), (x, y, VAR.resolution[0], VAR.tailleCellule * 1.8), 0)
-        pygame.draw.rect(VAR.fenetre, (255, 180, 112, 64), (x, y, VAR.resolution[0], VAR.tailleCellule * 1.8), 4)
+        pygame.draw.rect(VAR.fenetre, (255, 137, 58, 64), (x, y, VAR.resolution[0], VAR.hauteur_cadre_joueurs), 0)
+        pygame.draw.rect(VAR.fenetre, (255, 180, 112, 64), (x, y, VAR.resolution[0], VAR.hauteur_cadre_joueurs), 4)
         
         # --- chrono
         image = FCT.Image_Texte(FCT.convert_seconds_to_time(self.MOTEUR.tempsRestant()), (255,255,255,255), 50)   
@@ -67,15 +69,20 @@ class CInterface:
             if joueur.actif:
                 imgId, indexId = C_DIRECTION.BAS.value, 0
                 if joueur.mort: imgId, indexId = 5, 5
-                VAR.fenetre.blit(FCT.image_decoupe(joueur.image,  indexId, imgId, VAR.tailleCellule, VAR.tailleCellule*2), (x, 4)) 
                 
-                image1 = FCT.Image_Texte(str(joueur.nb_manches), (0,0,0,255), 30)            
-                VAR.fenetre.blit(image1, (x + VAR.tailleCellule, VAR.tailleCellule-12))
-                image2 = FCT.Image_Texte(str(joueur.nb_manches), (255,255,255,255), 30)            
-                VAR.fenetre.blit(image2, (x + VAR.tailleCellule+2, VAR.tailleCellule+2-12))
+                imageJ = FCT.Redimensionne_Image(FCT.image_decoupe(joueur.image,  indexId, imgId, VAR.tailleCellule, VAR.tailleCellule*2), VAR.hauteur_cadre_joueurs / 2, VAR.hauteur_cadre_joueurs)
+                image_manches1 = FCT.Image_Texte(str(joueur.nb_manches), (0,0,0,255), 30)       
+                image_manches2 = FCT.Image_Texte(str(joueur.nb_manches), (255,255,255,255), 30)     
+                image_score = FCT.Image_Texte(str(joueur.score()), (0,0,0,255), 12)        
+                VAR.fenetre.blit(imageJ, (x, 4)) 
                 
-                image = FCT.Image_Texte(str(joueur.score()), (0,0,0,255), 12)            
-                VAR.fenetre.blit(image, (x + VAR.tailleCellule, VAR.tailleCellule+image1.get_height()-12))
+                y =  imageJ.get_height() - image_manches1.get_height() - 16
+                     
+                VAR.fenetre.blit(image_manches1, (x + imageJ.get_width(), y))                       
+                VAR.fenetre.blit(image_manches2, (x + imageJ.get_width()+2, y - 2))
+                
+                y =  imageJ.get_height() - image_score.get_height() - 8
+                VAR.fenetre.blit(image_score, (x + imageJ.get_width(), y))
 
                 x += (largeur + VAR.tailleCellule)
         

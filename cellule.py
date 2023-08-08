@@ -5,6 +5,7 @@ import variables as VAR
 import time, random
 import item
 
+import terrain as CT
 from enums import *
 
 class CCellule(item.CItem):
@@ -62,8 +63,8 @@ class CCellule(item.CItem):
                 VAR.fenetre.blit(VAR.image["ombre"], (posX, posY))         
     
     def Dessiner_Sol(self, _fenetre = None):
-        posX = (self.x * VAR.tailleCellule) + self.TERRAIN.contour
-        posY = (self.y * VAR.tailleCellule) + self.TERRAIN.contour
+        posX = (self.x * VAR.tailleCellule) + CT.C_CONTOUR
+        posY = (self.y * VAR.tailleCellule) + CT.C_CONTOUR
         i = int((posY * VAR.nbLignes) + posX)    
        
         if not self.objet == C_TERRAIN.MUR: 
@@ -74,8 +75,8 @@ class CCellule(item.CItem):
                 
     def Dessiner_Mur_Fixe(self, _fenetre = None):        
         if self.objet == C_TERRAIN.MUR: 
-            posX = (self.x * VAR.tailleCellule) + self.TERRAIN.contour 
-            posY = (self.y * VAR.tailleCellule) + self.TERRAIN.contour
+            posX = (self.x * VAR.tailleCellule) + CT.C_CONTOUR 
+            posY = (self.y * VAR.tailleCellule) + CT.C_CONTOUR
             _fenetre.blit(VAR.image["mur"], (posX, posY))
                       
 

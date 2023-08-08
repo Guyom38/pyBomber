@@ -27,15 +27,22 @@ class CJoueurs():
         self.LISTE = []
         
         self.Recolorisation_Joueurs()
-        self.image_masque = FCT.Colorisation_Masque(VAR.image["joueur0"])   
-
+        
+        
+        print("redessine joueurs")
     
     def Reinitaliser(self):
+
         position = 0
         for joueur in self.LISTE:
             if joueur.actif:                
                 joueur.Initialiser(position)
                 position += 1
+                
+        self.image_masque = FCT.Colorisation_Masque(VAR.image["joueur0"])   
+                
+
+        
 
                 
     def Afficher_Tous_Les_Joueurs(self, _joueur_a_afficher = None):

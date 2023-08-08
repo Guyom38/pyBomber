@@ -29,7 +29,7 @@ class CJoueur(item.CItem):
         self.couleur = (255,255,255,255)        
     
         self.Initialiser(self.id)
-        self.Colorisation()
+       
 
     def score(self):
         return (self.nb_manches * 1000) + (self.nb_morts * 50)
@@ -67,9 +67,10 @@ class CJoueur(item.CItem):
         
         self.offSetX = 0
         self.offSetY = - 12 * VAR.zoom
-        
+        self.Colorisation()
                                 
     def Colorisation(self):
+        print("recolorie")
         self.image = VAR.image["joueur0"].copy()      
         if self.id == 0: return
         

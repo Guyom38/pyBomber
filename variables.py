@@ -21,9 +21,10 @@ mode_ecran = DOUBLEBUF
 if fullHd: resolution = (1920, 1080)
 if plein_ecran: mode_ecran = FULLSCREEN
 
-zoom = 3
+zoom = -1
+hauteur_cadre_joueurs = 64
 
-tailleCellule = 16
+tailleCellule = 16 
 nbLignes, nbColonnes = 13, 15
 tauxRemplissage = 70
 delaisExplosion = 3    

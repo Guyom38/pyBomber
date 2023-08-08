@@ -68,8 +68,8 @@ class CObjets:
         for objet in self.LISTE:            
             objet_objet = ((objet.x * VAR.tailleCellule), (objet.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
             
-            objet_objet = self.Ajustement(objet_objet, 8)
-            joueur = self.Ajustement(joueur, 8)
+            #objet_objet = self.Ajustement(objet_objet, 8)
+            #joueur = self.Ajustement(joueur, 8)
             
             if FCT.Collision(joueur, objet_objet):    
                 return objet

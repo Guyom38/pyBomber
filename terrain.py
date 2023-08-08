@@ -9,23 +9,26 @@ import cellule as CC
 import time
 
 from enums import *
+
+C_CONTOUR = 16  
          
-class CTerrain():       
+class CTerrain():  
+       
     def __init__(self, _moteur):
         self.MOTEUR = _moteur        
-        self.contour = 16
+        
         self.contour_fond = (0, 0, 0)
         self.contour_bordure = (255,255,255)
     
     def Reconfigurer_Terrain():
-        VAR.nbColonnes = int((VAR.resolution[0] / VAR.tailleCellule) )-5 
+        VAR.nbColonnes = int(((VAR.resolution[0] - (C_CONTOUR * 2)) / VAR.tailleCellule) )-5 
         if VAR.nbColonnes % 2 == 0: VAR.nbColonnes +=1        
-        VAR.nbLignes = int((VAR.resolution[1] / VAR.tailleCellule) )-4        
-        if VAR.nbLignes % 2 == 0: VAR.nbLignes +=1       
+        VAR.nbLignes = int(((VAR.resolution[1] - VAR.hauteur_cadre_joueurs - (C_CONTOUR * 2) ) / VAR.tailleCellule) )    
+        if VAR.nbLignes % 2 == 0: VAR.nbLignes -=1       
         
         print("Dimension Terrain : ", VAR.nbColonnes, VAR.nbLignes)
         VAR.offSet = ( ((VAR.resolution[0] - (VAR.nbColonnes* VAR.tailleCellule)) /2) ,
-                       ((VAR.resolution[1] - (VAR.nbLignes* VAR.tailleCellule)) /2) + VAR.tailleCellule) 
+                        VAR.hauteur_cadre_joueurs + (((VAR.resolution[1] - VAR.hauteur_cadre_joueurs) - (VAR.nbLignes* VAR.tailleCellule)) /2) ) 
         
     def Initialiser(self):
         self.GRILLE =  [[CC.CCellule(self.MOTEUR, x, y) for y in range(VAR.nbLignes)] for x in range(VAR.nbColonnes)]
@@ -41,7 +44,9 @@ class CTerrain():
         
         
     def Preparation_Couches_Fixes(self):
-        largeur, hauteur = (VAR.nbColonnes * VAR.tailleCellule) + (self.contour*2), (VAR.nbLignes * VAR.tailleCellule) + (self.contour * 2)
+        largeur = (VAR.nbColonnes * VAR.tailleCellule) + (C_CONTOUR * 2)
+        hauteur = (VAR.nbLignes * VAR.tailleCellule) + (C_CONTOUR * 2)
+        
         self.image = pygame.Surface((largeur, hauteur),pygame.SRCALPHA,32)
         pygame.draw.rect(self.image, self.contour_fond , (0, 0, largeur, hauteur), 0)        
         pygame.draw.rect(self.image, self.contour_bordure , (0, 0, largeur, hauteur), 4)        
@@ -57,7 +62,7 @@ class CTerrain():
         #temps_ref = time.time()
         if self.image == None :
             self.Preparation_Couches_Fixes()       
-        VAR.fenetre.blit(self.image, (VAR.offSet[0] - self.contour, VAR.offSet[1] - self.contour))
+        VAR.fenetre.blit(self.image, (VAR.offSet[0] - C_CONTOUR, VAR.offSet[1] - C_CONTOUR))
         
         # --- affiche couches suivantes, murs ...      
         for y in range(VAR.nbLignes):

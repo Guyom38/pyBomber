@@ -19,6 +19,9 @@ def Charge_Musique(_fichier):
     pygame.mixer.music.load("musics/" + _fichier + ".mp3")
     pygame.mixer.music.play()
 
+def Redimensionne_Image(img, w, h):
+    return pygame.transform.scale(img, (w, h))  
+
 def image_decoupe(img, x, y, dimx, dimy, dimxZ = -1, dimyZ = -1):
     tmp = pygame.Surface((dimx, dimy),pygame.SRCALPHA,32)
     tmp.blit(img, (0,0), (int(x) * dimx, int(y) * dimy, dimx, dimy))

@@ -7,7 +7,7 @@ import fonctions as FCT
 
 from enums import *
 
-
+zoom_en_cours = 0
 def Charger_Images_FULL(_tag, _fichier):
     tmp = pygame.image.load("images/" + _fichier).convert_alpha() 
     tmp = pygame.transform.scale(tmp, (VAR.resolution[0], VAR.resolution[1]))
@@ -58,7 +58,13 @@ def Chargement_Audios():
     
     
 def Changement_Zoom(_zoom):  
-    VAR.tailleCellule = VAR.pixelBloc * _zoom
+    # --- evite de recharger les graphismes
+    global zoom_en_cours    
+    if zoom_en_cours == _zoom: return
+    print("Chargement des graphismes : " + str(_zoom))
+    zoom_en_cours = _zoom
+    VAR.zoom = _zoom
+    VAR.tailleCellule = VAR.pixelBloc *  VAR.zoom
     
     
     # --- Decors
@@ -83,6 +89,7 @@ def Changement_Zoom(_zoom):
     
     # --- Joueurs
     Charger_Images_ZOOM("joueur0", "sprite1.png", _zoom)
+    print(VAR.image["joueur0"].get_width())
     Charger_Images_ZOOM("explosion", "explosion2.png", _zoom)
     
 

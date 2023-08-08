@@ -61,8 +61,7 @@ class CMenu():
 
     
     def Initialiser(self):
-        self.oldZoom = VAR.zoom        
-        
+
         FCT.Charge_Musique("menu" )  
         CR.Changement_Zoom(3)    
         
@@ -78,7 +77,7 @@ class CMenu():
         self.TERRAIN.Construire_Terrain_De_Jeu(True)
         self.TERRAIN.image = None           
         
-        
+        self.JOUEURS.Reinitaliser()
         
         self.LISTE = {}
         self.menu = "PRINCIPAL"

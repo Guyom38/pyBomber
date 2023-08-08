@@ -40,6 +40,8 @@ class CMoteur():
         self.HIGHSCORE = CH.CHighscore(self)
         
     def Initialisation(self): 
+        VAR.zoom = 3
+        
         self.chargement = CCH.CChargement()
         self.chargement.start()
            
@@ -72,7 +74,9 @@ class CMoteur():
 
        
     def Relancer_Une_Partie(self):
-        CR.Changement_Zoom(VAR.zoom)    
+        VAR.zoom = 4
+        CR.Changement_Zoom(VAR.zoom)  
+          
         self.phase_jeu = C_PHASE_DE_JEU.JEU
         CT.CTerrain.Reconfigurer_Terrain()        
         
