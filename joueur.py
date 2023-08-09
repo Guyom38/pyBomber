@@ -30,40 +30,32 @@ class CJoueur(item.CItem):
     
         self.Initialiser(self.id)
        
-
-    def score(self):
-        return (self.nb_manches * 1000) + (self.nb_morts * 50)
-    
-    def estMalade(self): return not (self.maladie == 0)
-    def vraimentMort(self): return (self.mort and self.animationId == -1)
     
     def Initialiser(self, _position):        
-        self.x, self.y = self.Position_Initiale(_position)        
-        
+        self.x, self.y = self.Position_Initiale(_position) 
         self.direction = C_DIRECTION.BAS
         self.enMouvement = False
         
-        self.vitesseBase = 0.06
+        self.vitesseBase = VAR.C_VITESSE_JOUEUR
+        self.pasVitesse = VAR.C_VITESSE_PAS
         self.vitesse = self.vitesseBase
-        self.pasVitesse = 0.005
         
         self.puissance = 1
         self.bombes = 3
         self.bombes_posees = 0
-        self.bombes_protection = None
-        
-        self.coup_de_pied = False
+        self.bombes_protection = None        
+        self.coup_de_pied = True
         self.coup_de_poing = False
+        
         self.maladie = 0
         self.maladie_temps = -1        
         self.maladie_temps_touche = -1
         
         self.mort = False
         self.clown = False
-
         
         if not self.menu:
-            self.TERRAIN.Libere_Zone(self.iX(), self.iY(), 2)    
+            self.TERRAIN.Libere_Zone(self.celluleX(), self.celluleY(), 2)    
         
         self.offSetX = 0
         self.offSetY = - 12 * VAR.zoom
@@ -96,20 +88,25 @@ class CJoueur(item.CItem):
         if _position == 7 and self.actif: x, y = (VAR.nbColonnes-2, round(VAR.nbLignes/2,0))
         if _position == 8 and self.actif: x, y = (round(VAR.nbColonnes/2,0), VAR.nbLignes-2)
         
+        # --- Evite les murs de decors
         if x % 2 == 0: x -=1
         if y % 2 == 0: y -=1
         
         return (x, y)
     
 
-        
+# -----------------------------------------------------------------------------------------------------------
+#
+#   AFFICHAGE
+#
+# -----------------------------------------------------------------------------------------------------------        
     
     
     def Afficher(self, _menu = False):
         if not self.actif: return
         
-        posX = VAR.offSet[0] + self.offSetX + (self.x * VAR.tailleCellule) 
-        posY = VAR.offSet[1] + self.offSetY + (self.y * VAR.tailleCellule)      
+        posX = self.ecranX()
+        posY = self.ecranY()    
         directionImage = self.direction.value
         
         if not self.mort: 
@@ -144,25 +141,10 @@ class CJoueur(item.CItem):
                 self.Transmission_Heritage_Apres_Mort()
                 self.animationId = -1
     
-                
-    def Mourir(self):
-        # --- active l'animation de la mort
-        self.mort = True
-        
-        
-        
-    def Transmission_Heritage_Apres_Mort(self):
-        # --- jete les objets
-        for _ in range(self.bombes-1):
-            if random.randint(0,100) <25: self.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), C_OBJET.BOMBE, True)
-        
-        for _ in range(self.puissance-1):
-            if random.randint(0, 100) <15: self.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), C_OBJET.FLAMME, True)
-        
-        nbVitesse = int(round((self.vitesse-self.vitesseBase) / self.pasVitesse,0))
-        for _ in range(nbVitesse):
-            if random.randint(0, 100) <15: self.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), C_OBJET.ROLLER, True)
-        
+
+    def score(self):
+        return (self.nb_manches * 1000) + (self.nb_morts * 50)
+    
         
     def Action_Poser_Une_Bombe(self):
         if self.bombes_posees < self.bombes:
@@ -175,19 +157,22 @@ class CJoueur(item.CItem):
 
     def Retire_Protection_Bombe_Si_A_Cote(self):
         if self.bombes_protection == None: return
-        
-        if not self.BOMBES.Detection_Collision_Avec_Une_Bombe(self, self.bombes_protection):
+        if not FCT.Collision2((self.x, self.y), (self.bombes_protection.x, self.bombes_protection.y)):        
             self.bombes_protection = None
- 
-            
-    def Gestion_Deplacement(self):
-        if self.enMouvement == False: return 
-        
+
+# -----------------------------------------------------------------------------------------------------------
+#
+#   MALADIES
+#
+# -----------------------------------------------------------------------------------------------------------
+
+    def Gestion_Maladies(self):
         vitesseDeBase = self.vitesse
         if self.maladie == C_MALADIE.RALENTISSEMENT: vitesseDeBase = 0.02
         if self.maladie == C_MALADIE.FIGER:
             if self.maladie_temps == -1: self.maladie_temps = time.time()
             if time.time() - self.maladie_temps < VAR.maladie_delais_figer:
+                self.enMouvement = False
                 return 
             else:
                 self.Se_Soigne()
@@ -196,46 +181,18 @@ class CJoueur(item.CItem):
             if time.time() - self.maladie_temps < VAR.maladie_delais_chiasse:
                 self.Action_Poser_Une_Bombe() 
             else:
-                self.Se_Soigne()
+                self.Se_Soigne()                
+        return (vitesseDeBase)   
 
-        # --- mouvement en fonction de la direction
-        if self.direction == C_DIRECTION.HAUT:   self.y -= vitesseDeBase
-        if self.direction == C_DIRECTION.BAS:    self.y += vitesseDeBase
-        if self.direction == C_DIRECTION.GAUCHE: self.x -= vitesseDeBase
-        if self.direction == C_DIRECTION.DROITE: self.x += vitesseDeBase        
-
-        # --- controle si collision
-        coord_collision = self.Detection_Collision_Decors()
-        if not coord_collision == VAR.C_AUCUNE_COLLISION:
-            # --- repositionne parfaitement la position du joueur sur la case qu'il occupe
-            if self.direction in [C_DIRECTION.HAUT,C_DIRECTION.BAS]: self.y = self.iY()
-            if self.direction in [C_DIRECTION.GAUCHE,C_DIRECTION.DROITE]: self.x = self.iX()
+    def Se_Soigne(self):
+        self.maladie = 0
+        self.maladie_Temps = -1
+           
+    def Tombe_Malade(self):
+        FCT.jouer_sons("tete_mort")
+        self.maladie = random.choices(list(C_MALADIE))[0]
+        print(self.maladie)
             
-            if not coord_collision == VAR.C_HORS_TERRAIN:  
-                self.Algorithme_Drift(coord_collision)  
-        
-        self.Retire_Protection_Bombe_Si_A_Cote()
-        self.Detection_Collision_Objets()
-        self.Detection_Collision_Avec_Autres_Joueurs()                    
-        self.enMouvement = False             
-        
-    def Detection_Collision_Avec_Autres_Joueurs(self):
-        coord_joueur = (self.x * VAR.tailleCellule, self.y * VAR.tailleCellule, VAR.tailleCellule, VAR.tailleCellule)
-        for joueur in self.JOUEURS.LISTE:
-            if not joueur == self:
-                coord_autre_joueur = (joueur.x * VAR.tailleCellule, joueur.y * VAR.tailleCellule, VAR.tailleCellule, VAR.tailleCellule)
-                
-                if FCT.Collision(coord_joueur, coord_autre_joueur):
-                    if self.coup_de_poing: return True
-                    
-                    # --- si je suis malade
-                    if self.estMalade():
-                        return self.Contamine_Autre_Joueur(self, joueur)
-                    elif joueur.estMalade():
-                        return self.Contamine_Autre_Joueur(joueur, self)
-        return False
-                
-    
     def Contamine_Autre_Joueur(self, _joueurMalade, _joueurSain):
         if (_joueurMalade.maladie_temps_touche == -1 or time.time() - _joueurMalade.maladie_temps_touche > 2):
             _joueurSain.maladie = _joueurMalade.maladie
@@ -246,13 +203,66 @@ class CJoueur(item.CItem):
        
             return True        
         else:
-            return False
-               
+            return False     
+
+    def estMalade(self): return not (self.maladie == 0)
+    def vraimentMort(self): return (self.mort and self.animationId == -1)                    
+    def Mourir(self): self.mort = True
+        
+    def Transmission_Heritage_Apres_Mort(self):
+        # --- jete les objets
+        for _ in range(self.bombes-1):
+            if random.randint(0,100) <25: self.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), C_OBJET.BOMBE, True)
+        
+        for _ in range(self.puissance-1):
+            if random.randint(0, 100) <15: self.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), C_OBJET.FLAMME, True)
+        
+        nbVitesse = int(round((self.vitesse-self.vitesseBase) / self.pasVitesse,0))
+        for _ in range(nbVitesse):
+            if random.randint(0, 100) <15: self.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), C_OBJET.ROLLER, True)
+                   
+# -----------------------------------------------------------------------------------------------------------
+#
+#   DEPLACEMENTS & COLLISIONS
+#
+# -----------------------------------------------------------------------------------------------------------         
+    def Gestion_Deplacement(self):         
+        vitesseDeBase = self.Gestion_Maladies()
+        if self.enMouvement == False: return        
+        
+        # --- mouvement en fonction de la direction
+        if self.direction == C_DIRECTION.HAUT:   self.y -= vitesseDeBase
+        if self.direction == C_DIRECTION.BAS:    self.y += vitesseDeBase
+        if self.direction == C_DIRECTION.GAUCHE: self.x -= vitesseDeBase
+        if self.direction == C_DIRECTION.DROITE: self.x += vitesseDeBase        
+
+        self.Gestion_Collisions()
+        self.Retire_Protection_Bombe_Si_A_Cote()              
+        self.enMouvement = False       
+              
+        
+    def Gestion_Collisions(self):
+        # --- controle si collision
+        coord_collision_mur = self.Detection_Collision_Decors()
+        collision_bombe = self.Detection_Collision_Bombe()
+        #coord_collision_bombe = self.Detection_Collision_Avec_Bombes()
+        if (not coord_collision_mur == VAR.C_AUCUNE_COLLISION or collision_bombe): # or (not coord_collision_bombe == VAR.C_AUCUNE_COLLISION):
+            # --- repositionne parfaitement la position du joueur sur la case qu'il occupe
+            if self.direction in [C_DIRECTION.HAUT,C_DIRECTION.BAS]: self.y = self.celluleY()
+            if self.direction in [C_DIRECTION.GAUCHE,C_DIRECTION.DROITE]: self.x = self.celluleX()
+            
+            if not collision_bombe: 
+                self.Algorithme_Drift(coord_collision_mur)          
+        
+        self.Detection_Collision_Objets()
+        self.Detection_Collision_Avec_Autres_Joueurs()              
+                
+          
     def Action_Pousser_La_Bombe(self):
         pass
         
     def Toujours_Sur_Le_Terrain(self, x, y):
-        return x >= 0 and y >=0 and x <= VAR.nbColonnes and y <= VAR.nbLignes
+        return x >= 0 and y >=0 and x < VAR.nbColonnes and y < VAR.nbLignes
     
     def Zone_Traversable(self, gX, gY):
         return (self.TERRAIN.GRILLE[gX][gY].Traversable())    
@@ -260,7 +270,7 @@ class CJoueur(item.CItem):
     def Attrape_Objet(self, _objet_attrape):        
         # --- Si malade se debarrasse de sa maladie
         if self.estMalade():
-            self.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), C_OBJET.MALADIE, True, 4, 4)
+            self.OBJETS.Ajouter_Un_Objet(self.celluleX(), self.celluleY(), C_OBJET.MALADIE, True, 4, 4)
             self.Se_Soigne()
         
         # --- Prend le nouvel objet    
@@ -276,52 +286,64 @@ class CJoueur(item.CItem):
         self.OBJETS.Detruire_Objet(_objet_attrape)
         FCT.jouer_sons("prendre_objet")
             
-        
-    def Detection_Collision_Objets(self):
-        joueur = ((self.x * VAR.tailleCellule), (self.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
-        objet_attrape = self.OBJETS.Detection_Collision_Avec_Objets(joueur)
-        
-        if not (objet_attrape == None):     
-            if not objet_attrape.enMouvement:
-                self.Attrape_Objet(objet_attrape)
-        
-            
-    def Se_Soigne(self):
-        self.maladie = 0
-        self.maladie_Temps = -1
-           
-    def Tombe_Malade(self):
-        FCT.jouer_sons("tete_mort")
-        self.maladie = random.choices(list(C_MALADIE))[0]
-        print(self.maladie)
-        
-                   
-    def Detection_Collision_Decors(self):
-        
-        joueur = ((self.x * VAR.tailleCellule), (self.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
-
+    def Detection_Collision_Decors(self):        
         collision = VAR.C_AUCUNE_COLLISION
         for coord in ((-1,-1), (0,-1), (1, -1),
                       (-1, 0), (0, 0), (1, 0),
                       (-1, 1), (0, 1), (1, 1)):
             
             x, y = coord                
-            gX, gY = self.iX() + x, self.iY() + y
+            gX, gY = self.celluleX() + x, self.celluleY() + y
             
             if self.Toujours_Sur_Le_Terrain(gX, gY):
                 if not self.Zone_Traversable(gX, gY):
+                    if FCT.Collision2((self.x, self.y), (gX, gY)): return (gX, gY)
 
-                    decors = (gX * VAR.tailleCellule, gY * VAR.tailleCellule, VAR.tailleCellule, VAR.tailleCellule)
-                    if FCT.Collision(joueur, decors): return (gX, gY)
-                    if self.BOMBES.Detection_Collision_Avec_Les_Bombes(self): return (gX, gY)
             else:
                 collision = VAR.C_HORS_TERRAIN
                 break
 
         return collision
 
+    # --- Reaction du joueur face a une bombe
+    def Detection_Collision_Bombe(self):
+        # --- recupere la bombe touchée
+        bombe_touchee = FCT.Detection_Collision(self.BOMBES, self)
+        
+        if not bombe_touchee == None:
+            if self.bombes_protection == bombe_touchee:
+                return False
+                        
+            if self.coup_de_pied and not bombe_touchee.enMouvement:
+                bombe_touchee.direction = self.direction
+                bombe_touchee.enMouvement = True
+                return False
+            else:
+                return True
+        return False
+              
+    def Detection_Collision_Objets(self):
+        #joueur = ((self.x * VAR.tailleCellule), (self.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
+        objet_attrape = FCT.Detection_Collision(self.OBJETS, self)
+        
+        if not (objet_attrape == None):     
+            if not objet_attrape.enMouvement:
+                self.Attrape_Objet(objet_attrape)
 
+    def Detection_Collision_Avec_Autres_Joueurs(self):
+        for joueur in self.JOUEURS.LISTE:
+            if not joueur == self:
 
+                if FCT.Collision2((self.x, self.y), (joueur.x, joueur.y)):
+                    if self.coup_de_poing: return True
+                    
+                    # --- si je suis malade
+                    if self.estMalade():
+                        return self.Contamine_Autre_Joueur(self, joueur)
+                    elif joueur.estMalade():
+                        return self.Contamine_Autre_Joueur(joueur, self)
+        return False
+    
     def Algorithme_Drift(self, _collision_coord):
         d = self.direction
         xOld, yOld = self.x, self.y
@@ -369,6 +391,6 @@ class CJoueur(item.CItem):
         
         # --- Ajustement du mouvement
         if not (yOld == self.y):
-            if self.y-self.iY() < self.vitesseBase: self.y = self.iY()
+            if self.y-self.celluleY() < self.vitesseBase: self.y = self.celluleY()
         if not (xOld == self.x):
-            if self.x-self.iX() < self.vitesseBase: self.x = self.iX()
+            if self.x-self.celluleX() < self.vitesseBase: self.x = self.celluleX()

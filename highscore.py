@@ -43,7 +43,9 @@ class CHighscore:
         marge = 64
         espacement = 8
         largeur_course = VAR.resolution[0] - (marge * 2)
-        hauteur_course = (int((VAR.resolution[1] - hauteur_titre - (espacement * 2)) / self.nbJoueurs)) - espacement
+        hauteur_course = (int((VAR.resolution[1] - hauteur_titre - (espacement * 2)) / self.nbJoueurs)) - espacement        
+        if hauteur_course > 64: hauteur_course = 64
+        
         posCourseDepart = 240
         pasCourse = (largeur_course - posCourseDepart) / (VAR.nb_parties + 1)
         

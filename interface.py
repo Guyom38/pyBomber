@@ -111,7 +111,7 @@ class CInterface:
             if self.temps_compte_a_rebours == -1:
                 self.temps_compte_a_rebours = time.time()
                 FCT.Charge_Musique('23')
-                pygame.mixer.music.play()
+
             
             self.Afficher_Compte_A_Rebours()            
                 

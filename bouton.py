@@ -18,10 +18,6 @@ class CBouton():
         self.texte = _texte
         
         self.fonction = _fonction
-        
-
-        
-       
         self.couleur_fond, self.couleur_bordure = (64, 64, 64, 64), (255, 255, 255, 255)
         
         
@@ -52,7 +48,7 @@ class CBouton():
         couleur2 = (0,0,0)
         
         for joueur in self.MOTEUR.JOUEURS.LISTE:            
-            coord_joueur = (joueur.oX() + (VAR.tailleCellule/2), joueur.oY()+(VAR.tailleCellule/2), VAR.tailleCellule/2 , VAR.tailleCellule/2)
+            coord_joueur = (joueur.ecranX() + (VAR.tailleCellule/2), joueur.ecranY()+(VAR.tailleCellule/2), VAR.tailleCellule/2 , VAR.tailleCellule/2)
             coord_bouton = (x, y, self.largeur, self.hauteur)
             if FCT.ContientDans(coord_joueur, coord_bouton):
                 

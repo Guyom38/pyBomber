@@ -8,9 +8,7 @@ class CJoueurs():
         self.MOTEUR = _moteur
         self.LISTE = []
     
-    def Activer_Tous_Les_Joueurs(self):
-        for joueur in self.LISTE:
-            joueur.actif = True
+
             
     def nbJoueurs(self):
         return len(self.LISTE)
@@ -31,8 +29,9 @@ class CJoueurs():
         
         print("redessine joueurs")
     
+ 
+            
     def Reinitaliser(self):
-
         position = 0
         for joueur in self.LISTE:
             if joueur.actif:                
@@ -78,7 +77,12 @@ class CJoueurs():
                 
                 VAR.LISTE_COLOR[key].append((new_valeur_r, new_valeur_g, new_valeur_b, 255))
                 
-                
+    
+   
+    def Activer_Tous_Les_Joueurs(self):
+        for joueur in self.LISTE:
+            joueur.actif = True   
+                        
     def RePositionne_Joueurs(self):
         for joueur in self.LISTE:
             joueur.Position_Initiale()

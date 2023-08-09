@@ -11,8 +11,7 @@ from enums import *
 
 class CBombes:
     def __init__(self, _moteur):
-        self.MOTEUR = _moteur
-        
+        self.MOTEUR = _moteur        
     
     def Initialiser(self):
         self.LISTE = []
@@ -29,21 +28,20 @@ class CBombes:
     # retourne Vrai si aucune bombe
     def Controle_Emplacement_Libre(self, _x, _y):
         for bombe in self.LISTE:
-            if bombe.x == _x and bombe.y == _y: return False            
+            if bombe.celluleX() == _x and bombe.celluleY() == _y: return False            
         return True
             
     def Ajouter_Une_Bombe(self, _joueur):
-        if self.Controle_Emplacement_Libre(_joueur.iX(), _joueur.iY()):         
+        if self.Controle_Emplacement_Libre(_joueur.celluleX(), _joueur.celluleY()):         
             bombe = CB.CBombe(self, _joueur)
             if _joueur.maladie == C_MALADIE.BOMBES_A_RETARDEMENT: bombe.delais = random.randint(4, 20)
             
             _joueur.bombes_protection = bombe
-            _joueur.bombes_posees += 1
-            
+            _joueur.bombes_posees += 1            
             self.LISTE.append(bombe)
+            
             return True
-        return False
-        
+        return False        
         
     def Explosion_En_Chaine(self, _x, _y):
         for bombe in self.LISTE:
@@ -52,36 +50,4 @@ class CBombes:
                     bombe.delais = 0.00
                     bombe.temps = time.time()
     
-    def Detection_Collision_Avec_Une_Bombe(self, _joueur, _bombe):
-        coordBombe = ((_bombe.x * VAR.tailleCellule), (_bombe.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
-        coordJoueur = ((_joueur.x * VAR.tailleCellule), (_joueur.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
-        return FCT.Collision(coordJoueur, coordBombe)
-    
-    def Detection_Collision_Avec_Autres_Bombes(self, _bombe):
-        coordBombe1 = ((_bombe.x * VAR.tailleCellule), (_bombe.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
-        for bombe in self.LISTE:            
-            coordBombe2 = ((bombe.x * VAR.tailleCellule), (bombe.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
-            if not bombe == _bombe:
-                if FCT.Collision(coordBombe1, coordBombe2):
-                    return True                
-        return False
-                           
-    def Detection_Collision_Avec_Les_Bombes(self, _joueur):
-        coordJoueur = ((_joueur.x * VAR.tailleCellule), (_joueur.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
-        for bombe in self.LISTE:            
-            coordBombe = ((bombe.x * VAR.tailleCellule), (bombe.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
-            
-            # --- Joueur protection activée, le joueur passe sur la bombe
-            if _joueur.bombes_protection == bombe: 
-                return False
-            
-            # --- Teste collision entre bombe et joueur
-            if FCT.Collision(coordJoueur, coordBombe):
-                if _joueur.coup_de_pied and not bombe.enMouvement: 
-                    bombe.direction = _joueur.direction
-                    bombe.enMouvement = True
-                    
-                    return False  
-                else: 
-                    return True
-        return False
+

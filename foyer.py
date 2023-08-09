@@ -6,5 +6,5 @@ class CFoyer:
         self.y = _y  
         self.imageY = _imageY   
         
-    def oX(self): return VAR.offSet[0] + (self.x * VAR.tailleCellule) 
-    def oY(self): return VAR.offSet[1] + (self.y * VAR.tailleCellule) 
+    def ecranX(self): return VAR.offSet[0] + (self.x * VAR.tailleCellule) 
+    def ecranY(self): return VAR.offSet[1] + (self.y * VAR.tailleCellule) 

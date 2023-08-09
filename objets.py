@@ -39,10 +39,6 @@ class CObjets:
         objet_hasard = self.PIOCHES.pop(0)  
         if not (objet_hasard == None):
             self.Ajouter_Un_Objet(_x, _y, objet_hasard)
-    
-    
-    def Purger_Objets_Exploses(self):
-        self.LISTE = [objet for objet in self.LISTE if objet.etat != C_ETAPE_BOMBE.A_EXPLOSE]
         
     def Ajouter_Un_Objet(self, _x, _y, _objet_hasard, _jeter = False, _oX = 0, _oY =0):
         objet = CO.CObjet(self.MOTEUR, _x, _y, _objet_hasard)
@@ -54,26 +50,9 @@ class CObjets:
             objet.etape = random.randint(0,4)     
             objet.enMouvement = True              
         self.LISTE.append(objet)
-        
-        
-    def Ajustement(self, _objet, _marge):
-        x, y, w, h = _objet
-        x = x + _marge
-        y = y + _marge
-        w = w - (_marge *2)
-        h = h - (_marge *2)
-        return x, y, w, h
-            
-    def Detection_Collision_Avec_Objets(self, joueur):
-        for objet in self.LISTE:            
-            objet_objet = ((objet.x * VAR.tailleCellule), (objet.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
-            
-            #objet_objet = self.Ajustement(objet_objet, 8)
-            #joueur = self.Ajustement(joueur, 8)
-            
-            if FCT.Collision(joueur, objet_objet):    
-                return objet
-        return None
-    
+   
     def Detruire_Objet(self, _objet):
         self.LISTE.remove(_objet)
+    
+    def Purger_Objets_Exploses(self):
+        self.LISTE = [objet for objet in self.LISTE if objet.etat != C_ETAPE_BOMBE.A_EXPLOSE]

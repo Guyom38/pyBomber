@@ -16,6 +16,8 @@ def jouer_sons(_fichier):
     VAR.sons[_fichier].play()
     
 def Charge_Musique(_fichier):  
+    if not VAR.music: return 
+    
     pygame.mixer.music.load("musics/" + _fichier + ".mp3")
     pygame.mixer.music.play()
 
@@ -70,7 +72,28 @@ def Collision(objet1, objet2):
         return False
     else:
         return True
-  
+
+def Collision2(objet1, objet2):
+    dx1 = dx2 = dy1 = dy2 = 1
+    x1, y1 = objet1
+    x2, y2 = objet2
+    
+    if ((x2 >= x1 + dx1) 
+            or (x2 + dx2 <= x1) 
+            or (y2 >= y1 + dy1)
+            or (y2 + dy2 <= y1)):
+
+        return False
+    else:
+        return True
+
+def Detection_Collision(_class_objet, _element):
+    for objet in _class_objet.LISTE:
+        if not objet == _element:
+            if Collision2((objet.x , objet.y), (_element.x, _element.y)): 
+                return objet
+    return None
+        
 def ContientDans(objet, objet_conteneur):
     xC, yC, dxC, dyC = objet_conteneur
     x, y, dx, dy = objet

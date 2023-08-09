@@ -43,8 +43,8 @@ class CCellule(item.CItem):
 
              
     def Afficher_Mur_Cassable(self):
-        posX = VAR.offSet[0] + (self.x * VAR.tailleCellule)
-        posY = VAR.offSet[1] + (self.y * VAR.tailleCellule)
+        posX = self.ecranX()
+        posY = self.ecranY()
         
         if self.objet == C_TERRAIN.CASSABLE: 
             if not self.casser:
@@ -54,7 +54,6 @@ class CCellule(item.CItem):
                 self.Animation_Explosion_Mur() 
                 
         elif self.objet == C_TERRAIN.BLOC:
-            #pygame.draw.rect(VAR.fenetre, (random.randint(0, 255),255,255), (posX, posY, VAR.tailleCellule, VAR.tailleCellule), 0)
             VAR.fenetre.blit(VAR.image["mur"], (posX, posY))
             
                

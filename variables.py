@@ -11,7 +11,7 @@ offSet = (0, 0)
 
 animation_MortFrameMax = 5    
 
-
+music = False
 fullHd = False
 plein_ecran = False
 
@@ -26,11 +26,11 @@ hauteur_cadre_joueurs = 64
 
 tailleCellule = 16 
 nbLignes, nbColonnes = 13, 15
-tauxRemplissage = 70
-delaisExplosion = 3    
+tauxRemplissage = 10
+delaisExplosion = 4    
 
-duree_partie = 15
-nb_parties = 2
+duree_partie = 90
+nb_parties = 3
 active_maladies = True
 active_heritage = True
 maladie_delais_chiasse = 30
@@ -39,6 +39,10 @@ maladie_delais_figer = delaisExplosion + 2
 CLAVIER = {
     0: {"DROITE": K_d, "GAUCHE": K_q, "HAUT" : K_z, "BAS" : K_s, "ACTION1" : K_w, "ACTION2" : K_x},
     1: {"DROITE": K_RIGHT, "GAUCHE": K_LEFT, "HAUT" : K_UP, "BAS" : K_DOWN, "ACTION1" : K_l, "ACTION2" : K_m} }
+
+C_VITESSE_BOMBE_ROULE = 0.05
+C_VITESSE_JOUEUR = 0.06
+C_VITESSE_PAS = 0.005
 
 
 

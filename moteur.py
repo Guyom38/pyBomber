@@ -120,7 +120,7 @@ class CMoteur():
                 
                 self.TERRAIN.TimeOut_Resserage_Du_Terrain()   
     
-                if self.JOUEURS.nbJoueurs_enVie() == 1:                    
+                if self.JOUEURS.nbJoueurs_enVie() <= 1:                    
                     self.INTERFACE.Victoire_Afficher()
                     
             pygame.display.update()

@@ -28,6 +28,8 @@ class CMenu():
         self.bouton_en_cours = -1
         self.oldZoom = 3
         
+        self.niveau = 0
+        
     def Action_NombreParties(self, _juste_valeur):
         if _juste_valeur:
             if VAR.nb_parties == 0: return "illimité"
@@ -47,18 +49,36 @@ class CMenu():
             return "ON" if VAR.active_maladies else "OFF"
         else:
             VAR.active_maladies = not VAR.active_maladies
-    def Action_Active_Heritage(self, _juste_valeur):
-        if _juste_valeur:
+    def Action_Active_Heritage(self, _active_heritage):
+        if _active_heritage:
             return "ON" if VAR.active_heritage else "OFF"
         else:
             VAR.active_heritage = not VAR.active_heritage
     
-    def Action_Revenir_Principal(self, _juste_heritage):
-        if _juste_heritage:
+    def Action_Revenir_Principal(self, _juste_valeur):
+        if _juste_valeur:
             return None
+            
         else:
-            self.menu = "PRINCIPAL"  
+            self.menu = "PRINCIPAL"
 
+    def Action_Dimension_Suivante(self, _juste_valeur):
+        if _juste_valeur:
+            if self.niveau == 0:
+                VAR.nbColonnes = 15
+                VAR.nbLignes = 13
+                return "ORIGINAL" + " ("+str(VAR.nbColonnes)+"x"+str(VAR.nbLignes)+")"
+            elif self.niveau == 1:
+                VAR.nbColonnes = 20
+                VAR.nbLignes = 40
+                return "ORIGINAL" + " ("+str(VAR.nbColonnes)+"x"+str(VAR.nbLignes)+")"
+            
+        else:
+            self.niveau += 1
+            if self.niveau > 1: self.niveau = 0
+            self.Action_Dimension_Suivante(True)  
+            
+            
     
     def Initialiser(self):
 
@@ -73,9 +93,7 @@ class CMenu():
         VAR.nbLignes = int((VAR.resolution[1] / VAR.tailleCellule)) - 2        
         self.largeurBouton, self.hauteurBouton = (VAR.nbColonnes - 2) * VAR.tailleCellule, 64
         
-        self.TERRAIN.GRILLE =  [[CC.CCellule(self.MOTEUR, x, y) for y in range(VAR.nbLignes)] for x in range(VAR.nbColonnes)]
-        self.TERRAIN.Construire_Terrain_De_Jeu(True)
-        self.TERRAIN.image = None           
+        self.TERRAIN.Initialiser(True)    
         
         self.JOUEURS.Reinitaliser()
         
@@ -104,15 +122,18 @@ class CMenu():
         self.LISTE["PARTIE"] = MENU2
         
         MENU4 = []
-        MENU4.append(CB.CBouton(self.MOTEUR, 20, "ORGINAL (15x13)"))
-        MENU4.append(CB.CBouton(self.MOTEUR, 21, "LARGEUR "))
-        MENU4.append(CB.CBouton(self.MOTEUR, 22, "LONGUEUR "))
+        MENU4.append(CB.CBouton(self.MOTEUR, 20, "", self.Action_Dimension_Suivante))
+        MENU4.append(CB.CBouton(self.MOTEUR, 99, ""))
+        MENU4.append(CB.CBouton(self.MOTEUR, 21, "TERRAIN (CLASSIQUE)"))
+        MENU4.append(CB.CBouton(self.MOTEUR, 22, "HAUTEUR (15) "))
         MENU4.append(CB.CBouton(self.MOTEUR, 23, "AU TAQUET"))
         MENU4.append(CB.CBouton(self.MOTEUR, 99, ""))
         MENU4.append(CB.CBouton(self.MOTEUR, 98, "REVENIR"))
         self.LISTE["NIVEAU"] = MENU4
         
-       
+
+        
+             
 
         MENU3 = []
         MENU3.append(CB.CBouton(self.MOTEUR, 30,  "RESOLUTION (1024x768)"))
@@ -147,7 +168,7 @@ class CMenu():
         
         hauteur_boutons = 0
         for bouton in self.LISTE[self.menu]:
-            if not bouton.texte == "":
+            if not bouton.id == 99:
                 hauteur_boutons += self.hauteurBouton + self.hauteur_saut
             else:
                 hauteur_boutons += self.hauteur_vide
@@ -163,7 +184,7 @@ class CMenu():
         VAR.offSet = (self.x, VAR.tailleCellule) 
         
         for bouton in self.LISTE[self.menu]:
-            if not bouton.texte == "":
+            if not bouton.id == 99:
                 bouton_presse = bouton.Afficher_Bouton(self.x, self.y)
                 self.y += self.hauteurBouton + self.hauteur_saut
                 if bouton_presse:

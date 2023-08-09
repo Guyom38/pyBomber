@@ -25,43 +25,39 @@ class CExplosion:
 
     def Initiatiser_Explosion(self):
         self.FOYER = {}
-
-        self.initialiser = False
+        self.Gestion_Propagation_De_LExplosion()
+        
         self.BOMBE.etat = C_ETAPE_BOMBE.EXPLOSE
         self.JOUEUR.bombes_posees -= 1  
         
     def Afficher_Explosion_De_La_Bombe(self):        
-        self.Gestion_Explosion()
+        if time.time() - self.BOMBE.temps > 0.05:
+            self.BOMBE.temps = time.time()      
+            self.BOMBE.animationId += 1                
+        if self.BOMBE.animationId > 5:
+            self.BOMBE.etat = C_ETAPE_BOMBE.A_EXPLOSE    
             
         for _, foyer in self.FOYER.items():
-            VAR.fenetre.blit(FCT.image_decoupe(VAR.image["explosion"], FCT.Animation(10, 4), foyer.imageY, VAR.tailleCellule,  VAR.tailleCellule), (foyer.oX(), foyer.oY()))  
+            VAR.fenetre.blit(FCT.image_decoupe(VAR.image["explosion"], FCT.Animation(10, 4), foyer.imageY, VAR.tailleCellule,  VAR.tailleCellule), (foyer.ecranX(), foyer.ecranY()))  
         
         
-    def Gestion_Explosion(self):
-        if not self.initialiser:
-            self.feuSTOP = {"" : True, C_DIRECTION.DROITE : True, C_DIRECTION.GAUCHE : True, C_DIRECTION.HAUT : True, C_DIRECTION.BAS : True}
-            self.feuSTOP_nb = {"" : 0, C_DIRECTION.DROITE : 0, C_DIRECTION.GAUCHE : 0, C_DIRECTION.HAUT : 0, C_DIRECTION.BAS : 0}
-            self.initialiser = True
+    def Gestion_Propagation_De_LExplosion(self):
+        self.feuSTOP = {"" : True, C_DIRECTION.DROITE : True, C_DIRECTION.GAUCHE : True, C_DIRECTION.HAUT : True, C_DIRECTION.BAS : True}
+        self.feuSTOP_nb = {"" : 0, C_DIRECTION.DROITE : 0, C_DIRECTION.GAUCHE : 0, C_DIRECTION.HAUT : 0, C_DIRECTION.BAS : 0}
+        self.initialiser = True
 
-            # --- ajoute la position sous le joueur
-            self.Detection_KesKi_Pete(self.BOMBE.iX(), self.BOMBE.iY(), "", 0) 
+        # --- ajoute la position sous le joueur
+        self.Detection_KesKi_Pete(self.BOMBE.celluleX(), self.BOMBE.celluleY(), "", 0) 
             
-            # --- progresse tout autour
-            for force in range(1, self.force):
-                for sens, xD, yD in ((C_DIRECTION.DROITE, force, 0), (C_DIRECTION.GAUCHE, -force, 0), (C_DIRECTION.HAUT, 0, -force), (C_DIRECTION.BAS, 0, force)):
-                    if (self.feuSTOP[sens]):
-                        posX, posY = int(round(self.BOMBE.x + xD, 0)), int(round(self.BOMBE.y + yD, 0))
-                        self.Detection_KesKi_Pete(posX, posY, sens, force)             
-            
-            self.ReDessine_Schema()
-
-        else:
-            if time.time() - self.BOMBE.temps > 0.05:
-                self.BOMBE.temps = time.time()      
-                self.BOMBE.animationId += 1
-                
-            if self.BOMBE.animationId > 5:
-                self.BOMBE.etat = C_ETAPE_BOMBE.A_EXPLOSE    
+        # --- progresse tout autour
+        for force in range(1, self.force):
+            for sens, xD, yD in ((C_DIRECTION.DROITE, force, 0), (C_DIRECTION.GAUCHE, -force, 0), (C_DIRECTION.HAUT, 0, -force), (C_DIRECTION.BAS, 0, force)):
+                if (self.feuSTOP[sens]):
+                    posX, posY = int(round(self.BOMBE.x + xD, 0)), int(round(self.BOMBE.y + yD, 0))
+                    self.Detection_KesKi_Pete(posX, posY, sens, force)   
+        
+        self.ReDessine_Schema()
+                    
 
     def Detection_KesKi_Pete(self, _posX, _posY, _sens, _force):               
         grille = self.MOTEUR.TERRAIN.GRILLE               
@@ -75,13 +71,13 @@ class CExplosion:
                 
                 # --- tue les joueurs sur la zone            
                 for joueur in self.BOMBES.MOTEUR.JOUEURS.LISTE:
-                    if _posX == joueur.iX() and _posY == joueur.iY():
+                    if _posX == joueur.celluleX() and _posY == joueur.celluleY():
                         joueur.Mourir()   
                         self.JOUEUR.nb_morts += 1
                                      
                 # --- Detruit les objets sur la zone
                 for objet in self.BOMBES.MOTEUR.OBJETS.LISTE:
-                    if _posX == objet.iX() and _posY == objet.iY():
+                    if _posX == objet.celluleX() and _posY == objet.celluleY():
                         objet.etat = C_ETAPE_BOMBE.A_EXPLOSE                    
                             
             elif self.feuSTOP_nb[_sens]+1 == _force:

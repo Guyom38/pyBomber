@@ -30,9 +30,9 @@ class CTerrain():
         VAR.offSet = ( ((VAR.resolution[0] - (VAR.nbColonnes* VAR.tailleCellule)) /2) ,
                         VAR.hauteur_cadre_joueurs + (((VAR.resolution[1] - VAR.hauteur_cadre_joueurs) - (VAR.nbLignes* VAR.tailleCellule)) /2) ) 
         
-    def Initialiser(self):
+    def Initialiser(self, _menu = False):
         self.GRILLE =  [[CC.CCellule(self.MOTEUR, x, y) for y in range(VAR.nbLignes)] for x in range(VAR.nbColonnes)]
-        self.Construire_Terrain_De_Jeu()
+        self.Construire_Terrain_De_Jeu(_menu)
         self.image = None
         
         self.x, self.y, self.xD, self.yD = 0, 1, 1, 1
@@ -41,7 +41,8 @@ class CTerrain():
         self.delais_ecrasement = 0.1
         self.tour = 0
         self.timeOut = False
-        
+    
+     
         
     def Preparation_Couches_Fixes(self):
         largeur = (VAR.nbColonnes * VAR.tailleCellule) + (C_CONTOUR * 2)
