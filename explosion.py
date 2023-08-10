@@ -62,7 +62,7 @@ class CExplosion:
     def Detection_KesKi_Pete(self, _posX, _posY, _sens, _force):               
         grille = self.MOTEUR.TERRAIN.GRILLE               
         if FCT.Position_Sur_Terrain(_posX, _posY):
-            self.feuSTOP[_sens] = (grille[_posX][_posY].Traversable() and self.feuSTOP[_sens])                    
+            self.feuSTOP[_sens] = (grille[_posX][_posY].traversable() and self.feuSTOP[_sens])                    
             self.BOMBES.Explosion_En_Chaine(_posX, _posY)
                         
             if self.feuSTOP[_sens]: 
@@ -81,7 +81,7 @@ class CExplosion:
                         objet.etat = C_ETAPE_BOMBE.A_EXPLOSE                    
                             
             elif self.feuSTOP_nb[_sens]+1 == _force:
-                if grille[_posX][_posY].Cassable():
+                if grille[_posX][_posY].cassable():
                     grille[_posX][_posY].Casser_Mur()  
 
     def Ajoute_Schema_Explosion(self, _posX, _posY, _force):
@@ -89,7 +89,7 @@ class CExplosion:
 
     
     def ReDessine_Schema(self):
-        for key, values in self.FOYER.items():  
+        for key, _ in self.FOYER.items():  
             posX, posY = key  
             gauche = (posX-1, posY) in self.FOYER 
             droite = (posX+1, posY) in self.FOYER 

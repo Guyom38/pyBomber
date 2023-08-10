@@ -7,7 +7,7 @@ from enums import *
 
 import fonctions as FCT
 
-import time, random
+import time, random, math
 from enum import Enum  
 import item
 
@@ -43,9 +43,9 @@ class CJoueur(item.CItem):
         self.puissance = 1
         self.bombes = 3
         self.bombes_posees = 0
-        self.bombes_protection = None        
+   
         self.coup_de_pied = True
-        self.coup_de_poing = False
+        self.coup_de_poing = True
         
         self.maladie = 0
         self.maladie_temps = -1        
@@ -60,7 +60,10 @@ class CJoueur(item.CItem):
         self.offSetX = 0
         self.offSetY = - 12 * VAR.zoom
         self.Colorisation()
-                                
+    
+    def score(self):
+        return (self.nb_manches * 1000) + (self.nb_morts * 50)
+                               
     def Colorisation(self):
         print("recolorie")
         self.image = VAR.image["joueur0"].copy()      
@@ -127,7 +130,7 @@ class CJoueur(item.CItem):
 
             if not _menu:
                 self.Gestion_Deplacement()  
-                self.Detection_Collision_Decors()    
+                self.Detection_Collision_Murs_Autour()    
         
         elif self.animationId >= 0:
             if self.animationId < VAR.animation_MortFrameMax+1:
@@ -142,8 +145,7 @@ class CJoueur(item.CItem):
                 self.animationId = -1
     
 
-    def score(self):
-        return (self.nb_manches * 1000) + (self.nb_morts * 50)
+
     
         
     def Action_Poser_Une_Bombe(self):
@@ -155,10 +157,6 @@ class CJoueur(item.CItem):
                     FCT.jouer_sons("poser_bombe")
     
 
-    def Retire_Protection_Bombe_Si_A_Cote(self):
-        if self.bombes_protection == None: return
-        if not FCT.Collision2((self.x, self.y), (self.bombes_protection.x, self.bombes_protection.y)):        
-            self.bombes_protection = None
 
 # -----------------------------------------------------------------------------------------------------------
 #
@@ -212,14 +210,14 @@ class CJoueur(item.CItem):
     def Transmission_Heritage_Apres_Mort(self):
         # --- jete les objets
         for _ in range(self.bombes-1):
-            if random.randint(0,100) <25: self.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), C_OBJET.BOMBE, True)
+            if random.randint(0,100) <25: self.OBJETS.Ajouter_Un_Objet(self.celluleX(), self.celluleY(), C_OBJET.BOMBE, True)
         
         for _ in range(self.puissance-1):
-            if random.randint(0, 100) <15: self.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), C_OBJET.FLAMME, True)
+            if random.randint(0, 100) <15: self.OBJETS.Ajouter_Un_Objet(self.celluleX(), self.celluleY(), C_OBJET.FLAMME, True)
         
         nbVitesse = int(round((self.vitesse-self.vitesseBase) / self.pasVitesse,0))
         for _ in range(nbVitesse):
-            if random.randint(0, 100) <15: self.OBJETS.Ajouter_Un_Objet(self.iX(), self.iY(), C_OBJET.ROLLER, True)
+            if random.randint(0, 100) <15: self.OBJETS.Ajouter_Un_Objet(self.celluleX(), self.celluleY(), C_OBJET.ROLLER, True)
                    
 # -----------------------------------------------------------------------------------------------------------
 #
@@ -237,15 +235,15 @@ class CJoueur(item.CItem):
         if self.direction == C_DIRECTION.DROITE: self.x += vitesseDeBase        
 
         self.Gestion_Collisions()
-        self.Retire_Protection_Bombe_Si_A_Cote()              
         self.enMouvement = False       
               
         
     def Gestion_Collisions(self):
+
         # --- controle si collision
-        coord_collision_mur = self.Detection_Collision_Decors()
+        coord_collision_mur = self.Detection_Collision_Murs_Autour()
         collision_bombe = self.Detection_Collision_Bombe()
-        #coord_collision_bombe = self.Detection_Collision_Avec_Bombes()
+
         if (not coord_collision_mur == VAR.C_AUCUNE_COLLISION or collision_bombe): # or (not coord_collision_bombe == VAR.C_AUCUNE_COLLISION):
             # --- repositionne parfaitement la position du joueur sur la case qu'il occupe
             if self.direction in [C_DIRECTION.HAUT,C_DIRECTION.BAS]: self.y = self.celluleY()
@@ -261,11 +259,7 @@ class CJoueur(item.CItem):
     def Action_Pousser_La_Bombe(self):
         pass
         
-    def Toujours_Sur_Le_Terrain(self, x, y):
-        return x >= 0 and y >=0 and x < VAR.nbColonnes and y < VAR.nbLignes
-    
-    def Zone_Traversable(self, gX, gY):
-        return (self.TERRAIN.GRILLE[gX][gY].Traversable())    
+
     
     def Attrape_Objet(self, _objet_attrape):        
         # --- Si malade se debarrasse de sa maladie
@@ -286,62 +280,66 @@ class CJoueur(item.CItem):
         self.OBJETS.Detruire_Objet(_objet_attrape)
         FCT.jouer_sons("prendre_objet")
             
-    def Detection_Collision_Decors(self):        
-        collision = VAR.C_AUCUNE_COLLISION
-        for coord in ((-1,-1), (0,-1), (1, -1),
-                      (-1, 0), (0, 0), (1, 0),
-                      (-1, 1), (0, 1), (1, 1)):
-            
-            x, y = coord                
-            gX, gY = self.celluleX() + x, self.celluleY() + y
-            
-            if self.Toujours_Sur_Le_Terrain(gX, gY):
-                if not self.Zone_Traversable(gX, gY):
-                    if FCT.Collision2((self.x, self.y), (gX, gY)): return (gX, gY)
 
-            else:
-                collision = VAR.C_HORS_TERRAIN
-                break
-
-        return collision
 
     # --- Reaction du joueur face a une bombe
     def Detection_Collision_Bombe(self):
         # --- recupere la bombe touchée
-        bombe_touchee = FCT.Detection_Collision(self.BOMBES, self)
+        bombe_touchee = FCT.Detection_Collision(self.BOMBES, self)        
         
         if not bombe_touchee == None:
-            if self.bombes_protection == bombe_touchee:
-                return False
-                        
-            if self.coup_de_pied and not bombe_touchee.enMouvement:
-                bombe_touchee.direction = self.direction
-                bombe_touchee.enMouvement = True
-                return False
+            if not bombe_touchee.enMouvement:
+                if (self.celluleX == bombe_touchee.celluleX() and self.celluleY() == bombe_touchee.celluleY()):
+                    return False
+            
+                if self.coup_de_pied:
+                    bombe_touchee.direction = self.direction
+                    bombe_touchee.enMouvement = True
+                    return False                
             else:
                 return True
         return False
+    
               
     def Detection_Collision_Objets(self):
-        #joueur = ((self.x * VAR.tailleCellule), (self.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
-        objet_attrape = FCT.Detection_Collision(self.OBJETS, self)
-        
+        objet_attrape = FCT.Detection_Collision(self.OBJETS, self)        
         if not (objet_attrape == None):     
             if not objet_attrape.enMouvement:
                 self.Attrape_Objet(objet_attrape)
 
+    def Saut(self, _x, _y):
+        oldPos = ( self.x, self.y)
+        self.x = self.x + _x
+        self.y = self.y + _y
+        
+        if not self.Detection_Collision_Murs_Autour() == VAR.C_AUCUNE_COLLISION:
+            self.x, self.y = oldPos    
+        
+    def Pousser_Autre_Joueur(self, _joueur):
+        if (self.celluleX() == _joueur.celluleX()) and (self.celluleY() == _joueur.celluleY()):
+            return
+        
+        if self.direction == C_DIRECTION.BAS:
+            _joueur.Saut(0, +1)
+        elif self.direction == C_DIRECTION.HAUT:
+            _joueur.Saut(0, -1)
+        elif self.direction == C_DIRECTION.GAUCHE:
+            _joueur.Saut(-1, 0)
+        elif self.direction == C_DIRECTION.DROITE:
+            _joueur.Saut(1, 0)
+        
     def Detection_Collision_Avec_Autres_Joueurs(self):
-        for joueur in self.JOUEURS.LISTE:
-            if not joueur == self:
-
-                if FCT.Collision2((self.x, self.y), (joueur.x, joueur.y)):
-                    if self.coup_de_poing: return True
-                    
-                    # --- si je suis malade
-                    if self.estMalade():
-                        return self.Contamine_Autre_Joueur(self, joueur)
-                    elif joueur.estMalade():
-                        return self.Contamine_Autre_Joueur(joueur, self)
+        joueur_collision = FCT.Detection_Collision_High(self.JOUEURS, self)
+        if not (joueur_collision == None):
+            if self.coup_de_poing: 
+                self.Pousser_Autre_Joueur(joueur_collision)
+                return True
+                
+            # --- si je suis malade
+            if self.estMalade():
+                return self.Contamine_Autre_Joueur(self, joueur_collision)
+            elif joueur_collision.estMalade():
+                return self.Contamine_Autre_Joueur(joueur_collision, self)                    
         return False
     
     def Algorithme_Drift(self, _collision_coord):
@@ -354,38 +352,38 @@ class CJoueur(item.CItem):
         
         # --- Test le Passage a empreinter pour contourner
         if d == C_DIRECTION.DROITE: 
-            cellule_Sur_Chemin = (self.TERRAIN.GRILLE[xCollision-1][yCollision-1].Traversable())      
+            cellule_Sur_Chemin = (self.TERRAIN.GRILLE[xCollision-1][yCollision-1].traversable())      
         elif d == C_DIRECTION.GAUCHE: 
-            cellule_Sur_Chemin = (self.TERRAIN.GRILLE[xCollision+1][yCollision-1].Traversable())      
+            cellule_Sur_Chemin = (self.TERRAIN.GRILLE[xCollision+1][yCollision-1].traversable())      
         elif d == C_DIRECTION.HAUT: 
-            cellule_Sur_Chemin = (self.TERRAIN.GRILLE[xCollision-1][yCollision+1].Traversable())      
+            cellule_Sur_Chemin = (self.TERRAIN.GRILLE[xCollision-1][yCollision+1].traversable())      
         elif d == C_DIRECTION.BAS: 
-            cellule_Sur_Chemin = (self.TERRAIN.GRILLE[xCollision-1][yCollision-1].Traversable())      
+            cellule_Sur_Chemin = (self.TERRAIN.GRILLE[xCollision-1][yCollision-1].traversable())      
         
         # --- Test le passage final
         if d in [C_DIRECTION.DROITE,C_DIRECTION.GAUCHE]:                      
             # --- Passage au dessus            
             if  (yCollision-limitx2) <= self.y <= (yCollision-limit): 
-                cellule_Destination = (self.TERRAIN.GRILLE[xCollision][yCollision-1].Traversable())
+                cellule_Destination = (self.TERRAIN.GRILLE[xCollision][yCollision-1].traversable())
                 if cellule_Sur_Chemin and cellule_Destination:
                     self.y -= self.vitesseBase  
                     
             # --- Passage au dessous
             elif (yCollision+limit ) <= self.y <= (yCollision+limitx2):
-                cellule_Destination = (self.TERRAIN.GRILLE[xCollision][yCollision+1].Traversable())
+                cellule_Destination = (self.TERRAIN.GRILLE[xCollision][yCollision+1].traversable())
                 if cellule_Sur_Chemin and cellule_Destination:
                     self.y += self.vitesseBase
 
         elif d in [C_DIRECTION.HAUT,C_DIRECTION.BAS]:     
             # --- Passage au droite
             if (xCollision-limitx2) <= self.x <= (xCollision-limit): 
-                cellule_Destination = (self.TERRAIN.GRILLE[xCollision-1][yCollision].Traversable())
+                cellule_Destination = (self.TERRAIN.GRILLE[xCollision-1][yCollision].traversable())
                 if cellule_Sur_Chemin and cellule_Destination:
                     self.x -= self.vitesseBase
                     
             # --- Passage au gauche
             elif (xCollision+limit ) <= self.x <= (xCollision + limitx2):
-                cellule_Destination = (self.TERRAIN.GRILLE[xCollision+1][yCollision].Traversable())
+                cellule_Destination = (self.TERRAIN.GRILLE[xCollision+1][yCollision].traversable())
                 if cellule_Sur_Chemin and cellule_Destination:
                     self.x += self.vitesseBase
         

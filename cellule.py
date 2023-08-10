@@ -16,11 +16,9 @@ class CCellule(item.CItem):
         self.casser = False
         
         
-    def Traversable(self):
-        return (self.objet == C_TERRAIN.SOL)
-    
-    def Cassable(self):
-        return (self.objet == C_TERRAIN.CASSABLE)
+    def traversable(self): return (self.objet == C_TERRAIN.SOL)    
+    def obstacle(self): return not (self.objet == C_TERRAIN.SOL)    
+    def cassable(self): return (self.objet == C_TERRAIN.CASSABLE)
     
     def Casser_Mur(self):
         self.temps = time.time()
@@ -46,7 +44,7 @@ class CCellule(item.CItem):
         posX = self.ecranX()
         posY = self.ecranY()
         
-        if self.objet == C_TERRAIN.CASSABLE: 
+        if self.cassable(): 
             if not self.casser:
                 VAR.fenetre.blit(VAR.image["cassable"], (posX, posY))    
             else:

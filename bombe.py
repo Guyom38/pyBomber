@@ -26,19 +26,18 @@ class CBombe(item.CItem):
         if self.etat == C_ETAPE_BOMBE.VA_PETER:
             self.Gestion_Bombe_Qui_Roule()
             self.Gestion_CompteARebourd_Bombe()  
-            self.Afficher_La_Bombe()                       
+            
+            image = FCT.image_decoupe(VAR.image["objets"], FCT.Animation(10, 3), 1, VAR.tailleCellule,  VAR.tailleCellule)
+            VAR.fenetre.blit(image, (self.ecranX(), self.ecranY()))                         
                 
         elif self.etat == C_ETAPE_BOMBE.EXPLOSE: 
             self.EXPLOSION.Afficher_Explosion_De_La_Bombe()            
             
-    def Afficher_La_Bombe(self):
-        image = FCT.image_decoupe(VAR.image["objets"], FCT.Animation(10, 3), 1, VAR.tailleCellule,  VAR.tailleCellule)
-        VAR.fenetre.blit(image, (self.ecranX(), self.ecranY()))  
 
 
     def Gestion_Bombe_Qui_Roule(self):
         if not self.enMouvement: return
-        
+        print ("Debut : ", self.x, self.y)
         oldPosition = self.x, self.y
         if self.direction == C_DIRECTION.DROITE: self.x += VAR.C_VITESSE_BOMBE_ROULE
         if self.direction == C_DIRECTION.GAUCHE: self.x -= VAR.C_VITESSE_BOMBE_ROULE
@@ -46,9 +45,14 @@ class CBombe(item.CItem):
         if self.direction == C_DIRECTION.BAS: self.y += VAR.C_VITESSE_BOMBE_ROULE
         
         if self.Detection_Collisions():
+            print ("Av : ", self.x, self.y)
             self.x, self.y = oldPosition
             self.x, self.y = self.celluleX(), self.celluleY()
+            print ("Ap : ", self.x, self.y)
             self.enMouvement = False
+            
+        print("")
+            
             
     def Gestion_CompteARebourd_Bombe(self):
         # --- anticipe le son du jeu
@@ -59,23 +63,35 @@ class CBombe(item.CItem):
         # --- si delais bombe expiré, alors BOOM    
         if time.time() - self.temps > self.delais:                        
             self.EXPLOSION.Initiatiser_Explosion()
+            
 
     def Detection_Collisions(self):
         # --- Controle sortie de terrain
-        if not FCT.Position_Sur_Terrain(self.celluleX(), self.celluleY()): return True
+        if not FCT.Position_Sur_Terrain(self.celluleX(), self.celluleY()): 
+            print("Collision Hors Terrain")
+            return True
         
         # --- Collision avec mur
-        if not self.TERRAIN.GRILLE[self.celluleX()][self.celluleY()].Traversable(): return True
+        if not (self.Detection_Collision_Murs_Autour() == VAR.C_AUCUNE_COLLISION):
+        #if not self.TERRAIN.GRILLE[self.celluleX()][self.celluleY()].traversable(): 
+            print("Collision mur")
+            return True
         
         # --- Collision avec Bombe
-        if not FCT.Detection_Collision(self.BOMBES, self) == None: return True
+        if not FCT.Detection_Collision(self.BOMBES, self)  == None: 
+            print("Collision Autre Bombe")
+            return True
         
         # --- Collision avec Objet        
-        #bombe = ((self.x * VAR.tailleCellule), (self.y * VAR.tailleCellule), VAR.tailleCellule, VAR.tailleCellule)
-        if FCT.Detection_Collision(self.OBJETS, self): return True
+        if not FCT.Detection_Collision(self.OBJETS, self) == None: 
+            print("Collision Avec Objet")
+            return True
         
         # --- Collision avec Joueur
-       
+        if not FCT.Detection_Collision(self.JOUEURS, self) == None: 
+            print("Collision avec Joueur")
+            return True
+        return False
                 
                 
             

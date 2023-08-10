@@ -26,7 +26,7 @@ hauteur_cadre_joueurs = 64
 
 tailleCellule = 16 
 nbLignes, nbColonnes = 13, 15
-tauxRemplissage = 10
+tauxRemplissage = 20
 delaisExplosion = 4    
 
 duree_partie = 90

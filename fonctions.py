@@ -87,6 +87,32 @@ def Collision2(objet1, objet2):
     else:
         return True
 
+def CollisionHigh(objet1, objet2):
+    dx1 = dx2 = dy1 = dy2 = 0.5
+    x1, y1 = objet1
+    x2, y2 = objet2
+    
+    x1 += 0.25
+    y1 += 0.25
+    x2 += 0.25
+    y2 += 0.25
+    
+    if ((x2 >= x1 + dx1) 
+            or (x2 + dx2 <= x1) 
+            or (y2 >= y1 + dy1)
+            or (y2 + dy2 <= y1)):
+
+        return False
+    else:
+        return True
+
+def Detection_Collision_High(_class_objet, _element):
+    for objet in _class_objet.LISTE:
+        if not objet == _element:
+            if CollisionHigh((objet.x , objet.y), (_element.x, _element.y)): 
+                return objet
+    return None
+    
 def Detection_Collision(_class_objet, _element):
     for objet in _class_objet.LISTE:
         if not objet == _element:

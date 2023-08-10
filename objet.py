@@ -67,7 +67,7 @@ class CObjet(item.CItem):
                 if self.y > self.yDest: pret_A_Etre_Place = True  
                                
             if pret_A_Etre_Place:
-                posX, posY = self.iX(), self.iY()  
+                posX, posY = self.celluleX(), self.celluleY()  
                 
                 if 0 <= posX < VAR.nbColonnes and 0 <= posY < VAR.nbLignes:
                     deja_Occupe = self.Objet_Present_Sur_Place(posX, posY)    
