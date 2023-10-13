@@ -11,6 +11,7 @@ import bouton as CB
 
 import time, random
 import ressources as CR
+import qr_code as QR
 
 class CMenu():
     def __init__(self, _moteur):
@@ -30,6 +31,11 @@ class CMenu():
         
         self.niveau = 0
         
+        self.nbColonnesRef = VAR.nbColonnes
+        self.nbLignesRef = VAR.nbLignes
+        
+        self.imageQrCode = None
+        
     def Action_NombreParties(self, _juste_valeur):
         if _juste_valeur:
             if VAR.nb_parties == 0: return "illimité"
@@ -37,6 +43,8 @@ class CMenu():
         else:
             VAR.nb_parties += 1
             if VAR.nb_parties > 10: VAR.nb_parties = 0
+            
+            
     def Action_DureeParties(self, _juste_valeur):
         if _juste_valeur:
             if VAR.duree_partie == 0: return "illimité"
@@ -44,16 +52,21 @@ class CMenu():
         else: 
             VAR.duree_partie += 30
             if VAR.duree_partie > 600: VAR.duree_partie = 0
+            
+            
     def Action_Active_Maladies(self, _juste_valeur):
         if _juste_valeur:
             return "ON" if VAR.active_maladies else "OFF"
         else:
             VAR.active_maladies = not VAR.active_maladies
+            
+            
     def Action_Active_Heritage(self, _active_heritage):
         if _active_heritage:
             return "ON" if VAR.active_heritage else "OFF"
         else:
             VAR.active_heritage = not VAR.active_heritage
+    
     
     def Action_Revenir_Principal(self, _juste_valeur):
         if _juste_valeur:
@@ -62,21 +75,26 @@ class CMenu():
         else:
             self.menu = "PRINCIPAL"
 
+
     def Action_Dimension_Suivante(self, _juste_valeur):
         if _juste_valeur:
             if self.niveau == 0:
-                VAR.nbColonnes = 15
-                VAR.nbLignes = 13
-                return "ORIGINAL" + " ("+str(VAR.nbColonnes)+"x"+str(VAR.nbLignes)+")"
+                self.nbColonnesRef = 15
+                self.nbLignesRef = 13
+                return "ORIGINAL" + " ("+str(self.nbColonnesRef)+"x"+str(self.nbLignesRef)+")"
             elif self.niveau == 1:
-                VAR.nbColonnes = 20
-                VAR.nbLignes = 40
-                return "ORIGINAL" + " ("+str(VAR.nbColonnes)+"x"+str(VAR.nbLignes)+")"
+                self.nbColonnesRef = 40
+                self.nbLignesRef = 20
+                return "LARGE" + " ("+str(self.nbColonnesRef)+"x"+str(self.nbLignesRef)+")"
+            elif self.niveau == 2:
+                self.nbColonnesRef = 60
+                self.nbLignesRef = 30
+                return "MEGA" + " ("+str(self.nbColonnesRef)+"x"+str(self.nbLignesRef)+")"
             
         else:
             self.niveau += 1
-            if self.niveau > 1: self.niveau = 0
-            self.Action_Dimension_Suivante(True)  
+            if self.niveau > 2: self.niveau = 0
+            return self.Action_Dimension_Suivante(True)  
             
             
     
@@ -89,12 +107,12 @@ class CMenu():
         self.hauteur_saut = 10
         self.hauteur_vide = VAR.tailleCellule
         
+        ## --- dimension pour le menu
         VAR.nbColonnes = int((self.largeurZone / VAR.tailleCellule)) +1
         VAR.nbLignes = int((VAR.resolution[1] / VAR.tailleCellule)) - 2        
         self.largeurBouton, self.hauteurBouton = (VAR.nbColonnes - 2) * VAR.tailleCellule, 64
         
-        self.TERRAIN.Initialiser(True)    
-        
+        self.TERRAIN.Initialiser(True)            
         self.JOUEURS.Reinitaliser()
         
         self.LISTE = {}
@@ -164,8 +182,7 @@ class CMenu():
         VAR.fenetre.blit(VAR.image['titre'], (0, 0))    
          
     
-    def Calcul_Hauteur_Cadre(self):
-        
+    def Calcul_Hauteur_Cadre(self):        
         hauteur_boutons = 0
         for bouton in self.LISTE[self.menu]:
             if not bouton.id == 99:
@@ -178,8 +195,7 @@ class CMenu():
     def Dessiner_Bouton(self):
         
         hauteur_boutons = self.Calcul_Hauteur_Cadre()
-       
-        
+               
         self.x, self.y = (VAR.resolution[0] - self.largeurZone) - 96,  int((VAR.resolution[1] - hauteur_boutons)  / 2)
         VAR.offSet = (self.x, VAR.tailleCellule) 
         
@@ -189,8 +205,6 @@ class CMenu():
                 self.y += self.hauteurBouton + self.hauteur_saut
                 if bouton_presse:
                     if bouton.id == 0:
-                        
-                        
                         nbJoueursPourLaPartie = len([1 for joueur in self.MOTEUR.JOUEURS.LISTE if joueur.clown])                        
 
                         if nbJoueursPourLaPartie > 1:  
@@ -198,6 +212,9 @@ class CMenu():
                                 joueur.actif = (joueur.clown or joueur.id == 0)
                             
                             VAR.zoom = self.oldZoom     
+                            VAR.nbColonnes = self.nbColonnesRef
+                            VAR.nbLignes = self.nbLignesRef
+                            
                             self.MOTEUR.Relancer_Une_Partie()
                             
                     elif bouton.id == 1:
@@ -213,8 +230,7 @@ class CMenu():
                         self.menu = "PRINCIPAL"
             else:
                 self.y += self.hauteur_vide
-                            
-                            
+                                                       
                             
         self.MOTEUR.CONTROLLEUR.action_bouton = False
                             
@@ -224,7 +240,15 @@ class CMenu():
             for _ in range(4):
                 self.PARTICULES.Ajouter_Particule(random.randint(0, VAR.resolution[0]), VAR.resolution[1], (162, 104, 254))
         self.PARTICULES.Afficher_Les_Particules()  
-           
+    
+    def Dessiner_QrCode(self):
+        if self.imageQrCode == None:         
+            # Génère le QR Code et le convertit en surface Pygame
+            qrcode_image = QR.generate_qr_code("http://ladnet.net/joystick/")
+            self.imageQrCode = QR.qr_image_to_pygame_surface(qrcode_image)
+        VAR.fenetre.blit( self.imageQrCode, (10, VAR.resolution[1] - self.imageQrCode.get_height()-10))
+       
+    
     def Afficher_Menu(self):
         joueurSelect = None
         
@@ -235,6 +259,9 @@ class CMenu():
         if self.menu != "PRINCIPAL": joueurSelect = 0            
         self.JOUEURS.Afficher_Tous_Les_Joueurs(joueurSelect)
 
+        if VAR.web_socket: 
+            self.Dessiner_QrCode()
+            
         self.Dessiner_Particules()
 
         if self.MOTEUR.CONTROLLEUR.Recherche_Manettes():

@@ -46,7 +46,8 @@ class CMoteur():
  
         
     def Initialisation(self): 
-        VAR.zoom = 3
+        # --- zoom pour l'interface dans le menu
+        VAR.zoom = 2
         
         self.chargement = CCH.CChargement()
         self.chargement.start()
@@ -72,14 +73,14 @@ class CMoteur():
 
     def Demarrer(self):
         VAR.fenetre = pygame.display.set_mode(VAR.resolution, VAR.mode_ecran, 32)
-        pygame.display.set_caption("PyBomber 0.8")        
+        pygame.display.set_caption("PyBomber 0.9")        
         self.horloge = pygame.time.Clock()        
         
         self.Initialisation()       
         self.Boucle()
        
     def Relancer_Une_Partie(self):
-        VAR.zoom = 4
+        VAR.zoom = 3
         CR.Changement_Zoom(VAR.zoom)  
           
         self.phase_jeu = C_PHASE_DE_JEU.JEU

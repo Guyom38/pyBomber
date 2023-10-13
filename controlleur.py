@@ -7,11 +7,6 @@ import time
 
 from enums import *
 
-import asyncio
-import websockets
-import json
-import wss as WSS
-
 class CCControlleur:
     def __init__(self, _moteur):
         self.MOTEUR = _moteur

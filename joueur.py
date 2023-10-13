@@ -41,11 +41,11 @@ class CJoueur(item.CItem):
         self.vitesse = self.vitesseBase
         
         self.puissance = 1
-        self.bombes = 3
+        self.bombes = 1
         self.bombes_posees = 0
    
-        self.coup_de_pied = True
-        self.coup_de_poing = True
+        self.coup_de_pied = False
+        self.coup_de_poing = False
         
         self.maladie = 0
         self.maladie_temps = -1        

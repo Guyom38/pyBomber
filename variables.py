@@ -14,6 +14,7 @@ animation_MortFrameMax = 5
 music = False
 fullHd = False
 plein_ecran = False
+web_socket = False
 
 resolution = (1320, 768)
 mode_ecran = DOUBLEBUF
@@ -28,7 +29,7 @@ hauteur_cadre_joueurs = 64
 
 tailleCellule = 16 
 nbLignes, nbColonnes = 13, 15
-tauxRemplissage = 20
+tauxRemplissage = 60
 delaisExplosion = 4    
 
 duree_partie = 90

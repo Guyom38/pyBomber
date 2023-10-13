@@ -1,21 +1,40 @@
 import moteur as CM
-#import wss as WSS
+import variables as VAR
 
 import asyncio
 import websockets
 import json
+import time
 
 class webSocket():  
-    async def tache1_socket( actions_websocket):   
-        print("     + Initialisation Tache Socket :")  
-        async with websockets.connect("wss://ws.ladnet.net") as websocket: #, extra_headers={'http_proxy_host': "haproxy", 'http_proxy_port': 3128}
-            print("         + boucle thread websocket")
-            while True:
-                message = await websocket.recv()
-                donnees = json.loads(message)
-                await actions_websocket.put(donnees)
-                
-                print(str(donnees))
+    async def tache1_socket(actions_websocket):   
+        
+        while VAR.boucle_jeu:
+            print("     + Initialisation Tache Socket :")  
+            try:
+                async with websockets.connect(VAR.urlWss) as websocket: # ...
+                    print("         + boucle thread websocket")
+                    VAR.web_socket = True
+                    
+                    while VAR.boucle_jeu:
+                        try:
+                            message = await asyncio.wait_for(websocket.recv(), timeout=1.0)
+                            donnees = json.loads(message)
+                            await actions_websocket.put(donnees)
+                            print(str(donnees))
+                            
+                        except asyncio.TimeoutError:
+                            print("Timeout: Aucun message reçu pendant 1 seconde. "+str(time.time()))
+                            continue
+                        
+            except (websockets.ConnectionClosed, OSError):
+                print("Erreur de connexion. Tentative de reconnexion dans 5 secondes...")
+                await asyncio.sleep(5)
+            except asyncio.CancelledError:
+                print("Tâche annulée. Nettoyage et fermeture.")
+                return
+
+
         
 async def tache2(actions_websocket):
     print("     + Initialisation Tache JEU :")
