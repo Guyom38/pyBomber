@@ -22,12 +22,16 @@ from enums import *
 
 import random, time
 
+import asyncio
+
+
 class CMoteur():
-    def __init__(self):
-        pygame.init()   
+    def __init__(self, actions_websocket):
+         
+        pygame.init()            
         pygame.mixer.init()
         
-        
+        self.actions_websocket = actions_websocket
         
         self.PARTICULES = CP.CParticules(self) 
         self.INTERFACE = CI.CInterface(self)        
@@ -38,6 +42,8 @@ class CMoteur():
         self.CONTROLLEUR = CC.CCControlleur(self)           
         self.MENU = CM.CMenu(self) 
         self.HIGHSCORE = CH.CHighscore(self)
+    
+ 
         
     def Initialisation(self): 
         VAR.zoom = 3
@@ -63,15 +69,14 @@ class CMoteur():
         self.chargement.Arreter()
 
     
-    
+
     def Demarrer(self):
         VAR.fenetre = pygame.display.set_mode(VAR.resolution, VAR.mode_ecran, 32)
         pygame.display.set_caption("PyBomber 0.8")        
         self.horloge = pygame.time.Clock()        
         
-        self.Initialisation()        
+        self.Initialisation()       
         self.Boucle()
-
        
     def Relancer_Une_Partie(self):
         VAR.zoom = 4

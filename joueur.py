@@ -65,7 +65,7 @@ class CJoueur(item.CItem):
         return (self.nb_manches * 1000) + (self.nb_morts * 50)
                                
     def Colorisation(self):
-        print("recolorie")
+        #print("recolorie")
         self.image = VAR.image["joueur0"].copy()      
         if self.id == 0: return
         

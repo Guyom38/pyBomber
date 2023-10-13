@@ -21,6 +21,8 @@ mode_ecran = DOUBLEBUF
 if fullHd: resolution = (1920, 1080)
 if plein_ecran: mode_ecran = FULLSCREEN
 
+urlWss = "wss://ws.ladnet.net"
+
 zoom = -1
 hauteur_cadre_joueurs = 64
 
