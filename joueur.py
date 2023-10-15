@@ -27,10 +27,9 @@ class CJoueur(item.CItem):
         self.nb_manches = 0
         
         self.couleur = (255,255,255,255)        
-    
+        self.directionSocket = None
         self.Initialiser(self.id)
-       
-    
+      
     def Initialiser(self, _position):        
         self.x, self.y = self.Position_Initiale(_position) 
         self.direction = C_DIRECTION.BAS

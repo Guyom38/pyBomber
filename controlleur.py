@@ -33,131 +33,72 @@ class CCControlleur:
         
         self.Creer_Joueurs_Clavier_Manettes()
     
-    #
-    # --
-    # async def Boucle_Ecoute_WebSocket(self):
-    #     self.JOUEURS_WEBSOCKET = {}
-    #     print("Initialisation thread websocket")
-      
-    #     async with websockets.connect("wss://ws.ladnet.net") as websocket: #, extra_headers={'http_proxy_host': "haproxy", 'http_proxy_port': 3128}
-    #         print(" + boucle thread websocket")
-    #         while True:
-    #             try:
-                    
-    #                 message = await websocket.recv()
-    #                 data = json.loads(message)
-    #                 print(str(data))
-    #                 if 'playerId' in data:
-                                            
-    #                     idJoueurWS = int(data['playerId'])
-    #                     print(str(idJoueurWS) + " => " + str(data))
-                        
-    #                     if idJoueurWS not in self.JOUEURS_WEBSOCKET:
-    #                         self.JOUEURS_WEBSOCKET[idJoueurWS] = len(self.JOUEURS_WEBSOCKET) 
-    #                         print("Nouveau Joueur #"+str(idJoueurWS)+" => id:" + str(self.JOUEURS_WEBSOCKET[idJoueurWS]))
-                        
-    #                     idJoueur = self.JOUEURS_WEBSOCKET[idJoueurWS]
-    #                     seuil = 30
-                        
-                        
-    #                     axis_x, axis_y, mouvementJoy = 0.0, 0.0, False                
-    #                     if 'joystick' in data['data']:
-    #                         axis_x, axis_y, mouvementJoy = float(data['data']['joystick']['x']), float(data['data']['joystick']['y']), True
-                        
-    #                     if not self.JOUEURS.LISTE[idJoueur].mort:                
-    #                         if (mouvementJoy):
-    #                             if round(axis_x,0) != 0 or round(axis_y,0) != 0: self.JOUEURS.LISTE[idJoueur].enMouvement = True 
-                                
-    #                             BONNE_DIRECTION = [C_DIRECTION.GAUCHE, C_DIRECTION.DROITE, C_DIRECTION.HAUT, C_DIRECTION.BAS]
-    #                             if self.JOUEURS.LISTE[idJoueur].maladie == C_MALADIE.TOUCHES_INVERSEES:
-    #                                 BONNE_DIRECTION = [C_DIRECTION.DROITE, C_DIRECTION.GAUCHE, C_DIRECTION.BAS, C_DIRECTION.HAUT]
-                                
-    #                             if axis_x < -seuil: 
-    #                                 self.JOUEURS.LISTE[idJoueur].direction = BONNE_DIRECTION[0]
-    #                                 self.Menu_Pression_Touche(BONNE_DIRECTION[0])
-    #                             if axis_x > seuil: 
-    #                                 self.JOUEURS.LISTE[idJoueur].direction =  BONNE_DIRECTION[1]
-    #                                 self.Menu_Pression_Touche(BONNE_DIRECTION[1])
-    #                             if axis_y > seuil: 
-    #                                 self.JOUEURS.LISTE[idJoueur].direction = BONNE_DIRECTION[2]
-    #                                 self.Menu_Pression_Touche(BONNE_DIRECTION[2])
-    #                             if axis_y < -seuil: 
-    #                                 self.JOUEURS.LISTE[idJoueur].direction =  BONNE_DIRECTION[3]     
-    #                                 self.Menu_Pression_Touche(BONNE_DIRECTION[3])  
-                            
-    #                         if 'button' in data['data']: 
-    #                             if self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.JEU:                         
-    #                                 if (data['data']['button'] == 'B'):
-    #                                     self.JOUEURS.LISTE[idJoueur].Action_Poser_Une_Bombe()
-    #                                 if (data['data']['button'] == 'A'):
-    #                                     self.JOUEURS.LISTE[idJoueur].Action_Pousser_La_Bombe()
-                                
-    #                             elif self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.MENU:
-    #                                 if (data['data']['button'] == 'A'):
-    #                                     self.action_bouton = True  
-                                     
-    #             except Exception as e:
-    #                 print(f"Erreur: {e}")
-                    
-    #             await asyncio.sleep(0)
-    
+        
     def Traite_Actions_WebSocket(self):
     
-            while not self.MOTEUR.actions_websocket.empty():
-                try:
-                    
-                    data = self.MOTEUR.actions_websocket.get_nowait()
-                    if 'playerId' in data:
-                                            
-                        idJoueurWS = int(data['playerId'])
-                        print(str(idJoueurWS) + " => " + str(data))
+        while not self.MOTEUR.actions_websocket.empty():
+            try:                    
+                data = self.MOTEUR.actions_websocket.get_nowait()
+                if 'playerId' in data:                                            
+                    idJoueurWS = int(data['playerId'])
                         
-                        if idJoueurWS not in self.JOUEURS_WEBSOCKET:
-                            self.JOUEURS_WEBSOCKET[idJoueurWS] = len(self.JOUEURS_WEBSOCKET) 
-                            print("Nouveau Joueur #"+str(idJoueurWS)+" => id:" + str(self.JOUEURS_WEBSOCKET[idJoueurWS]))
+                    if idJoueurWS not in self.JOUEURS_WEBSOCKET:
+                        self.JOUEURS_WEBSOCKET[idJoueurWS] = len(self.JOUEURS_WEBSOCKET) 
+                        print("Nouveau Joueur #"+str(idJoueurWS)+" => id:" + str(self.JOUEURS_WEBSOCKET[idJoueurWS]))
                         
-                        idJoueur = self.JOUEURS_WEBSOCKET[idJoueurWS]
-                        seuil = 30
+                    idJoueur = self.JOUEURS_WEBSOCKET[idJoueurWS]
                         
                         
-                        axis_x, axis_y, mouvementJoy = 0.0, 0.0, False                
-                        if 'joystick' in data['data']:
-                            axis_x, axis_y, mouvementJoy = float(data['data']['joystick']['x']), float(data['data']['joystick']['y']), True
-                        
-                        if not self.JOUEURS.LISTE[idJoueur].mort:                
-                            if (mouvementJoy):
-                                if round(axis_x,0) != 0 or round(axis_y,0) != 0: self.JOUEURS.LISTE[idJoueur].enMouvement = True 
+                    #axis_x, axis_y, mouvementJoy = 0.0, 0.0, False                
+                    if 'joystick' in data['data']:
+                        if 'direction' in data['data']['joystick']:                        
+                             self.JOUEURS.LISTE[idJoueur].directionSocket = data['data']['joystick']['direction']['angle']
                                 
-                                BONNE_DIRECTION = [C_DIRECTION.GAUCHE, C_DIRECTION.DROITE, C_DIRECTION.HAUT, C_DIRECTION.BAS]
-                                if self.JOUEURS.LISTE[idJoueur].maladie == C_MALADIE.TOUCHES_INVERSEES:
-                                    BONNE_DIRECTION = [C_DIRECTION.DROITE, C_DIRECTION.GAUCHE, C_DIRECTION.BAS, C_DIRECTION.HAUT]
+                    if not self.JOUEURS.LISTE[idJoueur].mort:                
+                                  
+                        if 'button' in data['data']: 
+                            if self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.JEU:                         
+                                if (data['data']['button'] == 'B'):
+                                    self.JOUEURS.LISTE[idJoueur].Action_Poser_Une_Bombe()
+                                if (data['data']['button'] == 'A'):
+                                    self.JOUEURS.LISTE[idJoueur].Action_Pousser_La_Bombe()
                                 
-                                if axis_x < -seuil: 
-                                    self.JOUEURS.LISTE[idJoueur].direction = BONNE_DIRECTION[0]
-                                    self.Menu_Pression_Touche(BONNE_DIRECTION[0])
-                                if axis_x > seuil: 
-                                    self.JOUEURS.LISTE[idJoueur].direction =  BONNE_DIRECTION[1]
-                                    self.Menu_Pression_Touche(BONNE_DIRECTION[1])
-                                if axis_y > seuil: 
-                                    self.JOUEURS.LISTE[idJoueur].direction = BONNE_DIRECTION[2]
-                                    self.Menu_Pression_Touche(BONNE_DIRECTION[2])
-                                if axis_y < -seuil: 
-                                    self.JOUEURS.LISTE[idJoueur].direction =  BONNE_DIRECTION[3]     
-                                    self.Menu_Pression_Touche(BONNE_DIRECTION[3])  
-                            
-                            if 'button' in data['data']: 
-                                if self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.JEU:                         
-                                    if (data['data']['button'] == 'B'):
-                                        self.JOUEURS.LISTE[idJoueur].Action_Poser_Une_Bombe()
-                                    if (data['data']['button'] == 'A'):
-                                        self.JOUEURS.LISTE[idJoueur].Action_Pousser_La_Bombe()
-                                
-                                elif self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.MENU:
-                                    if (data['data']['button'] == 'A'):
-                                        self.action_bouton = True  
+                            elif self.MOTEUR.phase_jeu == C_PHASE_DE_JEU.MENU:
+                                if (data['data']['button'] == 'A'):
+                                    self.action_bouton = True  
+                                        
+                       
                                      
-                except Exception as e:
-                    print(f"Erreur: {e}")
+            except Exception as e:
+                print(f"Erreur: {e}")
+        
+    
+    def Deplacement_Joueurs_webSocket(self):    
+        for joueur in self.JOUEURS.LISTE:    
+            BONNE_DIRECTION = [C_DIRECTION.GAUCHE, C_DIRECTION.DROITE, C_DIRECTION.HAUT, C_DIRECTION.BAS]
+            if joueur.maladie == C_MALADIE.TOUCHES_INVERSEES:
+                BONNE_DIRECTION = [C_DIRECTION.DROITE, C_DIRECTION.GAUCHE, C_DIRECTION.BAS, C_DIRECTION.HAUT]
+            
+                
+            if joueur.directionSocket == 'left': #axis_x < -seuil: 
+                joueur.direction = BONNE_DIRECTION[0]
+                self.Menu_Pression_Touche(BONNE_DIRECTION[0])
+                                
+            elif joueur.directionSocket == 'right': #axis_x > seuil: 
+                joueur.direction =  BONNE_DIRECTION[1]
+                self.Menu_Pression_Touche(BONNE_DIRECTION[1])
+                                
+            elif joueur.directionSocket == 'up': #axis_y > seuil: 
+                joueur.direction = BONNE_DIRECTION[2]
+                self.Menu_Pression_Touche(BONNE_DIRECTION[2])
+                                
+            elif joueur.directionSocket == 'down': #axis_y < -seuil: 
+                joueur.direction =  BONNE_DIRECTION[3]     
+                self.Menu_Pression_Touche(BONNE_DIRECTION[3])  
+                
+            if joueur.directionSocket != None:
+                joueur.enMouvement = True 
+                
                     
                      
     #
@@ -201,7 +142,10 @@ class CCControlleur:
                         
         # --- Gestion Clavier Joueur #1  
         self.Gestion_Clavier()
+        
+        # --- Gestion WebSockets Joueurs
         self.Traite_Actions_WebSocket()
+        self.Deplacement_Joueurs_webSocket()
         
         # --- Gestion Manettes Joueur #1 a #9
         self.Gestion_Manettes_Directions()
