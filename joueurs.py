@@ -2,13 +2,14 @@ import pygame
 from pygame.locals import *
 import variables as VAR
 import fonctions as FCT
+import random
 
 class CJoueurs():
     def __init__(self, _moteur):
         self.MOTEUR = _moteur
         self.LISTE = []
-    
 
+        random.shuffle(VAR.liste_pseudos)
             
     def nbJoueurs(self):
         return len(self.LISTE)

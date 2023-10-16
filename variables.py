@@ -1,4 +1,5 @@
 from pygame.locals import *
+import uuid
 
 image = {}
 pixelBloc = 16
@@ -15,6 +16,10 @@ music = False
 fullHd = False
 plein_ecran = False
 web_socket = False
+web_socket_id_partie = uuid.uuid4()
+liste_pseudos =  ["Nikou", "Bamboula", "PouetPouet", "Zigzag", "Chocolatine", "Bouffon", "Cacahuète", "Turlututu", 
+                                 "Zigouigoui", "Babar", "PoufPouf", "Grincheux", "Rigolo", "Schtroumpf", "Gribouille", "Chiffon", "Cocorico", "Choucroute", "Poussin"] 
+
 
 resolution = (1320, 768)
 mode_ecran = DOUBLEBUF

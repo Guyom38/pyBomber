@@ -16,6 +16,11 @@ class webSocket():
                     print("         + boucle thread websocket")
                     VAR.web_socket = True
                     
+                    data_to_send = {"game": "pybomber",
+                                    "id_game": str(VAR.web_socket_id_partie),  
+                                    "type_client": "game" }
+                    
+                    await websocket.send(json.dumps(data_to_send))
                     while VAR.boucle_jeu:
                         try:
                             message = await asyncio.wait_for(websocket.recv(), timeout=1.0)

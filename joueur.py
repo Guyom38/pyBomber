@@ -29,6 +29,9 @@ class CJoueur(item.CItem):
         self.couleur = (255,255,255,255)        
         self.directionSocket = None
         self.Initialiser(self.id)
+        
+        self.nom = random.choice(VAR.liste_pseudos)
+
       
     def Initialiser(self, _position):        
         self.x, self.y = self.Position_Initiale(_position) 
@@ -103,6 +106,17 @@ class CJoueur(item.CItem):
 #
 # -----------------------------------------------------------------------------------------------------------        
     
+    def Afficher_Nom(self):
+        if self.nom == "": return 0
+        
+        image_nom = FCT.Image_Texte(self.nom, (255,255,255,255), 8)      
+        
+        posX = int( (self.ecranX() + (VAR.tailleCellule /2)) - (image_nom.get_width() /2) )
+        posY = self.ecranY() - image_nom.get_height()
+        
+        pygame.draw.rect(VAR.fenetre, (0,0,0,64), (posX-2, posY-2, image_nom.get_width()+2, image_nom.get_height()+2), 0)
+        VAR.fenetre.blit(image_nom, (posX, posY)) 
+        
     
     def Afficher(self, _menu = False):
         if not self.actif: return
@@ -143,7 +157,7 @@ class CJoueur(item.CItem):
                 self.Transmission_Heritage_Apres_Mort()
                 self.animationId = -1
     
-
+        self.Afficher_Nom()
 
     
         

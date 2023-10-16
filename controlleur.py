@@ -53,6 +53,9 @@ class CCControlleur:
                     if 'joystick' in data['data']:
                         if 'direction' in data['data']['joystick']:                        
                              self.JOUEURS.LISTE[idJoueur].directionSocket = data['data']['joystick']['direction']['angle']
+                        if 'state' in data['data']['joystick']:                     
+                            if ( data['data']['joystick']['state']) == 'end':   
+                                self.JOUEURS.LISTE[idJoueur].directionSocket = None
                                 
                     if not self.JOUEURS.LISTE[idJoueur].mort:                
                                   

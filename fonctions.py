@@ -4,7 +4,7 @@ from pygame.locals import *
 import variables as VAR
 import time
 
-
+import uuid
 
 
 
@@ -141,3 +141,4 @@ def Image_Texte(_texte, _couleur, _taille):
 
 def Position_Sur_Terrain(_x, _y):
     return (_x >=0 and _x < VAR.nbColonnes and _y >=0 and _y < VAR.nbLignes)
+
